@@ -6,7 +6,8 @@
         "build": "vite build",
         "dev": "vite",
         "lint": "prettier --check .",
-        "fix": "prettier --write ."
+        "fix": "prettier --write .",
+        "dev:laravel": "concurrently \"npm run dev\" \"php artisan serve\" \"vite\""
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.1.13",
