@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use App\Enums\CompanyStatusEnum;
+use App\Enums\CompanyTypeEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Company extends Model
+final class Company extends Model
 {
     /** @use HasFactory<\Database\Factories\CompanyFactory> */
     use HasFactory;
@@ -21,6 +25,8 @@ class Company extends Model
     ];
 
     protected $casts = [
+        'type' => CompanyTypeEnum::class,
+        'status' => CompanyStatusEnum::class,
         'appeal_token_expires_at' => 'datetime',
         'is_active' => 'boolean',
     ];

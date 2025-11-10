@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Filament\Admin\Resources\Users\UserResource;
+use App\Filament\Admin\Widgets\CompanyStatsOverview;
 use App\Filament\Admin\Widgets\LatestAccessLogs;
-use App\Filament\Widgets\CompanyStatsOverview;
 use App\Models\User;
 use Awcodes\LightSwitch\Enums\Alignment;
 use Awcodes\LightSwitch\LightSwitchPlugin;

@@ -5,8 +5,52 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/* Required by all components */
+@import '../../vendor/filament/support/resources/css/index.css';
+
+/* Required by actions and tables */
+@import '../../vendor/filament/actions/resources/css/index.css';
+
+/* Required by actions, forms and tables */
+@import '../../vendor/filament/forms/resources/css/index.css';
+
+/* Required by actions and infolists */
+@import '../../vendor/filament/infolists/resources/css/index.css';
+
+/* Required by notifications */
+@import '../../vendor/filament/notifications/resources/css/index.css';
+
+/* Required by actions, infolists, forms, schemas and tables */
+@import '../../vendor/filament/schemas/resources/css/index.css';
+
+/* Required by tables */
+@import '../../vendor/filament/tables/resources/css/index.css';
+
+/* Required by widgets */
+@import '../../vendor/filament/widgets/resources/css/index.css';
+
 @theme {
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-main-100: #e8d5d2;
+    --color-main-200: #d1aba6;
+    --color-main-300: #b98179;
+    --color-main-400: #a2574d;
+    --color-main-500: #8b2d20;
+    --color-main-600: #6f241a;
+    --color-main-700: #531b13;
+    --color-main-800: #38120d;
+    --color-main-900: #1c0906;
+
+    --color-secondary-100: #fefdfb;
+    --color-secondary-200: #fdf9f5;
+    --color-secondary-300: #fbf4eb;
+    --color-secondary-400: #f8eedd;
+    --color-secondary-500: #f4e6ca;
+    --color-secondary-600: #edd9b3;
+    --color-secondary-700: #e3ca96;
+    --color-secondary-800: #d6b574;
+    --color-secondary-900: #c49c4d;
 }

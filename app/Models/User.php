@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\CompanyStatusEnum;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,9 +26,14 @@ final class User extends Authenticatable implements FilamentUser
      */
     protected $fillable = [
         'avatar_url',
+        'dni',
         'name',
+        'lastname',
         'email',
         'password',
+        'company_id',
+        'is_company_representative',
+        'is_active',
     ];
 
     /**
@@ -44,6 +51,31 @@ final class User extends Authenticatable implements FilamentUser
         return true;
     }
 
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->is_active;
+    }
+
+    public function companyIsActive(): bool
+    {
+        return $this->company?->is_active;
+    }
+
+    public function companyStatus(): CompanyStatusEnum
+    {
+        return $this->company?->status;
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->name} {$this->last_name}";
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -55,10 +87,5 @@ final class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function company()
-    {
-        return $this->belongsTo(Company::class);
     }
 }

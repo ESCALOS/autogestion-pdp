@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Middleware\RedirectAdminUsers;
+use App\Livewire\Company\CreateCompany;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
 
@@ -22,3 +25,15 @@ Livewire::setScriptRoute(function ($handle) {
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::middleware('guest')->group(function () {
+    Route::get('/registrar-empresa', CreateCompany::class)
+        ->name('company.create');
+});
+
+Route::middleware(['auth', RedirectAdminUsers::class])->group(function () {
+    Route::get('/dashboard', DashboardController::class)
+        ->name('dashboard');
+});
+
+require __DIR__.'/auth.php';
