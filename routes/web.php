@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\CompanyAppealController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DriverAppealController;
 use App\Http\Middleware\RedirectAdminUsers;
 use App\Livewire\Company\CreateCompany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 /* NOTE: Do Not Remove
@@ -34,6 +38,41 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', RedirectAdminUsers::class])->group(function () {
     Route::get('/dashboard', DashboardController::class)
         ->name('dashboard');
+
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/company/document/{document}', function (App\Models\CompanyDocument $document) {
+        // Verificar que el usuario tenga permiso para ver este documento
+        if (Auth::user()->hasRole('super_admin') || Auth::user()->company_id === $document->company_id) {
+            // Generar URL temporal de S3 válida por 5 minutos
+            $temporaryUrl = Storage::disk('s3')->temporaryUrl(
+                $document->path,
+                now()->addMinutes(5)
+            );
+
+            return redirect($temporaryUrl);
+        }
+
+        abort(403);
+    })
+    ->name('company.document.view');
+});
+
+// Rutas públicas para apelación de empresas rechazadas
+Route::get('/company/appeal/{token}', [CompanyAppealController::class, 'show'])
+    ->name('company.appeal.show');
+Route::put('/company/appeal/{token}', [CompanyAppealController::class, 'update'])
+    ->name('company.appeal.update');
+Route::get('/company/appeal-success', [CompanyAppealController::class, 'success'])
+    ->name('company.appeal.success');
+
+// Rutas públicas para actualización de documentos de conductores
+Route::get('/driver/appeal/{token}', [DriverAppealController::class, 'show'])
+    ->name('driver.appeal.show');
+Route::put('/driver/appeal/{token}', [DriverAppealController::class, 'update'])
+    ->name('driver.appeal.update');
+Route::get('/driver/appeal-success', [DriverAppealController::class, 'success'])
+    ->name('driver.appeal.success');
 
 require __DIR__.'/auth.php';

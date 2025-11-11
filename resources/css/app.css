@@ -34,15 +34,15 @@
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 
-    --color-main-100: #e8d5d2;
-    --color-main-200: #d1aba6;
-    --color-main-300: #b98179;
-    --color-main-400: #a2574d;
-    --color-main-500: #8b2d20;
-    --color-main-600: #6f241a;
-    --color-main-700: #531b13;
-    --color-main-800: #38120d;
-    --color-main-900: #1c0906;
+    --color-primary-100: #e8d5d2;
+    --color-primary-200: #d1aba6;
+    --color-primary-300: #b98179;
+    --color-primary-400: #a2574d;
+    --color-primary-500: #8b2d20;
+    --color-primary-600: #6f241a;
+    --color-primary-700: #531b13;
+    --color-primary-800: #38120d;
+    --color-primary-900: #1c0906;
 
     --color-secondary-100: #fefdfb;
     --color-secondary-200: #fdf9f5;
@@ -53,4 +53,22 @@
     --color-secondary-700: #e3ca96;
     --color-secondary-800: #d6b574;
     --color-secondary-900: #c49c4d;
+}
+
+.fi-fo-field-label-content {
+    @media (prefers-color-scheme: dark) {
+        color: #333333;
+    }
+}
+
+.fi-sc-wizard-header-step-label {
+    color: black;
+}
+
+.fi-ac-btn-action {
+    @media (prefers-color-scheme: dark) {
+        background-color: var(--color-primary-500);
+        border-color: var(--color-primary-500);
+        color: white;
+    }
 }
