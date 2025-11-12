@@ -149,7 +149,7 @@ final class ViewCompany extends Page
             }
 
             if ($allApproved && $this->canApproveAll()) {
-                $this->record->update(['status' => 2]);
+                $this->record->update(['status' => 2, 'is_active' => true]);
 
                 // Enviar correo de aprobación
                 if ($this->record->representative->email) {
