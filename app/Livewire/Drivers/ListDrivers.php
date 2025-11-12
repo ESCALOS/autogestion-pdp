@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Drivers;
 
 use App\Models\Driver;
@@ -10,12 +12,13 @@ use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
-class ListDrivers extends Component implements HasActions, HasSchemas, HasTable
+final class ListDrivers extends Component implements HasActions, HasSchemas, HasTable
 {
     use InteractsWithActions, InteractsWithSchemas, InteractsWithTable;
 
@@ -51,7 +54,12 @@ class ListDrivers extends Component implements HasActions, HasSchemas, HasTable
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('Estado')
+                    ->options(\App\Enums\EntityStatusEnum::class),
+                SelectFilter::make('document_type')
+                    ->label('Tipo de Documento')
+                    ->options(\App\Enums\DriverDocumentTypeEnum::class),
             ])
             ->recordActions([
                 //

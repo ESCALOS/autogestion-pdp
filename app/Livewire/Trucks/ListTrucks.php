@@ -12,6 +12,8 @@ use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -70,7 +72,37 @@ final class ListTrucks extends Component implements HasActions, HasSchemas, HasT
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->label('Estado')
+                    ->options(\App\Enums\EntityStatusEnum::class),
+                SelectFilter::make('truck_type')
+                    ->label('Tipo')
+                    ->options(function () {
+                        return Truck::query()
+                            ->where('company_id', Auth::user()->company_id)
+                            ->distinct()
+                            ->pluck('truck_type', 'truck_type')
+                            ->toArray();
+                    }),
+                SelectFilter::make('nationality')
+                    ->label('Nacionalidad')
+                    ->options(function () {
+                        return Truck::query()
+                            ->where('company_id', Auth::user()->company_id)
+                            ->distinct()
+                            ->pluck('nationality', 'nationality')
+                            ->toArray();
+                    }),
+                TernaryFilter::make('is_internal')
+                    ->label('Interno')
+                    ->placeholder('Todos')
+                    ->trueLabel('Solo Internos')
+                    ->falseLabel('Solo Externos'),
+                TernaryFilter::make('has_bonus')
+                    ->label('Bonificación')
+                    ->placeholder('Todos')
+                    ->trueLabel('Con Bonificación')
+                    ->falseLabel('Sin Bonificación'),
             ])
             ->recordActions([
                 //
