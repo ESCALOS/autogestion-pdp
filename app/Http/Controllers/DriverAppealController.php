@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Enums\DriverStatusEnum;
+use App\Enums\EntityStatusEnum;
 use App\Models\Driver;
 use Exception;
 use Illuminate\Http\Request;
@@ -107,7 +107,7 @@ final class DriverAppealController extends Controller
 
             // Actualizar estado del conductor a revisión de documentos y limpiar token
             $driver->update([
-                'status' => DriverStatusEnum::DOCUMENT_REVIEW,
+                'status' => EntityStatusEnum::DOCUMENT_REVIEW,
                 'appeal_token' => null,
                 'appeal_token_expires_at' => null,
             ]);

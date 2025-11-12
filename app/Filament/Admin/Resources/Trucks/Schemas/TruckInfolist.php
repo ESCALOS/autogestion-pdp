@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Trucks\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
@@ -12,11 +13,11 @@ class TruckInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('company_id')
-                    ->numeric(),
+                Select::make('company_id')
+                    ->relationship('company', 'business_name'),
                 TextEntry::make('license_plate'),
                 TextEntry::make('status')
-                    ->numeric(),
+                    ->badge(),
                 TextEntry::make('nationality')
                     ->placeholder('-'),
                 IconEntry::make('is_internal')

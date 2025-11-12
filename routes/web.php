@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\CompanyAppealController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DriverAppealController;
-use App\Http\Middleware\RedirectAdminUsers;
 use App\Livewire\Company\CreateCompany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -35,11 +33,7 @@ Route::middleware('guest')->group(function () {
         ->name('company.create');
 });
 
-Route::middleware(['auth', RedirectAdminUsers::class])->group(function () {
-    Route::get('/dashboard', DashboardController::class)
-        ->name('dashboard');
 
-});
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/company/document/{document}', function (App\Models\CompanyDocument $document) {
@@ -76,3 +70,4 @@ Route::get('/driver/appeal-success', [DriverAppealController::class, 'success'])
     ->name('driver.appeal.success');
 
 require __DIR__.'/auth.php';
+require __DIR__.'/dashboard.php';

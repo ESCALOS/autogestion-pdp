@@ -11,15 +11,14 @@ class DriverInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('company_id')
-                    ->numeric(),
+                TextEntry::make('company.name'),
                 TextEntry::make('document_type')
-                    ->numeric(),
+                    ->badge(),
                 TextEntry::make('document_number'),
                 TextEntry::make('name'),
                 TextEntry::make('lastname'),
                 TextEntry::make('status')
-                    ->numeric(),
+                    ->badge(),
                 TextEntry::make('appeal_token_expires_at')
                     ->dateTime()
                     ->placeholder('-'),

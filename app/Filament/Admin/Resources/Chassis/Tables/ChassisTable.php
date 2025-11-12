@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Chassis\Tables;
 
-use App\Enums\ChassisStatusEnum;
+use App\Enums\EntityStatusEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -94,7 +94,7 @@ class ChassisTable
             ->filters([
                 SelectFilter::make('status')
                     ->label('Estado de Chassis')
-                    ->options(ChassisStatusEnum::class),
+                    ->options(EntityStatusEnum::class),
             ])
             ->recordActions([
                 ViewAction::make(),

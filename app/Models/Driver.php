@@ -17,8 +17,6 @@ class Driver extends Model
         'name',
         'lastname',
         'license_number',
-        'email',
-        'phone',
         'status',
         'appeal_token',
         'appeal_token_expires_at',
@@ -26,7 +24,7 @@ class Driver extends Model
 
     protected $casts = [
         'document_type' => \App\Enums\DriverDocumentTypeEnum::class,
-        'status' => \App\Enums\DriverStatusEnum::class,
+        'status' => \App\Enums\EntityStatusEnum::class,
         'appeal_token_expires_at' => 'datetime',
     ];
 

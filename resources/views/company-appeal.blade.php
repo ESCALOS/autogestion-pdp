@@ -1,5 +1,5 @@
 <x-layouts.guest>
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-8 sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-4xl">
             <!-- Header -->
             <div class="mb-8 text-center">
