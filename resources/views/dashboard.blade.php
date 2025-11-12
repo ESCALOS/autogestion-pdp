@@ -50,7 +50,8 @@
                 <h5 class="text-lg font-semibold text-slate-900">Trucks</h5>
                 <p class="text-sm text-slate-600">Gestión de vehículos</p>
                 <a
-                    href="@if(Route::has('trucks.index')){{ route('trucks.index') }}@else #@endif"
+                    href="{{ route('trucks.index') }}"
+                    wire:navigate
                     class="mt-2 inline-block font-medium hover:underline"
                     style="color: #8b2d23"
                 >
@@ -76,7 +77,8 @@
                 <h5 class="text-lg font-semibold text-slate-900">Chassis</h5>
                 <p class="text-sm text-slate-600">Registro de chasis</p>
                 <a
-                    href="@if(Route::has('chassis.index')){{ route('chassis.index') }}@else #@endif"
+                    href="{{ route('chassis.index') }}"
+                    wire:navigate
                     class="mt-2 inline-block font-medium hover:underline"
                     style="color: #8b2d23"
                 >
