@@ -57,7 +57,7 @@ class DriverResource extends Resource
     {
         return [
             'index' => ListDrivers::route('/'),
-            'create' => CreateDriver::route('/create'),
+            // 'create' => CreateDriver::route('/create'),
             'view' => ViewDriver::route('/{record}'),
             'edit' => EditDriver::route('/{record}/edit'),
         ];
