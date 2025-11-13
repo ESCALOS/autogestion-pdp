@@ -55,7 +55,7 @@ class TruckResource extends Resource
     {
         return [
             'index' => ListTrucks::route('/'),
-            'create' => CreateTruck::route('/create'),
+            // 'create' => CreateTruck::route('/create'),
             'view' => ViewTruck::route('/{record}'),
             'edit' => EditTruck::route('/{record}/edit'),
         ];

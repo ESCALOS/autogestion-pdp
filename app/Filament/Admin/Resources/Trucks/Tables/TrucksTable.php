@@ -6,6 +6,8 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use App\Models\Truck;
+use App\Enums\EntityStatusEnum;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -16,34 +18,38 @@ class TrucksTable
     {
         return $table
             ->columns([
-                TextColumn::make('company_id')
-                    ->numeric()
+                TextColumn::make('company.business_name')
+                    ->label('Empresa')
                     ->sortable(),
                 TextColumn::make('license_plate')
+                    ->label('Placa')
                     ->searchable(),
                 TextColumn::make('status')
-                    ->numeric()
+                    ->badge()
+                    ->label('Estado')
                     ->sortable(),
                 TextColumn::make('nationality')
+                    ->label('Nacionalidad')
                     ->searchable(),
                 IconColumn::make('is_internal')
+                    ->label('Interno')
                     ->boolean(),
                 TextColumn::make('truck_type')
                     ->searchable(),
                 IconColumn::make('has_bonus')
+                    ->label('Bono')
                     ->boolean(),
                 TextColumn::make('tare')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('appeal_token_expires_at')
-                    ->dateTime()
+                    ->label('Tara (kg)')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
+                    ->label('Creado')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->dateTime()
+                    ->label('Actualizado')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -51,7 +57,10 @@ class TrucksTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->label('Validar')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->visible(fn (Truck $record): bool => $record->status !== EntityStatusEnum::ACTIVE),
                 EditAction::make(),
             ])
             ->toolbarActions([

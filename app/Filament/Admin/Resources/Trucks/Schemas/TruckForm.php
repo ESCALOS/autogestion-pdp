@@ -2,7 +2,9 @@
 
 namespace App\Filament\Admin\Resources\Trucks\Schemas;
 
+use App\Enums\EntityStatusEnum;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -18,10 +20,9 @@ class TruckForm
                     ->numeric(),
                 TextInput::make('license_plate')
                     ->required(),
-                TextInput::make('status')
+                Select::make('status')
                     ->required()
-                    ->numeric()
-                    ->default(1),
+                    ->options(EntityStatusEnum::class),
                 TextInput::make('nationality'),
                 Toggle::make('is_internal')
                     ->required(),
