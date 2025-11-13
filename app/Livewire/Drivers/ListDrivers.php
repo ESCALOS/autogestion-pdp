@@ -66,7 +66,8 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
             ])
             ->toolbarActions([
                 //
-            ]);
+            ])
+            ->poll('5s');
     }
 
     public function render(): View

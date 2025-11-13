@@ -109,7 +109,8 @@ final class ListTrucks extends Component implements HasActions, HasSchemas, HasT
             ])
             ->toolbarActions([
                 //
-            ]);
+            ])
+            ->poll('5s');
     }
 
     public function render(): View

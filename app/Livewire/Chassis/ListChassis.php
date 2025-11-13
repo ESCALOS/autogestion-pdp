@@ -149,7 +149,8 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
             ])
             ->toolbarActions([
                 //
-            ]);
+            ])
+            ->poll('5s');
     }
 
     public function render(): View
