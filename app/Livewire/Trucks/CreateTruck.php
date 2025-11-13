@@ -113,6 +113,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.tarjeta_propiedad.expiration_date')
@@ -131,6 +132,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.soat.expiration_date')
@@ -149,6 +151,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.poliza_seguro.expiration_date')
@@ -167,6 +170,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.revision_tecnica.expiration_date')
@@ -194,6 +198,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->label('Habilitación MTC')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.habilitacion_mtc.expiration_date')
@@ -210,6 +215,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->label('Bonificación')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.bonificacion.expiration_date')
