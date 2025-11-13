@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Mail;
 
 use App\Models\Company;
@@ -11,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-final class CompanyRejectedMail extends Mailable
+class CompanyRejectedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -24,7 +22,7 @@ final class CompanyRejectedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Empresa Rechazada - '.$this->company->business_name,
+            subject: 'Empresa Rechazada - ' . $this->company->business_name,
         );
     }
 

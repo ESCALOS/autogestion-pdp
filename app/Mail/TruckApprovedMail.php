@@ -2,34 +2,32 @@
 
 namespace App\Mail;
 
-use App\Models\Driver;
+use App\Models\Truck;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class DriverRejectedMail extends Mailable
+class TruckApprovedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public function __construct(
-        public Driver $driver,
-        public array $rejectedDocuments,
-        public ?string $appealUrl = null
+        public Truck $truck
     ) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Documentos Rechazados - ' . $this->driver->full_name,
+            subject: 'Vehículo Aprobado - ' . $this->truck->license_plate,
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.driver-rejected',
+            view: 'emails.truck-approved',
         );
     }
 

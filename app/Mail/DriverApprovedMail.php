@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Mail;
 
 use App\Models\Driver;
@@ -11,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-final class DriverApprovedMail extends Mailable
+class DriverApprovedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -22,7 +20,7 @@ final class DriverApprovedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Conductor Aprobado - '.$this->driver->full_name,
+            subject: 'Conductor Aprobado - ' . $this->driver->full_name,
         );
     }
 

@@ -2,19 +2,19 @@
 
 namespace App\Mail;
 
-use App\Models\Driver;
+use App\Models\Chassis;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class DriverRejectedMail extends Mailable
+class ChassisRejectedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public function __construct(
-        public Driver $driver,
+        public Chassis $chassis,
         public array $rejectedDocuments,
         public ?string $appealUrl = null
     ) {}
@@ -22,14 +22,14 @@ class DriverRejectedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Documentos Rechazados - ' . $this->driver->full_name,
+            subject: 'Documentos Rechazados - ' . $this->chassis->license_plate,
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.driver-rejected',
+            view: 'emails.chassis-rejected',
         );
     }
 
