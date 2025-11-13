@@ -142,6 +142,7 @@ final class CreateCompany extends Component implements HasSchemas
                                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
                                         ->maxSize(5120)
                                         ->required()
+                                        ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/")
                                         ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
 
                                     FileUpload::make('representative_dni_document')
@@ -149,6 +150,7 @@ final class CreateCompany extends Component implements HasSchemas
                                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
                                         ->maxSize(5120)
                                         ->required()
+                                        ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/")
                                         ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
 
                                     ...($this->companyType === 2 ? [
@@ -157,6 +159,7 @@ final class CreateCompany extends Component implements HasSchemas
                                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
                                             ->maxSize(5120)
                                             ->required()
+                                            ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/")
                                             ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
 
                                         FileUpload::make('power_of_attorney_document')
@@ -164,6 +167,7 @@ final class CreateCompany extends Component implements HasSchemas
                                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
                                             ->maxSize(5120)
                                             ->required()
+                                            ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/")
                                             ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
                                     ] : []),
                                 ]),

@@ -1,24 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Drivers;
 
 use App\Enums\DocumentTypeEnum;
 use App\Enums\DriverDocumentTypeEnum;
 use App\Enums\EntityStatusEnum;
-use App\Models\Driver;
 use App\Models\Document;
+use App\Models\Driver;
+use Exception;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
-use Filament\Notifications\Notification;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +29,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
 
-class CreateDriver extends Component implements HasSchemas
+final class CreateDriver extends Component implements HasSchemas
 {
     use InteractsWithSchemas;
 
@@ -96,6 +99,7 @@ class CreateDriver extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->validationAttribute('DNI')
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.dni.expiration_date')
@@ -114,6 +118,7 @@ class CreateDriver extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.licencia_de_conducir.expiration_date')
@@ -131,6 +136,7 @@ class CreateDriver extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.induccion_seguridad.expiration_date')
@@ -149,6 +155,7 @@ class CreateDriver extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.declaracion_jurada.expiration_date')
@@ -176,6 +183,7 @@ class CreateDriver extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.curso_pbip.expiration_date')
@@ -194,6 +202,7 @@ class CreateDriver extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.curso_seguridad_portuaria.expiration_date')
@@ -212,6 +221,7 @@ class CreateDriver extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.curso_mercancias.expiration_date')
@@ -239,6 +249,7 @@ class CreateDriver extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.sctr.expiration_date')
@@ -251,9 +262,9 @@ class CreateDriver extends Component implements HasSchemas
                                 ]),
                         ]),
                 ])
-                ->submitAction(new HtmlString('<button type="submit" class="inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-10 px-4 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700">Crear Conductor</button>'))
-                ->extraAlpineAttributes(['@driver-created.window' => 'step = \'form.datos-del-conductor::data::wizard-step\''])
-                ->skippable(false),
+                    ->submitAction(new HtmlString('<button type="submit" class="inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-10 px-4 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700">Crear Conductor</button>'))
+                    ->extraAlpineAttributes(['@driver-created.window' => 'step = \'form.datos-del-conductor::data::wizard-step\''])
+                    ->skippable(false),
             ])
             ->statePath('data');
     }
@@ -307,7 +318,7 @@ class CreateDriver extends Component implements HasSchemas
                 ->success()
                 ->send();
 
-            $this->js(<<<JS
+            $this->js(<<<'JS'
                 Swal.fire({
                     icon: 'success',
                     title: 'Conductor creado exitosamente',
@@ -321,13 +332,13 @@ class CreateDriver extends Component implements HasSchemas
             $this->form->fill();
             $this->dispatch('driver-created');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->title('Error al crear el conductor')
                 ->body($e->getMessage())
                 ->danger()
                 ->send();
-            Log::error('Error creating driver: ' . $e->getMessage());
+            Log::error('Error creating driver: '.$e->getMessage());
         }
     }
 
