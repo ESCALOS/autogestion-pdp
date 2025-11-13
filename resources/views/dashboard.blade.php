@@ -5,87 +5,30 @@
     </div>
 
     <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div
-            class="flex items-start space-x-4 rounded-lg border bg-white p-4 text-slate-900 shadow-md transition-shadow hover:shadow-lg"
-            style="border-color: #e9d7d4"
-        >
-            <div
-                class="inline-flex shrink-0 items-center justify-center rounded-md p-3"
-                style="background-color: #8b2d23; color: #ffffff"
-            >
-                <!-- driver icon -->
+        <x-access-card title="Conductores" description="Gestión de conductores" :route="route('drivers.index')">
+            <x-slot name="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="20" height="20" fill="currentColor">
                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3z" />
                     <path d="M8 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
                 </svg>
-            </div>
-            <div class="flex-1">
-                <h5 class="text-lg font-semibold text-slate-900">Drivers</h5>
-                <p class="text-sm text-slate-600">Gestión de conductores</p>
-                <a
-                    href="{{ route('drivers.index') }}"
-                    wire:navigate
-                    class="mt-2 inline-block font-medium hover:underline"
-                    style="color: #8b2d23"
-                >
-                    Acceder →
-                </a>
-            </div>
-        </div>
+            </x-slot>
+        </x-access-card>
 
-        <div
-            class="flex items-start space-x-4 rounded-lg border bg-white p-4 text-slate-900 shadow-md transition-shadow hover:shadow-lg"
-            style="border-color: #e9d7d4"
-        >
-            <div
-                class="inline-flex shrink-0 items-center justify-center rounded-md p-3"
-                style="background-color: #8b2d23; color: #ffffff"
-            >
-                <!-- truck icon (updated) -->
+        <x-access-card title="Camiones" description="Gestión de vehículos" :route="route('trucks.index')">
+            <x-slot name="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                     <path d="M3 11h11v2H3v-2zm13 0h3l3 3v3h-2a2 2 0 1 1-4 0h-8a2 2 0 1 1-4 0H2v-3l1-5h14z" />
                 </svg>
-            </div>
-            <div class="flex-1">
-                <h5 class="text-lg font-semibold text-slate-900">Trucks</h5>
-                <p class="text-sm text-slate-600">Gestión de vehículos</p>
-                <a
-                    href="{{ route('trucks.index') }}"
-                    wire:navigate
-                    class="mt-2 inline-block font-medium hover:underline"
-                    style="color: #8b2d23"
-                >
-                    Acceder →
-                </a>
-            </div>
-        </div>
+            </x-slot>
+        </x-access-card>
 
-        <div
-            class="flex items-start space-x-4 rounded-lg border bg-white p-4 text-slate-900 shadow-md transition-shadow hover:shadow-lg"
-            style="border-color: #e9d7d4"
-        >
-            <div
-                class="inline-flex shrink-0 items-center justify-center rounded-md p-3"
-                style="background-color: #8b2d23; color: #ffffff"
-            >
-                <!-- chassis icon (updated - box/cube) -->
+        <x-access-card title="Chassis" description="Registro de chasis" :route="route('chassis.index')">
+            <x-slot name="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                     <path d="M12 2L3 7v10l9 5 9-5V7l-9-5zm0 2.2L18.7 7 12 10.8 5.3 7 12 4.2z" />
                 </svg>
-            </div>
-            <div class="flex-1">
-                <h5 class="text-lg font-semibold text-slate-900">Chassis</h5>
-                <p class="text-sm text-slate-600">Registro de chasis</p>
-                <a
-                    href="{{ route('chassis.index') }}"
-                    wire:navigate
-                    class="mt-2 inline-block font-medium hover:underline"
-                    style="color: #8b2d23"
-                >
-                    Acceder →
-                </a>
-            </div>
-        </div>
+            </x-slot>
+        </x-access-card>
     </div>
 
     <h4 class="mt-8 mb-4 text-lg font-semibold text-slate-900">Solicitudes</h4>
