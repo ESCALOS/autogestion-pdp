@@ -24,18 +24,18 @@ class ListTrucks extends ListRecords
             'todos' => Tab::make('Todos'),
 
             'pendientes' => Tab::make('Pendientes')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 1))
-                ->badge(fn () => \App\Models\Driver::where('status', 1)->count())
+                ->modifyQueryUsing(fn ($query) => $query->where('status', 4))
+                ->badge(fn () => \App\Models\Truck::where('status', 4)->count())
                 ->badgeColor('warning'),
 
             'aprobados' => Tab::make('Aprobados')
                 ->modifyQueryUsing(fn ($query) => $query->where('status', 2))
-                ->badge(fn () => \App\Models\Driver::where('status', 2)->count())
+                ->badge(fn () => \App\Models\Truck::where('status', 2)->count())
                 ->badgeColor('success'),
 
             'rechazados' => Tab::make('Rechazados')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 3))
-                ->badge(fn () => \App\Models\Driver::where('status', 3)->count())
+                ->modifyQueryUsing(fn ($query) => $query->where('status', 6))
+                ->badge(fn () => \App\Models\Truck::where('status', 6)->count())
                 ->badgeColor('danger'),
         ];
     }
