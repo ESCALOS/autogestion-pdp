@@ -2,8 +2,9 @@
 
 namespace App\Filament\Admin\Resources\Drivers\Pages;
 
+use App\Enums\EntityStatusEnum;
 use App\Filament\Admin\Resources\Drivers\DriverResource;
-use Filament\Actions\CreateAction;
+use App\Models\Driver;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 
@@ -24,18 +25,18 @@ class ListDrivers extends ListRecords
             'todos' => Tab::make('Todos'),
 
             'pendientes' => Tab::make('Pendientes')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 4))
-                ->badge(fn () => \App\Models\Driver::where('status', 4)->count())
+                ->modifyQueryUsing(fn ($query) => $query->whereIn('status', [EntityStatusEnum::PENDING_APPROVAL, EntityStatusEnum::DOCUMENT_REVIEW]))
+                ->badge(fn () => Driver::whereIn('status', [EntityStatusEnum::PENDING_APPROVAL, EntityStatusEnum::DOCUMENT_REVIEW])->count())
                 ->badgeColor('warning'),
 
             'aprobados' => Tab::make('Aprobados')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 2))
-                ->badge(fn () => \App\Models\Driver::where('status', 2)->count())
+                ->modifyQueryUsing(fn ($query) => $query->where('status', EntityStatusEnum::ACTIVE))
+                ->badge(fn () => Driver::where('status', EntityStatusEnum::ACTIVE)->count())
                 ->badgeColor('success'),
 
             'rechazados' => Tab::make('Rechazados')
-                ->modifyQueryUsing(fn ($query) => $query->where('status', 6))
-                ->badge(fn () => \App\Models\Driver::where('status', 6)->count())
+                ->modifyQueryUsing(fn ($query) => $query->whereIn('status', [EntityStatusEnum::INACTIVE, EntityStatusEnum::NEEDS_UPDATE, EntityStatusEnum::INFECTED_DOCUMENTS]))
+                ->badge(fn () => Driver::whereIn('status', [EntityStatusEnum::INACTIVE, EntityStatusEnum::NEEDS_UPDATE, EntityStatusEnum::INFECTED_DOCUMENTS])->count())
                 ->badgeColor('danger'),
         ];
     }
