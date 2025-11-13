@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <link rel="stylesheet" href="{{ asset('css/validation-documents.css') }}">
+    @vite(['resources/css/validation-documents.css'])
 
     <div class="validation-container">
         {{-- Información del Conductor --}}

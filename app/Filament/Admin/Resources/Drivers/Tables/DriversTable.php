@@ -5,6 +5,8 @@ namespace App\Filament\Admin\Resources\Drivers\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use App\Models\Driver;
+use App\Enums\EntityStatusEnum;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
@@ -61,7 +63,10 @@ class DriversTable
             ->filters([
             ])
             ->recordActions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->label('Validar')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->visible(fn (Driver $record): bool => $record->status !== EntityStatusEnum::ACTIVE),
                 EditAction::make(),
             ])
             ->toolbarActions([
