@@ -22,7 +22,7 @@ class ViewDriver extends Page
     public Driver $record;
     public array $documentStatuses = [];
     public array $rejectionReasons = [];
-    public ?string $selectedDocument = null;
+    public ?int $selectedDocumentId = null;
 
     protected function getViewData(): array
     {
@@ -57,9 +57,18 @@ class ViewDriver extends Page
     {
         $document = $this->record->documents->find($documentId);
         if ($document) {
-            $this->selectedDocument = $document->path;
+            $this->selectedDocumentId = $document->id;
             $this->dispatch('open-document-modal');
         }
+    }
+
+    public function getSelectedDocument()
+    {
+        if ($this->selectedDocumentId) {
+            return $this->record->documents->find($this->selectedDocumentId);
+        }
+
+        return null;
     }
 
     public function approveDocument(int $documentId): void
@@ -161,17 +170,17 @@ class ViewDriver extends Page
 
                 // Enviar correo de rechazo con enlace de apelación
                 $representativeEmail = $this->record->company->representative->email ?? null;
-                
+
                 if ($representativeEmail && !empty($rejectedDocuments)) {
                     try {
                         $appealUrl = route('driver.appeal.show', $appealToken);
                         Mail::to($representativeEmail)
                             ->send(new DriverRejectedMail($this->record, $rejectedDocuments, $appealUrl));
-                        
+
                         Log::info('Correo de rechazo enviado a: ' . $representativeEmail);
                     } catch (\Exception $e) {
                         Log::error('Error al enviar correo de rechazo: ' . $e->getMessage());
-                        
+
                         Notification::make()
                             ->title('Advertencia')
                             ->warning()
@@ -193,12 +202,12 @@ class ViewDriver extends Page
 
                 // Enviar correo de aprobación
                 $representativeEmail = $this->record->company->representative->email ?? null;
-                
+
                 if ($representativeEmail) {
                     try {
                         Mail::to($representativeEmail)
                             ->send(new DriverApprovedMail($this->record));
-                        
+
                         Log::info('Correo de aprobación enviado a: ' . $representativeEmail);
                     } catch (\Exception $e) {
                         Log::error('Error al enviar correo de aprobación: ' . $e->getMessage());
