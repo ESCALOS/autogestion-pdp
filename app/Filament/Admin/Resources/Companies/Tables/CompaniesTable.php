@@ -5,11 +5,14 @@ namespace App\Filament\Admin\Resources\Companies\Tables;
 use App\Enums\CompanyStatusEnum;
 use App\Enums\CompanyTypeEnum;
 use App\Filament\Admin\Resources\Companies\CompanyResource;
+use App\Filament\Exports\CompanyExporter;
 use App\Models\Company;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -62,7 +65,11 @@ class CompaniesTable
                 EditAction::make(),
             ])
             ->toolbarActions([
+                ExportAction::make()
+                    ->exporter(CompanyExporter::class),
                 BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->exporter(CompanyExporter::class),
                     DeleteBulkAction::make(),
                 ]),
             ])

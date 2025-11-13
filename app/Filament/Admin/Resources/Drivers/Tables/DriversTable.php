@@ -2,11 +2,14 @@
 
 namespace App\Filament\Admin\Resources\Drivers\Tables;
 
+use App\Enums\EntityStatusEnum;
+use App\Filament\Exports\DriverExporter;
+use App\Models\Driver;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use App\Models\Driver;
-use App\Enums\EntityStatusEnum;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
@@ -70,7 +73,11 @@ class DriversTable
                 EditAction::make(),
             ])
             ->toolbarActions([
+                ExportAction::make()
+                    ->exporter(DriverExporter::class),
                 BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->exporter(DriverExporter::class),
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),

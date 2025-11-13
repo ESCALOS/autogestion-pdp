@@ -2,12 +2,15 @@
 
 namespace App\Filament\Admin\Resources\Trucks\Tables;
 
+use App\Enums\EntityStatusEnum;
+use App\Filament\Exports\TruckExporter;
+use App\Models\Truck;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ViewAction;
-use App\Models\Truck;
-use App\Enums\EntityStatusEnum;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -64,7 +67,11 @@ class TrucksTable
                 EditAction::make(),
             ])
             ->toolbarActions([
+                ExportAction::make()
+                    ->exporter(TruckExporter::class),
                 BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->exporter(TruckExporter::class),
                     DeleteBulkAction::make(),
                 ]),
             ])

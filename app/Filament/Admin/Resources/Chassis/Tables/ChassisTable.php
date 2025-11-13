@@ -3,10 +3,13 @@
 namespace App\Filament\Admin\Resources\Chassis\Tables;
 
 use App\Enums\EntityStatusEnum;
+use App\Filament\Exports\ChassisExporter;
 use App\Models\Chassis;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -105,7 +108,11 @@ class ChassisTable
                 EditAction::make(),
             ])
             ->toolbarActions([
+                ExportAction::make()
+                    ->exporter(ChassisExporter::class),
                 BulkActionGroup::make([
+                    ExportBulkAction::make()
+                        ->exporter(ChassisExporter::class),
                     DeleteBulkAction::make(),
                 ]),
             ])
