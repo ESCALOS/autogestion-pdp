@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ChassisAppealController;
 use App\Http\Controllers\CompanyAppealController;
 use App\Http\Controllers\DriverAppealController;
+use App\Http\Controllers\TruckAppealController;
 use App\Livewire\Company\CreateCompany;
 use App\Models\Document;
 use Illuminate\Support\Facades\Auth;
@@ -84,6 +86,22 @@ Route::middleware(['auth'])->group(function () {
         abort(403);
     })
     ->name('driver.document.view');
+
+    Route::get('/chassis/document/{document}', function(Document $document) {
+        // Verificar que el usuario tenga permiso para ver este documento
+        if (Auth::user()->hasRole('super_admin') || Auth::user()->company_id === $document->company_id) {
+            // Generar URL temporal de S3 válida por 5 minutos
+            $temporaryUrl = Storage::disk('s3')->temporaryUrl(
+                $document->path,
+                now()->addMinutes(5)
+            );
+
+            return redirect($temporaryUrl);
+        }
+
+        abort(403);
+    })
+    ->name('chassis.document.view');
 });
 
 // Rutas públicas para apelación de empresas rechazadas
@@ -101,6 +119,24 @@ Route::put('/driver/appeal/{token}', [DriverAppealController::class, 'update'])
     ->name('driver.appeal.update');
 Route::get('/driver/appeal-success', [DriverAppealController::class, 'success'])
     ->name('driver.appeal.success');
+
+
+// Rutas públicas para actualización de documentos de camiones
+Route::get('/truck/appeal/{token}', [TruckAppealController::class, 'show'])
+    ->name('truck.appeal.show');
+Route::put('/truck/appeal/{token}', [TruckAppealController::class, 'update'])
+    ->name('truck.appeal.update');
+Route::get('/truck/appeal-success', [TruckAppealController::class, 'success'])
+    ->name('truck.appeal.success');
+
+
+// Rutas públicas para actualización de documentos de carretas
+Route::get('/chassis/appeal/{token}', [ChassisAppealController::class, 'show'])
+    ->name('chassis.appeal.show');
+Route::put('/chassis/appeal/{token}', [ChassisAppealController::class, 'update'])
+    ->name('chassis.appeal.update');
+Route::get('/chassis/appeal-success', [ChassisAppealController::class, 'success'])
+    ->name('chassis.appeal.success');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/dashboard.php';
