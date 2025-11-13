@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\CompanyAppealController;
 use App\Http\Controllers\DriverAppealController;
 use App\Livewire\Company\CreateCompany;
+use App\Models\Document;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -51,6 +52,22 @@ Route::middleware(['auth'])->group(function () {
         abort(403);
     })
     ->name('company.document.view');
+
+    Route::get('/truck/document/{document}', function(Document $document) {
+        // Verificar que el usuario tenga permiso para ver este documento
+        if (Auth::user()->hasRole('super_admin') || Auth::user()->company_id === $document->company_id) {
+            // Generar URL temporal de S3 válida por 5 minutos
+            $temporaryUrl = Storage::disk('s3')->temporaryUrl(
+                $document->path,
+                now()->addMinutes(5)
+            );
+
+            return redirect($temporaryUrl);
+        }
+
+        abort(403);
+    })
+    ->name('truck.document.view');
 });
 
 // Rutas públicas para apelación de empresas rechazadas
