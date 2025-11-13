@@ -4,6 +4,9 @@ namespace App\Filament\Admin\Resources\Chassis\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use App\Models\Company;
+use App\Enums\EntityStatusEnum;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -13,37 +16,52 @@ class ChassisForm
     {
         return $schema
             ->components([
-                TextInput::make('company_id')
-                    ->required()
-                    ->numeric(),
+                Select::make('company_id')
+                    ->label('Empresa')
+                    ->options(Company::query()->pluck('business_name', 'id'))
+                    ->searchable()
+                    ->required(),
                 TextInput::make('license_plate')
+                    ->label('Placa')
                     ->required(),
-                TextInput::make('status')
+                Select::make('status')
                     ->required()
-                    ->default('1'),
-                TextInput::make('vehicle_type'),
+                    ->label('Estado')
+                    ->options(EntityStatusEnum::class),
+                TextInput::make('vehicle_type')
+                    ->label('Tipo de Vehículo'),
                 TextInput::make('axle_count')
+                    ->label('Número de Ejes')
                     ->numeric(),
-                Toggle::make('has_bonus')
-                    ->required(),
-                TextInput::make('tare')
+                    TextInput::make('tare')
+                    ->label('Tara')
                     ->numeric(),
-                TextInput::make('safe_weight')
+                    TextInput::make('safe_weight')
+                    ->label('Peso Seguro')
                     ->numeric(),
-                TextInput::make('height')
+                    TextInput::make('height')
+                    ->label('Alto')
                     ->numeric(),
-                TextInput::make('length')
+                    TextInput::make('length')
+                    ->label('Largo')
                     ->numeric(),
-                TextInput::make('width')
+                    TextInput::make('width')
+                    ->label('Ancho')
                     ->numeric(),
+                    TextInput::make('material')
+                    ->label('Material'),
                 Toggle::make('is_insulated')
+                    ->label('¿Es Aislado?')
                     ->required(),
-                TextInput::make('material'),
-                Toggle::make('accepts_20ft')
+                    Toggle::make('accepts_20ft')
+                    ->label('¿Acepta 20\'?')
                     ->required(),
                 Toggle::make('accepts_40ft')
+                    ->label('¿Acepta 40\'?')
                     ->required(),
-                DateTimePicker::make('appeal_token_expires_at'),
+                Toggle::make('has_bonus')
+                    ->label('¿Tiene Bono?')
+                    ->required()
             ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Drivers\Schemas;
 
 use App\Enums\DriverDocumentTypeEnum;
 use App\Enums\EntityStatusEnum;
+use App\Models\Company;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -16,9 +17,10 @@ class DriverForm
         return $schema
             ->components([
                 Select::make('company_id')
-                    ->required()
-                    ->relationship('company', 'business_name')
-                    ->columnSpanFull(),
+                    ->label('Empresa')
+                    ->options(Company::query()->pluck('business_name', 'id'))
+                    ->searchable()
+                    ->required(),
                 Select::make('document_type')
                     ->required()
                     ->options(DriverDocumentTypeEnum::class),

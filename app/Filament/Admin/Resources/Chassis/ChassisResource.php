@@ -55,7 +55,7 @@ class ChassisResource extends Resource
     {
         return [
             'index' => ListChassis::route('/'),
-            'create' => CreateChassis::route('/create'),
+            // 'create' => CreateChassis::route('/create'),
             'view' => ViewChassis::route('/{record}'),
             'edit' => EditChassis::route('/{record}/edit'),
         ];

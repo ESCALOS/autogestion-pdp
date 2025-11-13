@@ -14,7 +14,8 @@ class EditTruck extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
+            ViewAction::make()
+            ->label('Ver Documentos'),
             DeleteAction::make(),
         ];
     }

@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Chassis\Tables;
 
 use App\Enums\EntityStatusEnum;
+use App\Models\Chassis;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -18,9 +19,9 @@ class ChassisTable
     {
         return $table
             ->columns([
-                TextColumn::make('company.bussines_name')
-                    ->numeric()
+                TextColumn::make('company.business_name')
                     ->label('Empresa')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('license_plate')
                     ->searchable()
@@ -97,13 +98,17 @@ class ChassisTable
                     ->options(EntityStatusEnum::class),
             ])
             ->recordActions([
-                ViewAction::make(),
+                ViewAction::make()
+                ->label('Validar')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->visible(fn (Chassis $record): bool => $record->status !== EntityStatusEnum::ACTIVE),
                 EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->poll('5s');
     }
 }

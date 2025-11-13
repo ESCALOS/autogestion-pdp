@@ -2,18 +2,252 @@
 
 namespace App\Filament\Admin\Resources\Chassis\Pages;
 
+use App\Enums\EntityStatusEnum;
 use App\Filament\Admin\Resources\Chassis\ChassisResource;
-use Filament\Actions\EditAction;
-use Filament\Resources\Pages\ViewRecord;
+use App\Mail\ChassisApprovedMail;
+use App\Mail\ChassisRejectedMail;
+use App\Models\Chassis;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\Page;
+use Illuminate\Support\Facades\{Auth, DB, Mail, Log};
+use Illuminate\Support\Str;
 
-class ViewChassis extends ViewRecord
+class ViewChassis extends Page
 {
     protected static string $resource = ChassisResource::class;
+
+    protected string $view = 'filament.resources.chassis-resource.pages.view-chassis';
+
+    public Chassis $record;
+    public array $documentStatuses = [];
+    public array $rejectionReasons = [];
+    public ?string $selectedDocument = null;
+
+    protected function getViewData(): array
+    {
+        return [
+            'record' => $this->record->load('documents'),
+        ];
+    }
+
+    public function mount(int|string $record): void
+    {
+        // Si $record es una cadena JSON, extraer el ID
+        if (is_string($record) && str_starts_with($record, '{')) {
+            $recordData = json_decode($record);
+            $record = $recordData->id ?? $record;
+        }
+
+        $this->record = Chassis::with(['documents', 'documents.documentable', 'company.representative'])->findOrFail($record);
+
+        // Inicializar estados de documentos
+        foreach ($this->record->documents as $document) {
+            $this->documentStatuses[$document->id] = $document->status ?? 1;
+            $this->rejectionReasons[$document->id] = $document->rejection_reason ?? '';
+        }
+    }
+
+    public function getTitle(): string
+    {
+        return "Validar Documentos - {$this->record->license_plate}";
+    }
+
+    public function openDocument(int $documentId): void
+    {
+        $document = $this->record->documents->find($documentId);
+        if ($document) {
+            $this->selectedDocument = $document->path;
+            $this->dispatch('open-document-modal');
+        }
+    }
+
+    public function approveDocument(int $documentId): void
+    {
+        $this->documentStatuses[$documentId] = 2; // approved
+        $this->rejectionReasons[$documentId] = '';
+    }
+
+    public function rejectDocument(int $documentId): void
+    {
+        $this->documentStatuses[$documentId] = 3; // rejected
+    }
+
+    public function resetDocument(int $documentId): void
+    {
+        $this->documentStatuses[$documentId] = 1; // pending
+        $this->rejectionReasons[$documentId] = '';
+    }
+
+    public function canApproveAll(): bool
+    {
+        // Verificar que tenga al menos un documento
+        if ($this->record->documents->isEmpty()) {
+            return false;
+        }
+
+        // Todos los documentos deben estar aprobados
+        foreach ($this->record->documents as $document) {
+            $status = $this->documentStatuses[$document->id] ?? 1;
+            if ($status !== 2) { // 2 = approved
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function saveValidation(): void
+    {
+        try {
+            DB::beginTransaction();
+
+            $allApproved = true;
+            $hasRejected = false;
+            $hasChanges = false;
+
+            foreach ($this->record->documents as $document) {
+                $newStatus = $this->documentStatuses[$document->id];
+
+                if ($document->status !== $newStatus) {
+                    $hasChanges = true;
+
+                    $document->update([
+                        'status' => $newStatus,
+                        'rejection_reason' => $newStatus === 3 // 3 = rejected
+                            ? $this->rejectionReasons[$document->id]
+                            : null,
+                        'validated_by' => Auth::id(),
+                        'validated_date' => now(),
+                    ]);
+                }
+
+                if ($newStatus === 3) { // 3 = rejected
+                    $hasRejected = true;
+                    $allApproved = false;
+                } elseif ($newStatus !== 2) { // 2 = approved
+                    $allApproved = false;
+                }
+            }
+
+            // Determinar el estado final del chassis
+            if ($hasRejected) {
+                // Si hay documentos rechazados -> NEEDS_UPDATE
+                $appealToken = Str::random(64);
+                $expiresAt = now()->addDays(30);
+
+                $this->record->update([
+                    'status' => EntityStatusEnum::NEEDS_UPDATE,
+                    'appeal_token' => $appealToken,
+                    'appeal_token_expires_at' => $expiresAt,
+                ]);
+
+                // Preparar lista de documentos rechazados
+                $rejectedDocuments = [];
+                foreach ($this->record->documents as $document) {
+                    if ($this->documentStatuses[$document->id] === 3) { // 3 = rejected
+                        $rejectedDocuments[] = [
+                            'type' => $document->type->getLabel(),
+                            'reason' => $this->rejectionReasons[$document->id] ?? 'No especificado'
+                        ];
+                    }
+                }
+
+                // Enviar correo de rechazo con enlace de apelación
+                $representativeEmail = $this->record->company->representative->email ?? null;
+                
+                if ($representativeEmail && !empty($rejectedDocuments)) {
+                    try {
+                        $appealUrl = route('chassis.appeal.show', $appealToken);
+                        Mail::to($representativeEmail)
+                            ->send(new ChassisRejectedMail($this->record, $rejectedDocuments, $appealUrl));
+                        
+                        Log::info('Correo de rechazo enviado a: ' . $representativeEmail);
+                    } catch (\Exception $e) {
+                        Log::error('Error al enviar correo de rechazo: ' . $e->getMessage());
+                        
+                        Notification::make()
+                            ->title('Advertencia')
+                            ->warning()
+                            ->body('Los documentos fueron rechazados pero no se pudo enviar el correo de notificación.')
+                            ->send();
+                    }
+                } else {
+                    Log::warning('No se envió correo: email=' . ($representativeEmail ?? 'NULL') . ', documentos rechazados=' . count($rejectedDocuments));
+                }
+
+                Notification::make()
+                    ->title('Documentos Rechazados')
+                    ->warning()
+                    ->body('Los documentos han sido rechazados. El chassis requiere actualizar documentos.')
+                    ->send();
+            } elseif ($allApproved && $this->canApproveAll()) {
+                // Si todos están aprobados -> ACTIVE
+                $this->record->update(['status' => EntityStatusEnum::ACTIVE]);
+
+                // Enviar correo de aprobación
+                $representativeEmail = $this->record->company->representative->email ?? null;
+                
+                if ($representativeEmail) {
+                    try {
+                        Mail::to($representativeEmail)
+                            ->send(new ChassisApprovedMail($this->record));
+                        
+                        Log::info('Correo de aprobación enviado a: ' . $representativeEmail);
+                    } catch (\Exception $e) {
+                        Log::error('Error al enviar correo de aprobación: ' . $e->getMessage());
+                    }
+                } else {
+                    Log::warning('No se envió correo de aprobación: la empresa no tiene representante con email registrado');
+                }
+
+                Notification::make()
+                    ->title('Chassis Aprobado')
+                    ->success()
+                    ->body('Todos los documentos han sido aprobados y el chassis ha sido validado.')
+                    ->send();
+            } else {
+                // Si todavía hay documentos pendientes -> PENDING_APPROVAL
+                $this->record->update(['status' => EntityStatusEnum::PENDING_APPROVAL]);
+
+                Notification::make()
+                    ->title('Documentos en Revisión')
+                    ->info()
+                    ->body('Los documentos están en proceso de validación.')
+                    ->send();
+            }
+
+            DB::commit();
+
+            if (!$hasChanges) {
+                Notification::make()
+                    ->title('Sin cambios')
+                    ->info()
+                    ->body('No se han realizado cambios en la validación.')
+                    ->send();
+                return;
+            }
+
+            $this->redirect(static::getResource()::getUrl('index'));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Notification::make()
+                ->title('Error')
+                ->danger()
+                ->body('Ocurrió un error al guardar la validación: ' . $e->getMessage())
+                ->send();
+        }
+    }
 
     protected function getHeaderActions(): array
     {
         return [
-            EditAction::make(),
+            Action::make('back')
+                ->label('Volver')
+                ->url(static::getResource()::getUrl('index'))
+                ->color('gray'),
         ];
     }
 }
