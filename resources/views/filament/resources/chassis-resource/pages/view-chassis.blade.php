@@ -29,60 +29,60 @@
                     <span class="info-value">{{ $record->created_at->format('d/m/Y H:i') }}</span>
                 </div>
 
-                @if($record->vehicle_type)
-                <div class="info-item">
-                    <span class="info-label">Tipo de Vehículo:</span>
-                    <span class="info-value">{{ $record->vehicle_type }}</span>
-                </div>
+                @if ($record->vehicle_type)
+                    <div class="info-item">
+                        <span class="info-label">Tipo de Vehículo:</span>
+                        <span class="info-value">{{ $record->vehicle_type }}</span>
+                    </div>
                 @endif
 
-                @if($record->axle_count)
-                <div class="info-item">
-                    <span class="info-label">Número de Ejes:</span>
-                    <span class="info-value">{{ $record->axle_count }}</span>
-                </div>
+                @if ($record->axle_count)
+                    <div class="info-item">
+                        <span class="info-label">Número de Ejes:</span>
+                        <span class="info-value">{{ $record->axle_count }}</span>
+                    </div>
                 @endif
 
-                @if($record->tare)
-                <div class="info-item">
-                    <span class="info-label">Tara:</span>
-                    <span class="info-value">{{ number_format($record->tare, 2) }} ton</span>
-                </div>
+                @if ($record->tare)
+                    <div class="info-item">
+                        <span class="info-label">Tara:</span>
+                        <span class="info-value">{{ number_format($record->tare, 2) }} ton</span>
+                    </div>
                 @endif
 
-                @if($record->safe_weight)
-                <div class="info-item">
-                    <span class="info-label">Peso Seguro:</span>
-                    <span class="info-value">{{ number_format($record->safe_weight, 2) }} ton</span>
-                </div>
+                @if ($record->safe_weight)
+                    <div class="info-item">
+                        <span class="info-label">Peso Seguro:</span>
+                        <span class="info-value">{{ number_format($record->safe_weight, 2) }} ton</span>
+                    </div>
                 @endif
 
-                @if($record->height)
-                <div class="info-item">
-                    <span class="info-label">Alto:</span>
-                    <span class="info-value">{{ number_format($record->height, 2) }} m</span>
-                </div>
+                @if ($record->height)
+                    <div class="info-item">
+                        <span class="info-label">Alto:</span>
+                        <span class="info-value">{{ number_format($record->height, 2) }} m</span>
+                    </div>
                 @endif
 
-                @if($record->length)
-                <div class="info-item">
-                    <span class="info-label">Largo:</span>
-                    <span class="info-value">{{ number_format($record->length, 2) }} m</span>
-                </div>
+                @if ($record->length)
+                    <div class="info-item">
+                        <span class="info-label">Largo:</span>
+                        <span class="info-value">{{ number_format($record->length, 2) }} m</span>
+                    </div>
                 @endif
 
-                @if($record->width)
-                <div class="info-item">
-                    <span class="info-label">Ancho:</span>
-                    <span class="info-value">{{ number_format($record->width, 2) }} m</span>
-                </div>
+                @if ($record->width)
+                    <div class="info-item">
+                        <span class="info-label">Ancho:</span>
+                        <span class="info-value">{{ number_format($record->width, 2) }} m</span>
+                    </div>
                 @endif
 
-                @if($record->material)
-                <div class="info-item">
-                    <span class="info-label">Material:</span>
-                    <span class="info-value">{{ $record->material }}</span>
-                </div>
+                @if ($record->material)
+                    <div class="info-item">
+                        <span class="info-label">Material:</span>
+                        <span class="info-value">{{ $record->material }}</span>
+                    </div>
                 @endif
 
                 <div class="info-item">
@@ -119,135 +119,134 @@
         <div class="info-card">
             <h2 class="info-card-title">Documentos para Validar</h2>
 
-            @if($record->documents->isEmpty())
+            @if ($record->documents->isEmpty())
                 <div class="rejection-reason-container">
-                    <x-filament::badge color="warning">
-                        No hay documentos subidos para este chassis
-                    </x-filament::badge>
+                    <x-filament::badge color="warning">No hay documentos subidos para este chassis</x-filament::badge>
                 </div>
             @else
                 <div class="documents-container">
-                    @foreach($record->documents as $document)
-                    @php
-                        $currentStatus = $documentStatuses[$document->id] ?? $document->status;
-                    @endphp
+                    @foreach ($record->documents as $document)
+                        @php
+                            $currentStatus = $documentStatuses[$document->id] ?? $document->status;
+                        @endphp
 
-                    <div wire:key="document-{{ $document->id }}" class="document-card {{ $currentStatus == 2 ? 'approved' : ($currentStatus == 3 ? 'rejected' : '') }}">
-                        <div class="document-header">
-                            <x-filament::icon
-                                :icon="$document->type->getIcon()"
-                                class="document-icon"
-                                :style="'color: ' . match($document->type->getColor()) {
-                                    'primary' => 'rgb(59, 130, 246)',
-                                    'secondary' => 'rgb(107, 114, 128)',
-                                    'tertiary' => 'rgb(139, 92, 246)',
-                                    'info' => 'rgb(6, 182, 212)',
-                                    default => 'rgb(107, 114, 128)'
-                                }"
-                            />
-                            <h3 class="document-title">{{ $document->type->getLabel() }}</h3>
-                        </div>
-
-                        <div class="document-info">
-                            <div class="status-row">
-                                <span class="status-label">Estado actual:</span>
-                                <x-filament::badge :color="match($currentStatus) {
-                                    2 => 'success',
-                                    3 => 'danger',
-                                    default => 'warning'
-                                }">
-                                    {{ match($currentStatus) {
-                                        2 => 'Aprobado',
-                                        3 => 'Rechazado',
-                                        default => 'Pendiente'
-                                    } }}
-                                </x-filament::badge>
+                        <div
+                            wire:key="document-{{ $document->id }}"
+                            class="document-card {{ $currentStatus == 2 ? 'approved' : ($currentStatus == 3 ? 'rejected' : '') }}"
+                        >
+                            <div class="document-header">
+                                <x-filament::icon
+                                    :icon="$document->type->getIcon()"
+                                    class="document-icon"
+                                    :style="'color: ' . match($document->type->getColor()) {
+                                        'primary' => 'rgb(59, 130, 246)',
+                                        'secondary' => 'rgb(107, 114, 128)',
+                                        'tertiary' => 'rgb(139, 92, 246)',
+                                        'info' => 'rgb(6, 182, 212)',
+                                        default => 'rgb(107, 114, 128)'
+                                    }"
+                                />
+                                <h3 class="document-title">{{ $document->type->getLabel() }}</h3>
                             </div>
 
-                            @if($document->submitted_date)
-                                <p class="document-date">
-                                    Fecha de envío: {{ $document->submitted_date->format('d/m/Y') }}
-                                </p>
-                            @endif
+                            <div class="document-info">
+                                <div class="status-row">
+                                    <span class="status-label">Estado actual:</span>
+                                    <x-filament::badge
+                                        :color="match($currentStatus) {
+                                            2 => 'success',
+                                            3 => 'danger',
+                                            default => 'warning'
+                                        }"
+                                    >
+                                        {{
+                                            match ($currentStatus) {
+                                                2 => 'Aprobado',
+                                                3 => 'Rechazado',
+                                                default => 'Pendiente',
+                                            }
+                                        }}
+                                    </x-filament::badge>
+                                </div>
 
-                            @if($document->expiration_date)
-                                <p class="document-date">
-                                    Fecha de vencimiento: {{ $document->expiration_date->format('d/m/Y') }}
-                                </p>
-                            @endif
-                        </div>
+                                @if ($document->submitted_date)
+                                    <p class="document-date">
+                                        Fecha de envío: {{ $document->submitted_date->format('d/m/Y') }}
+                                    </p>
+                                @endif
 
-                        {{-- Acciones del documento --}}
-                        <div class="document-actions">
-                            <x-filament::button
-                                wire:click="openDocument({{ $document->id }})"
-                                size="sm"
-                                color="info"
-                            >
-                                <x-filament::icon icon="heroicon-o-eye" class="w-4 h-4 mr-1" />
-                                Ver Documento
-                            </x-filament::button>
+                                @if ($document->expiration_date)
+                                    <p class="document-date">
+                                        Fecha de vencimiento: {{ $document->expiration_date->format('d/m/Y') }}
+                                    </p>
+                                @endif
+                            </div>
 
-                            <x-filament::button
-                                wire:click="approveDocument({{ $document->id }})"
-                                size="sm"
-                                color="success"
-                                :disabled="$currentStatus == 2"
-                            >
-                                <x-filament::icon icon="heroicon-o-check-circle" class="w-4 h-4 mr-1" />
-                                Aprobar
-                            </x-filament::button>
-
-                            <x-filament::button
-                                wire:click="rejectDocument({{ $document->id }})"
-                                size="sm"
-                                color="danger"
-                                :disabled="$currentStatus == 3"
-                            >
-                                <x-filament::icon icon="heroicon-o-x-circle" class="w-4 h-4 mr-1" />
-                                Rechazar
-                            </x-filament::button>
-
-                            @if($currentStatus != 1)
+                            {{-- Acciones del documento --}}
+                            <div class="document-actions">
                                 <x-filament::button
-                                    wire:click="resetDocument({{ $document->id }})"
+                                    wire:click="openDocument({{ $document->id }})"
                                     size="sm"
-                                    color="gray"
+                                    color="info"
                                 >
-                                    <x-filament::icon icon="heroicon-o-arrow-path" class="w-4 h-4 mr-1" />
-                                    Restablecer
+                                    <x-filament::icon icon="heroicon-o-eye" class="mr-1 h-4 w-4" />
+                                    Ver Documento
                                 </x-filament::button>
+
+                                <x-filament::button
+                                    wire:click="approveDocument({{ $document->id }})"
+                                    size="sm"
+                                    color="success"
+                                    :disabled="$currentStatus == 2"
+                                >
+                                    <x-filament::icon icon="heroicon-o-check-circle" class="mr-1 h-4 w-4" />
+                                    Aprobar
+                                </x-filament::button>
+
+                                <x-filament::button
+                                    wire:click="rejectDocument({{ $document->id }})"
+                                    size="sm"
+                                    color="danger"
+                                    :disabled="$currentStatus == 3"
+                                >
+                                    <x-filament::icon icon="heroicon-o-x-circle" class="mr-1 h-4 w-4" />
+                                    Rechazar
+                                </x-filament::button>
+
+                                @if ($currentStatus != 1)
+                                    <x-filament::button
+                                        wire:click="resetDocument({{ $document->id }})"
+                                        size="sm"
+                                        color="gray"
+                                    >
+                                        <x-filament::icon icon="heroicon-o-arrow-path" class="mr-1 h-4 w-4" />
+                                        Restablecer
+                                    </x-filament::button>
+                                @endif
+                            </div>
+
+                            {{-- Razón de rechazo --}}
+                            @if ($currentStatus == 3)
+                                <div class="rejection-reason-container">
+                                    <label class="rejection-label">Razón del Rechazo *</label>
+                                    <textarea
+                                        wire:model="rejectionReasons.{{ $document->id }}"
+                                        rows="3"
+                                        class="rejection-textarea"
+                                        placeholder="Ingrese la razón del rechazo..."
+                                    ></textarea>
+                                </div>
                             @endif
                         </div>
-
-                        {{-- Razón de rechazo --}}
-                        @if($currentStatus == 3)
-                            <div class="rejection-reason-container">
-                                <label class="rejection-label">
-                                    Razón del Rechazo *
-                                </label>
-                                <textarea
-                                    wire:model="rejectionReasons.{{ $document->id }}"
-                                    rows="3"
-                                    class="rejection-textarea"
-                                    placeholder="Ingrese la razón del rechazo..."
-                                ></textarea>
-                            </div>
-                        @endif
-                    </div>
-                @endforeach
+                    @endforeach
                 </div>
             @endif
         </div>
 
         {{-- Botones de acción --}}
         <div class="actions-footer">
-            <x-filament::button
-                wire:click="saveValidation"
-                color="primary"
-                size="lg"
-            >
-                <x-filament::icon icon="heroicon-o-check" class="w-5 h-5 mr-2" />
+            <x-filament::button wire:click="saveValidation" color="primary" size="lg">
+                <x-filament::icon icon="heroicon-o-check" class="mr-2 h-5 w-5" />
                 {{ $this->canApproveAll() ? 'Aprobar Chassis' : 'Guardar Validación' }}
             </x-filament::button>
         </div>
@@ -255,28 +254,29 @@
 
     {{-- Modal para ver documentos --}}
     <x-filament::modal id="document-modal" width="7xl">
-        <x-slot name="heading">
-            Visualización de Documento
-        </x-slot>
+        <x-slot name="heading">Visualización de Documento</x-slot>
 
-        @if($selectedDocument)
+        @php
+            $selectedDocument = $this->getSelectedDocument();
+        @endphp
+
+        @if ($selectedDocument)
             <div class="modal-content">
                 @php
-                    $extension = strtolower(pathinfo($selectedDocument, PATHINFO_EXTENSION));
+                    $extension = strtolower(pathinfo($selectedDocument->path, PATHINFO_EXTENSION));
+                    $documentUrl = route('chassis.document.view', $selectedDocument->id);
                 @endphp
 
-                @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                    <img src="{{ Storage::url($selectedDocument) }}" alt="Documento" class="modal-image">
-                @elseif($extension === 'pdf')
-                    <iframe src="{{ Storage::url($selectedDocument) }}" class="modal-iframe"></iframe>
+                @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+                    <img src="{{ $documentUrl }}" alt="Documento" class="modal-image" />
+                @elseif ($extension === 'pdf')
+                    <iframe src="{{ $documentUrl }}" class="modal-iframe"></iframe>
                 @else
                     <div class="not-supported-container">
                         <div class="not-supported-content">
                             <x-filament::icon icon="heroicon-o-document" class="not-supported-icon" />
                             <p class="not-supported-text">Formato no soportado para vista previa</p>
-                            <a href="{{ Storage::url($selectedDocument) }}" target="_blank" class="download-link">
-                                Descargar documento
-                            </a>
+                            <a href="{{ $documentUrl }}" target="_blank" class="download-link">Descargar documento</a>
                         </div>
                     </div>
                 @endif
@@ -285,10 +285,10 @@
     </x-filament::modal>
 
     @script
-    <script>
-        $wire.on('open-document-modal', () => {
-            $wire.dispatch('open-modal', { id: 'document-modal' });
-        });
-    </script>
+        <script>
+            $wire.on('open-document-modal', () => {
+                $wire.dispatch('open-modal', { id: 'document-modal' })
+            })
+        </script>
     @endscript
 </x-filament-panels::page>
