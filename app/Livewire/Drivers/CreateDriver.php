@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Drivers;
 
+use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
 use App\Enums\DriverDocumentTypeEnum;
 use App\Enums\EntityStatusEnum;
@@ -27,6 +28,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Component;
 
 final class CreateDriver extends Component implements HasSchemas
@@ -100,6 +102,10 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->required()
                                                 ->validationAttribute('DNI')
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'DNI.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.dni.expiration_date')
@@ -119,6 +125,10 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'LICENCIA.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.licencia_de_conducir.expiration_date')
@@ -137,6 +147,10 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'INDUCCION_SEGURIDAD.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.induccion_seguridad.expiration_date')
@@ -156,6 +170,10 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'DECLARACION_JURADA_ANTECEDENTES.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.declaracion_jurada.expiration_date')
@@ -184,6 +202,10 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'CURSO_PBIP.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.curso_pbip.expiration_date')
@@ -203,6 +225,10 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'CURSO_SEGURIDAD_PORTUARIA.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.curso_seguridad_portuaria.expiration_date')
@@ -222,6 +248,10 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'CURSO_MERCANCIAS_PELIGROSAS.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.curso_mercancias.expiration_date')
@@ -250,6 +280,10 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'SCTR.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.sctr.expiration_date')
@@ -307,7 +341,7 @@ final class CreateDriver extends Component implements HasSchemas
                             'path' => $data['documents'][$key]['file'],
                             'submitted_date' => now(),
                             'expiration_date' => $data['documents'][$key]['expiration_date'],
-                            'status' => 1, // Pendiente
+                            'status' => DocumentStatusEnum::PENDING, // Pendiente
                         ]);
                     }
                 }

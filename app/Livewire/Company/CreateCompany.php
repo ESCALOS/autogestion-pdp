@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 #[Layout('components.layouts.guest')]
 final class CreateCompany extends Component implements HasSchemas
@@ -57,6 +58,10 @@ final class CreateCompany extends Component implements HasSchemas
                                     TextInput::make('ruc')
                                         ->label('RUC')
                                         ->placeholder($this->companyType === 1 ? '10XXXXXXXXX' : '20XXXXXXXXX')
+                                        ->unique(table: Company::class, column: 'ruc')
+                                        ->validationMessages([
+                                            'unique' => 'El RUC ya está registrado.',
+                                        ])
                                         ->required()
                                         ->numeric()
                                         ->maxLength(11)
@@ -82,6 +87,10 @@ final class CreateCompany extends Component implements HasSchemas
                                     TextInput::make('representative_dni')
                                         ->label('DNI')
                                         ->placeholder('12345678')
+                                        ->unique(table: User::class, column: 'dni')
+                                        ->validationMessages([
+                                            'unique' => 'El DNI ya está registrado.',
+                                        ])
                                         ->required()
                                         ->numeric()
                                         ->maxLength(8)
@@ -143,6 +152,10 @@ final class CreateCompany extends Component implements HasSchemas
                                         ->maxSize(5120)
                                         ->required()
                                         ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
+                                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                            $extension = $file->getClientOriginalExtension();
+                                            return 'FICHA_RUC.'.$extension;
+                                        })
                                         ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
 
                                     FileUpload::make('representative_dni_document')
@@ -151,6 +164,10 @@ final class CreateCompany extends Component implements HasSchemas
                                         ->maxSize(5120)
                                         ->required()
                                         ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
+                                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                            $extension = $file->getClientOriginalExtension();
+                                            return 'DNI_REPRESENTANTE.'.$extension;
+                                        })
                                         ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
 
                                     ...($this->companyType === 2 ? [
@@ -160,6 +177,10 @@ final class CreateCompany extends Component implements HasSchemas
                                             ->maxSize(5120)
                                             ->required()
                                             ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
+                                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                $extension = $file->getClientOriginalExtension();
+                                                return 'FICHA_SUNARP.'.$extension;
+                                            })
                                             ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
 
                                         FileUpload::make('power_of_attorney_document')
@@ -168,6 +189,10 @@ final class CreateCompany extends Component implements HasSchemas
                                             ->maxSize(5120)
                                             ->required()
                                             ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
+                                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                $extension = $file->getClientOriginalExtension();
+                                                return 'VIGENCIA_PODER.'.$extension;
+                                            })
                                             ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
                                     ] : []),
                                 ]),

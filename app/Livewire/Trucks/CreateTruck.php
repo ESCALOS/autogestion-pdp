@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Trucks;
 
+use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
 use App\Enums\EntityStatusEnum;
 use App\Models\Document;
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 final class CreateTruck extends Component implements HasSchemas
 {
@@ -114,6 +116,10 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'TARJETA_PROPIEDAD.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.tarjeta_propiedad.expiration_date')
@@ -133,6 +139,10 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'SOAT.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.soat.expiration_date')
@@ -152,6 +162,10 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'POLIZA_SEGURO.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.poliza_seguro.expiration_date')
@@ -171,6 +185,10 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'REVISION_TECNICA.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.revision_tecnica.expiration_date')
@@ -199,6 +217,10 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'HABILITACION_MTC.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.habilitacion_mtc.expiration_date')
@@ -216,6 +238,10 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'BONIFICACION.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.bonificacion.expiration_date')
@@ -269,7 +295,7 @@ final class CreateTruck extends Component implements HasSchemas
                             'path' => $data['documents'][$key]['file'],
                             'submitted_date' => now(),
                             'expiration_date' => $data['documents'][$key]['expiration_date'],
-                            'status' => 1, // Pendiente
+                            'status' => DocumentStatusEnum::PENDING, // Pendiente
                         ]);
                     }
                 }
@@ -289,7 +315,7 @@ final class CreateTruck extends Component implements HasSchemas
                             'path' => $data['documents'][$key]['file'],
                             'submitted_date' => now(),
                             'expiration_date' => $data['documents'][$key]['expiration_date'] ?? null,
-                            'status' => 1, // Pendiente
+                            'status' => DocumentStatusEnum::PENDING, // Pendiente
                         ]);
                     }
                 }

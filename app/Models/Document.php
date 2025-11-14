@@ -25,6 +25,7 @@ class Document extends Model
 
     protected $casts = [
         'type' => \App\Enums\DocumentTypeEnum::class,
+        'status' => \App\Enums\DocumentStatusEnum::class,
         'submitted_date' => 'date',
         'expiration_date' => 'date',
         'validated_date' => 'datetime',

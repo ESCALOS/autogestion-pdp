@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Chassis;
 
+use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
 use App\Enums\EntityStatusEnum;
 use App\Models\Chassis;
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 final class CreateChassis extends Component implements HasSchemas
 {
@@ -163,6 +165,10 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->maxSize(5120)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'REVISION_TECNICA.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.chassis_revision_tecnica.expiration_date')
@@ -191,6 +197,10 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'HABILITACION_MTC.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.chassis_habilitacion_mtc.expiration_date')
@@ -208,6 +218,10 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'BONIFICACION.'.$extension;
+                                                })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.chassis_bonificacion.expiration_date')
@@ -265,7 +279,7 @@ final class CreateChassis extends Component implements HasSchemas
                             'path' => $data['documents'][$key]['file'],
                             'submitted_date' => now(),
                             'expiration_date' => $data['documents'][$key]['expiration_date'],
-                            'status' => 1, // Pendiente
+                            'status' => DocumentStatusEnum::PENDING, // Pendiente
                         ]);
                     }
                 }
@@ -285,7 +299,7 @@ final class CreateChassis extends Component implements HasSchemas
                             'path' => $data['documents'][$key]['file'],
                             'submitted_date' => now(),
                             'expiration_date' => $data['documents'][$key]['expiration_date'] ?? null,
-                            'status' => 1, // Pendiente
+                            'status' => DocumentStatusEnum::PENDING, // Pendiente
                         ]);
                     }
                 }
