@@ -9,15 +9,14 @@ use App\Models\Chassis;
 use App\Models\Driver;
 use App\Models\Truck;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 final class DashboardController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $user = $request->user();
-        $companyId = $user->company_id;
+        $companyId = $request->user()->company_id;
 
-        // Estados agrupados
         $approvedStatuses = [EntityStatusEnum::ACTIVE->value];
         $pendingStatuses = [
             EntityStatusEnum::PENDING_APPROVAL->value,
@@ -30,73 +29,65 @@ final class DashboardController extends Controller
             EntityStatusEnum::REJECTED->value,
         ];
 
-        // Estadísticas de Drivers
-        $driversApproved = Driver::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', $approvedStatuses)
-            ->count();
-
-        $driversPending = Driver::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', $pendingStatuses)
-            ->count();
-
-        $driversRejected = Driver::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', $rejectedStatuses)
-            ->count();
-
-        // Estadísticas de Trucks
-        $trucksApproved = Truck::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', $approvedStatuses)
-            ->count();
-
-        $trucksPending = Truck::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', $pendingStatuses)
-            ->count();
-
-        $trucksRejected = Truck::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', $rejectedStatuses)
-            ->count();
-
-        // Estadísticas de Chassis
-        $chassisApproved = Chassis::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', $approvedStatuses)
-            ->count();
-
-        $chassisPending = Chassis::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', $pendingStatuses)
-            ->count();
-
-        $chassisRejected = Chassis::query()
-            ->where('company_id', $companyId)
-            ->whereIn('status', $rejectedStatuses)
-            ->count();
-
-        return view('dashboard', [
-            'drivers' => [
-                'approved' => $driversApproved,
-                'pending' => $driversPending,
-                'rejected' => $driversRejected,
-                'total' => $driversApproved + $driversPending + $driversRejected,
+        $modules = [
+            [
+                'key' => 'drivers',
+                'title' => 'Conductores',
+                'description' => 'Gestión de conductores',
+                'route' => 'drivers.index',
+                'model' => Driver::class,
+                'icon' => 'driver',
             ],
-            'trucks' => [
-                'approved' => $trucksApproved,
-                'pending' => $trucksPending,
-                'rejected' => $trucksRejected,
-                'total' => $trucksApproved + $trucksPending + $trucksRejected,
+            [
+                'key' => 'trucks',
+                'title' => 'Camiones',
+                'description' => 'Gestión de vehículos',
+                'route' => 'trucks.index',
+                'model' => Truck::class,
+                'icon' => 'truck',
             ],
-            'chassis' => [
-                'approved' => $chassisApproved,
-                'pending' => $chassisPending,
-                'rejected' => $chassisRejected,
-                'total' => $chassisApproved + $chassisPending + $chassisRejected,
+            [
+                'key' => 'chassis',
+                'title' => 'Carretas',
+                'description' => 'Gestión de carretas',
+                'route' => 'chassis.index',
+                'model' => Chassis::class,
+                'icon' => 'chassis',
             ],
-        ]);
+        ];
+
+        $stats = [];
+        foreach ($modules as $module) {
+            $stats[$module['key']] = array_merge(
+                $module,
+                ['stats' => $this->getEntityStats($module['model'], $companyId, $approvedStatuses, $pendingStatuses, $rejectedStatuses)]
+            );
+        }
+
+        return view('dashboard', ['modules' => $stats]);
+    }
+
+    private function getEntityStats(
+        string $modelClass,
+        int $companyId,
+        array $approvedStatuses,
+        array $pendingStatuses,
+        array $rejectedStatuses
+    ): array {
+        $stats = $modelClass::query()
+            ->where('company_id', $companyId)
+            ->select(
+                DB::raw('COUNT(CASE WHEN status IN (' . implode(',', array_map(fn($s) => "'$s'", $approvedStatuses)) . ') THEN 1 END) as approved'),
+                DB::raw('COUNT(CASE WHEN status IN (' . implode(',', array_map(fn($s) => "'$s'", $pendingStatuses)) . ') THEN 1 END) as pending'),
+                DB::raw('COUNT(CASE WHEN status IN (' . implode(',', array_map(fn($s) => "'$s'", $rejectedStatuses)) . ') THEN 1 END) as rejected')
+            )
+            ->first();
+
+        return [
+            'approved' => $stats->approved ?? 0,
+            'pending' => $stats->pending ?? 0,
+            'rejected' => $stats->rejected ?? 0,
+            'total' => ($stats->approved ?? 0) + ($stats->pending ?? 0) + ($stats->rejected ?? 0),
+        ];
     }
 }
