@@ -112,7 +112,7 @@ final class ViewCompany extends Page
         ];
 
         if ($this->record->type === CompanyTypeEnum::JURIDICA) {
-            $baseDocuments[] = CompanyDocumentTypeEnum::FICHA_SUNARP;
+            $baseDocuments[] = CompanyDocumentTypeEnum::SUNARP_RECORD;
             $baseDocuments[] = CompanyDocumentTypeEnum::POWER_OF_ATTORNEY_VALIDITY;
         }
 

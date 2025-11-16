@@ -26,11 +26,15 @@ final class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'dni' => $this->faker->unique()->numerify('########'),
+            'name' => $this->faker->firstName(),
+            'lastname' => $this->faker->lastName(),
+            'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => self::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'is_company_representative' => false,
+            'is_active' => true,
         ];
     }
 
@@ -41,6 +45,16 @@ final class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a company representative.
+     */
+    public function representative(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_company_representative' => true,
         ]);
     }
 }

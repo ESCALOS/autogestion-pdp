@@ -144,7 +144,7 @@ final class CreateCompany extends Component implements HasSchemas
                         ->description('Suba los documentos necesarios para completar el registro')
                         ->icon('heroicon-o-document-text')
                         ->schema([
-                            Grid::make($this->companyType === 2 ? 2 : 2)
+                            Grid::make(2)
                                 ->schema([
                                     FileUpload::make('ruc_document')
                                         ->label('Ficha RUC')
@@ -154,7 +154,9 @@ final class CreateCompany extends Component implements HasSchemas
                                         ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
                                         ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                             $extension = $file->getClientOriginalExtension();
-                                            return 'FICHA_RUC.'.$extension;
+                                            $typeName = mb_strtoupper(str_replace(' ', '_', CompanyDocumentTypeEnum::RUC_RECORD->getLabel()));
+
+                                            return "{$typeName}.{$extension}";
                                         })
                                         ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
 
@@ -166,7 +168,9 @@ final class CreateCompany extends Component implements HasSchemas
                                         ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
                                         ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                             $extension = $file->getClientOriginalExtension();
-                                            return 'DNI_REPRESENTANTE.'.$extension;
+                                            $typeName = mb_strtoupper(str_replace(' ', '_', CompanyDocumentTypeEnum::REPRESENTATIVE_DNI->getLabel()));
+
+                                            return "{$typeName}.{$extension}";
                                         })
                                         ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
 
@@ -179,7 +183,9 @@ final class CreateCompany extends Component implements HasSchemas
                                             ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
                                             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                 $extension = $file->getClientOriginalExtension();
-                                                return 'FICHA_SUNARP.'.$extension;
+                                                $typeName = mb_strtoupper(str_replace(' ', '_', CompanyDocumentTypeEnum::SUNARP_RECORD->getLabel()));
+
+                                                return "{$typeName}.{$extension}";
                                             })
                                             ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
 
@@ -191,7 +197,9 @@ final class CreateCompany extends Component implements HasSchemas
                                             ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
                                             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                 $extension = $file->getClientOriginalExtension();
-                                                return 'VIGENCIA_PODER.'.$extension;
+                                                $typeName = mb_strtoupper(str_replace(' ', '_', CompanyDocumentTypeEnum::POWER_OF_ATTORNEY_VALIDITY->getLabel()));
+
+                                                return "{$typeName}.{$extension}";
                                             })
                                             ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
                                     ] : []),
@@ -251,7 +259,7 @@ final class CreateCompany extends Component implements HasSchemas
                     if (isset($data['sunarp_document'])) {
                         $this->saveDocument(
                             $company,
-                            CompanyDocumentTypeEnum::FICHA_SUNARP,
+                            CompanyDocumentTypeEnum::SUNARP_RECORD,
                             $data['sunarp_document']
                         );
                     }

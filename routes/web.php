@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\ChassisAppealController;
-use App\Http\Controllers\CompanyAppealController;
 use App\Http\Controllers\DriverAppealController;
 use App\Http\Controllers\TruckAppealController;
 use App\Livewire\Company\CreateCompany;
@@ -36,8 +35,6 @@ Route::middleware('guest')->group(function () {
         ->name('company.create');
 });
 
-
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/company/document/{document}', function (App\Models\CompanyDocument $document) {
         // Verificar que el usuario tenga permiso para ver este documento
@@ -53,9 +50,9 @@ Route::middleware(['auth'])->group(function () {
 
         abort(403);
     })
-    ->name('company.document.view');
+        ->name('company.document.view');
 
-    Route::get('/truck/document/{document}', function(Document $document) {
+    Route::get('/truck/document/{document}', function (Document $document) {
         // Verificar que el usuario tenga permiso para ver este documento
         if (Auth::user()->hasRole('super_admin') || Auth::user()->company_id === $document->company_id) {
             // Generar URL temporal de S3 válida por 5 minutos
@@ -69,9 +66,9 @@ Route::middleware(['auth'])->group(function () {
 
         abort(403);
     })
-    ->name('truck.document.view');
+        ->name('truck.document.view');
 
-    Route::get('/driver/document/{document}', function(Document $document) {
+    Route::get('/driver/document/{document}', function (Document $document) {
         // Verificar que el usuario tenga permiso para ver este documento
         if (Auth::user()->hasRole('super_admin') || Auth::user()->company_id === $document->company_id) {
             // Generar URL temporal de S3 válida por 5 minutos
@@ -85,9 +82,9 @@ Route::middleware(['auth'])->group(function () {
 
         abort(403);
     })
-    ->name('driver.document.view');
+        ->name('driver.document.view');
 
-    Route::get('/chassis/document/{document}', function(Document $document) {
+    Route::get('/chassis/document/{document}', function (Document $document) {
         // Verificar que el usuario tenga permiso para ver este documento
         if (Auth::user()->hasRole('super_admin') || Auth::user()->company_id === $document->company_id) {
             // Generar URL temporal de S3 válida por 5 minutos
@@ -101,16 +98,8 @@ Route::middleware(['auth'])->group(function () {
 
         abort(403);
     })
-    ->name('chassis.document.view');
+        ->name('chassis.document.view');
 });
-
-// Rutas públicas para apelación de empresas rechazadas
-Route::get('/company/appeal/{token}', [CompanyAppealController::class, 'show'])
-    ->name('company.appeal.show');
-Route::put('/company/appeal/{token}', [CompanyAppealController::class, 'update'])
-    ->name('company.appeal.update');
-Route::get('/company/appeal-success', [CompanyAppealController::class, 'success'])
-    ->name('company.appeal.success');
 
 // Rutas públicas para actualización de documentos de conductores
 Route::get('/driver/appeal/{token}', [DriverAppealController::class, 'show'])
@@ -120,7 +109,6 @@ Route::put('/driver/appeal/{token}', [DriverAppealController::class, 'update'])
 Route::get('/driver/appeal-success', [DriverAppealController::class, 'success'])
     ->name('driver.appeal.success');
 
-
 // Rutas públicas para actualización de documentos de camiones
 Route::get('/truck/appeal/{token}', [TruckAppealController::class, 'show'])
     ->name('truck.appeal.show');
@@ -128,7 +116,6 @@ Route::put('/truck/appeal/{token}', [TruckAppealController::class, 'update'])
     ->name('truck.appeal.update');
 Route::get('/truck/appeal-success', [TruckAppealController::class, 'success'])
     ->name('truck.appeal.success');
-
 
 // Rutas públicas para actualización de documentos de carretas
 Route::get('/chassis/appeal/{token}', [ChassisAppealController::class, 'show'])
@@ -140,3 +127,4 @@ Route::get('/chassis/appeal-success', [ChassisAppealController::class, 'success'
 
 require __DIR__.'/auth.php';
 require __DIR__.'/dashboard.php';
+require __DIR__.'/appeals.php';
