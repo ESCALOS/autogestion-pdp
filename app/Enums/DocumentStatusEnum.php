@@ -30,12 +30,12 @@ enum DocumentStatusEnum: int implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::PENDING => 'yellow',
-            self::APPROVED => 'green',
-            self::REJECTED => 'red',
-            self::NEEDS_UPDATE => 'orange',
-            self::DOCUMENT_REVIEW => 'blue',
-            self::INFECTED_DOCUMENTS => 'gray',
+            self::PENDING => 'warning',
+            self::APPROVED => 'success',
+            self::REJECTED => 'danger',
+            self::NEEDS_UPDATE => 'warning',
+            self::DOCUMENT_REVIEW => 'info',
+            self::INFECTED_DOCUMENTS => 'danger',
         };
     }
 

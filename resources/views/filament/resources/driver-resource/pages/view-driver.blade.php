@@ -63,7 +63,7 @@
                     @foreach ($this->getRequiredDocumentTypes() as $documentType)
                         @php
                             $document = $record->documents->firstWhere('type', $documentType);
-                            $currentStatus = $document ? $documentStatuses[$document->id] ?? $document->status : 1;
+                            $currentStatus = $document ? $documentStatuses[$document->id] ?? $document->status->value : null;
                         @endphp
 
                         @if ($document)
@@ -90,19 +90,9 @@
                                     <div class="status-row">
                                         <span class="status-label">Estado actual:</span>
                                         <x-filament::badge
-                                            :color="match($currentStatus) {
-                                                2 => 'success',
-                                                3 => 'danger',
-                                                default => 'warning'
-                                            }"
+                                            :color="App\Enums\DocumentStatusEnum::from($currentStatus)->getColor()"
                                         >
-                                            {{
-                                                match ($currentStatus) {
-                                                    2 => 'Aprobado',
-                                                    3 => 'Rechazado',
-                                                    default => 'Pendiente',
-                                                }
-                                            }}
+                                            {{ App\Enums\DocumentStatusEnum::from($currentStatus)->getLabel() }}
                                         </x-filament::badge>
                                     </div>
                                     @if ($document->submitted_date)

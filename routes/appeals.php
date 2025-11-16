@@ -2,8 +2,14 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Company\AppealForm;
+use App\Livewire\Company\AppealForm as CompanyAppealForm;
+use App\Livewire\Driver\AppealForm as DriverAppealForm;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/company/appeal/{token}', AppealForm::class)
+// Apelaciones de empresas
+Route::get('/company/appeal/{token}', CompanyAppealForm::class)
     ->name('company.appeal.show');
+
+// Apelaciones de conductores
+Route::get('/driver/appeal/{token}', DriverAppealForm::class)
+    ->name('driver.appeal.show');

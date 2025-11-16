@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Drivers\Pages;
 
+use App\Enums\DocumentStatusEnum;
 use App\Enums\EntityStatusEnum;
 use App\Filament\Admin\Resources\Drivers\DriverResource;
 use App\Mail\DriverApprovedMail;
@@ -33,17 +34,11 @@ class ViewDriver extends Page
 
     public function mount(int|string $record): void
     {
-        // Si $record es una cadena JSON, extraer el ID
-        if (is_string($record) && str_starts_with($record, '{')) {
-            $recordData = json_decode($record);
-            $record = $recordData->id ?? $record;
-        }
-
-        $this->record = Driver::with(['documents', 'documents.documentable', 'company.representative'])->findOrFail($record);
-
+        $this->record = Driver::with('documents', 'company.representative')->findOrFail(json_decode($record)->id);
         // Inicializar estados de documentos
         foreach ($this->record->documents as $document) {
-            $this->documentStatuses[$document->id] = $document->status ?? 1;
+            Log::info('Documento ID: ' . $document->id . ' Estado: ' . ($document->status->getLabel() ?? 'NULL'));
+            $this->documentStatuses[$document->id] = $document->status->value;
             $this->rejectionReasons[$document->id] = $document->rejection_reason ?? '';
         }
     }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\RedirectAdminUsers;
 use App\Livewire\Chassis\CreateChassis;
-use App\Livewire\Drivers\CreateDriver;
+use App\Livewire\Driver\CreateDriver;
 use App\Livewire\Trucks\CreateTruck;
 use Illuminate\Support\Facades\Route;
 

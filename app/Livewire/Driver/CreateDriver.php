@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Drivers;
+namespace App\Livewire\Driver;
 
 use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
@@ -383,6 +383,6 @@ final class CreateDriver extends Component implements HasSchemas
 
     public function render(): View
     {
-        return view('livewire.drivers.create-driver');
+        return view('livewire.driver.create-driver');
     }
 }

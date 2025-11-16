@@ -12,5 +12,5 @@
             Nuevo Conductor
         </a>
     </div>
-    @livewire('drivers.list-drivers')
+    @livewire('driver.list-drivers')
 </x-layouts.app>

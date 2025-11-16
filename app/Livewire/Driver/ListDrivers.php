@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Drivers;
+namespace App\Livewire\Driver;
 
 use App\Models\Driver;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -72,6 +72,6 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
 
     public function render(): View
     {
-        return view('livewire.drivers.list-drivers');
+        return view('livewire.driver.list-drivers');
     }
 }
