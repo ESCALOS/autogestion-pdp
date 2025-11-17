@@ -5,8 +5,13 @@ declare(strict_types=1);
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\ResetPassword;
+use App\Livewire\Company\CreateCompany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return redirect()->route('login');
+});
 
 Route::middleware('guest')->group(function () {
     Route::get('login', Login::class)
@@ -17,6 +22,9 @@ Route::middleware('guest')->group(function () {
 
     Route::get('password/reset/{token}', ResetPassword::class)
         ->name('password.reset');
+
+    Route::get('/registrar-empresa', CreateCompany::class)
+        ->name('company.create');
 });
 
 Route::middleware('auth')->group(function () {

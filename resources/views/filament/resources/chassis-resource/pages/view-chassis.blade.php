@@ -255,7 +255,7 @@
             <div class="modal-content">
                 @php
                     $extension = strtolower(pathinfo($selectedDocument->path, PATHINFO_EXTENSION));
-                    $documentUrl = route('chassis.document.view', $selectedDocument->id);
+                    $documentUrl = route('entity.document.view', $selectedDocument->id);
                 @endphp
 
                 @if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
