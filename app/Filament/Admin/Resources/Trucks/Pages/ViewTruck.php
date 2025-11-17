@@ -34,17 +34,11 @@ class ViewTruck extends Page
 
     public function mount(int|string $record): void
     {
-        // Si $record es una cadena JSON, extraer el ID
-        if (is_string($record) && str_starts_with($record, '{')) {
-            $recordData = json_decode($record);
-            $record = $recordData->id ?? $record;
-        }
-
-        $this->record = Truck::with(['documents', 'documents.documentable', 'company.representative'])->findOrFail($record);
+        $this->record = Truck::with('documents', 'company.representative')->findOrFail(json_decode($record)->id);
 
         // Inicializar estados de documentos
         foreach ($this->record->documents as $document) {
-            $this->documentStatuses[$document->id] = $document->status ?? 1;
+            $this->documentStatuses[$document->id] = $document->status->value;
             $this->rejectionReasons[$document->id] = $document->rejection_reason ?? '';
         }
     }
@@ -106,6 +100,12 @@ class ViewTruck extends Page
         }
 
         return true;
+    }
+
+    public function getRequiredDocumentTypes(): array
+    {
+        // Devolver los tipos de documentos que ya están subidos
+        return $this->record->documents->pluck('type')->unique()->toArray();
     }
 
     public function saveValidation(): void

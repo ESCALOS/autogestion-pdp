@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Trucks;
+namespace App\Livewire\Truck;
 
 use App\Models\Truck;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -115,6 +115,6 @@ final class ListTrucks extends Component implements HasActions, HasSchemas, HasT
 
     public function render(): View
     {
-        return view('livewire.trucks.list-trucks');
+        return view('livewire.truck.list-trucks');
     }
 }

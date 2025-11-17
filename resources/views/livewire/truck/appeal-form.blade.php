@@ -1,6 +1,4 @@
-<div
-    class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-8 sm:px-6 lg:px-8 dark:from-gray-900 dark:to-gray-800"
->
+<div class="py-6 sm:py-12">
     @if ($success)
         {{-- Vista de éxito --}}
         <div class="mx-auto max-w-2xl">
@@ -22,11 +20,11 @@
 
                 <div class="px-4 py-6 sm:px-6 sm:py-8">
                     <p class="mb-4 text-gray-600 dark:text-gray-300">
-                        Sus documentos corregidos han sido recibidos correctamente.
+                        Los documentos del camión han sido recibidos correctamente.
                     </p>
 
                     <p class="mb-6 text-gray-600 dark:text-gray-300">
-                        El conductor volverá a estado
+                        El camión ha vuelto a estado
                         <strong class="text-blue-600 dark:text-blue-400">REVISIÓN DE DOCUMENTOS</strong>
                         y será revisado nuevamente por nuestro equipo.
                     </p>
@@ -52,29 +50,39 @@
             {{-- Header --}}
             <div class="mb-6 text-center sm:mb-10">
                 <h1 class="text-2xl font-bold text-gray-800 sm:text-4xl md:text-5xl dark:text-white">
-                    Actualizar Documentos del Conductor
+                    Actualizar Documentos del Camión
                 </h1>
                 <p class="mt-2 text-base text-gray-600 sm:mt-3 sm:text-lg dark:text-gray-300">
                     Por favor, vuelva a cargar los documentos observados o vencidos
                 </p>
             </div>
 
-            {{-- Información del conductor (tarjetas superiores) --}}
+            {{-- Información del camión (tarjetas superiores) --}}
             <div class="mb-6 grid gap-3 sm:mb-8 sm:gap-5 md:grid-cols-3">
                 <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 transition-all hover:border-primary-300 hover:shadow-md sm:p-6 dark:border-gray-700 dark:bg-gray-800">
                     <div class="mb-3 flex size-10 items-center justify-center rounded-lg sm:mb-4 sm:size-12" style="background-color: #8b2d20;">
                         <svg class="size-5 text-white sm:size-6" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                            <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                            <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
+                        </svg>
+                    </div>
+                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 sm:text-sm dark:text-gray-400">Placa</p>
+                    <p class="mt-1 text-lg font-bold text-gray-900 sm:text-xl dark:text-white">{{ $truck->license_plate }}</p>
+                </div>
+
+                <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 transition-all hover:border-primary-300 hover:shadow-md sm:p-6 dark:border-gray-700 dark:bg-gray-800">
+                    <div class="mb-3 flex size-10 items-center justify-center rounded-lg sm:mb-4 sm:size-12" style="background-color: #8b2d20;">
+                        <svg class="size-5 text-white sm:size-6" fill="currentColor" viewBox="0 0 20 20">
                             <path
                                 fill-rule="evenodd"
-                                d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                                d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z"
                                 clip-rule="evenodd"
                             />
                         </svg>
                     </div>
-                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 sm:text-sm dark:text-gray-400">Documento</p>
+                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 sm:text-sm dark:text-gray-400">Empresa</p>
                     <p class="mt-1 text-lg font-bold text-gray-900 sm:text-xl dark:text-white">
-                        {{ $driver->document_type->getLabel() }}: {{ $driver->document_number }}
+                        {{ $truck->company->business_name }}
                     </p>
                 </div>
 
@@ -83,28 +91,14 @@
                         <svg class="size-5 text-white sm:size-6" fill="currentColor" viewBox="0 0 20 20">
                             <path
                                 fill-rule="evenodd"
-                                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                                 clip-rule="evenodd"
                             />
                         </svg>
                     </div>
-                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 sm:text-sm dark:text-gray-400">Nombres</p>
+                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 sm:text-sm dark:text-gray-400">Tipo</p>
                     <p class="mt-1 text-lg font-bold text-gray-900 sm:text-xl dark:text-white">
-                        {{ $driver->full_name }}
-                    </p>
-                </div>
-
-                <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 transition-all hover:border-primary-300 hover:shadow-md sm:p-6 dark:border-gray-700 dark:bg-gray-800">
-                    <div class="mb-3 flex size-10 items-center justify-center rounded-lg sm:mb-4 sm:size-12" style="background-color: #8b2d20;">
-                        <svg class="size-5 text-white sm:size-6" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                                d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                            />
-                        </svg>
-                    </div>
-                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 sm:text-sm dark:text-gray-400">Licencia</p>
-                    <p class="mt-1 text-lg font-bold text-gray-900 sm:text-xl dark:text-white">
-                        {{ $driver->license_number }}
+                        {{ $truck->is_internal ? 'Interno' : 'Externo' }}
                     </p>
                 </div>
             </div>

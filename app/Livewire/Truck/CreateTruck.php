@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Livewire\Trucks;
+namespace App\Livewire\Truck;
 
 use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
@@ -351,6 +351,6 @@ final class CreateTruck extends Component implements HasSchemas
 
     public function render(): View
     {
-        return view('livewire.trucks.create-truck');
+        return view('livewire.truck.create-truck');
     }
 }

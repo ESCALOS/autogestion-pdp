@@ -12,5 +12,5 @@
             Nuevo Camión
         </a>
     </div>
-    @livewire('trucks.list-trucks')
+    @livewire('truck.list-trucks')
 </x-layouts.app>

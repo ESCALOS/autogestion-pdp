@@ -37,7 +37,6 @@ class ViewDriver extends Page
         $this->record = Driver::with('documents', 'company.representative')->findOrFail(json_decode($record)->id);
         // Inicializar estados de documentos
         foreach ($this->record->documents as $document) {
-            Log::info('Documento ID: ' . $document->id . ' Estado: ' . ($document->status->getLabel() ?? 'NULL'));
             $this->documentStatuses[$document->id] = $document->status->value;
             $this->rejectionReasons[$document->id] = $document->rejection_reason ?? '';
         }

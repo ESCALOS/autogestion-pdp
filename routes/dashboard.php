@@ -6,7 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\RedirectAdminUsers;
 use App\Livewire\Chassis\CreateChassis;
 use App\Livewire\Driver\CreateDriver;
-use App\Livewire\Trucks\CreateTruck;
+use App\Livewire\Truck\CreateTruck;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', RedirectAdminUsers::class])->group(function () {

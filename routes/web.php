@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\ChassisAppealController;
-use App\Http\Controllers\TruckAppealController;
 use App\Livewire\Company\CreateCompany;
 use App\Models\Document;
 use Illuminate\Support\Facades\Auth;
@@ -99,14 +98,6 @@ Route::middleware(['auth'])->group(function () {
     })
         ->name('chassis.document.view');
 });
-
-// Rutas públicas para actualización de documentos de camiones
-Route::get('/truck/appeal/{token}', [TruckAppealController::class, 'show'])
-    ->name('truck.appeal.show');
-Route::put('/truck/appeal/{token}', [TruckAppealController::class, 'update'])
-    ->name('truck.appeal.update');
-Route::get('/truck/appeal-success', [TruckAppealController::class, 'success'])
-    ->name('truck.appeal.success');
 
 // Rutas públicas para actualización de documentos de carretas
 Route::get('/chassis/appeal/{token}', [ChassisAppealController::class, 'show'])
