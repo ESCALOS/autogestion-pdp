@@ -20,7 +20,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
-#[Layout('components.layouts.guest')]
+#[Layout('components.layouts.appeal')]
 final class AppealForm extends Component implements HasSchemas
 {
     use InteractsWithSchemas;
