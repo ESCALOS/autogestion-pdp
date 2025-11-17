@@ -22,11 +22,11 @@
 
                 <div class="px-6 py-8">
                     <p class="mb-4 text-gray-700 dark:text-gray-300">
-                        Sus documentos corregidos han sido recibidos correctamente.
+                        Los documentos del camión han sido recibidos correctamente.
                     </p>
 
                     <p class="mb-6 text-gray-700 dark:text-gray-300">
-                        El conductor volverá a estado
+                        El camión ha vuelto a estado
                         <strong class="text-blue-600 dark:text-blue-400">REVISIÓN DE DOCUMENTOS</strong>
                         y será revisado nuevamente por nuestro equipo.
                     </p>
@@ -52,32 +52,32 @@
             {{-- Header --}}
             <div class="mb-8 text-center">
                 <h1 class="text-3xl font-bold text-gray-900 md:text-4xl dark:text-white">
-                    Actualizar Documentos del Conductor
+                    Apelar Documentos Rechazados - Camión
                 </h1>
                 <p class="mt-2 text-base text-gray-600 md:text-lg dark:text-gray-400">
-                    Por favor, vuelva a cargar los documentos observados o vencidos
+                    Por favor, vuelva a cargar los documentos observados
                 </p>
             </div>
 
-            {{-- Información del conductor --}}
+            {{-- Información del camión --}}
             <div class="mb-6 rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
                 <div class="grid gap-4 md:grid-cols-3">
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Documento</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Placa</p>
                         <p class="mt-1 text-base font-semibold text-gray-900 dark:text-white">
-                            {{ $driver->document_type->getLabel() }}: {{ $driver->document_number }}
+                            {{ $truck->license_plate }}
                         </p>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Nombres</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Empresa</p>
                         <p class="mt-1 text-base font-semibold text-gray-900 dark:text-white">
-                            {{ $driver->full_name }}
+                            {{ $truck->company->business_name }}
                         </p>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Licencia</p>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Tipo</p>
                         <p class="mt-1 text-base font-semibold text-gray-900 dark:text-white">
-                            {{ $driver->license_number }}
+                            {{ $truck->is_internal ? 'Interno' : 'Externo' }}
                         </p>
                     </div>
                 </div>
@@ -89,19 +89,19 @@
                 <ul class="space-y-2 text-sm text-blue-800 dark:text-blue-200">
                     <li class="flex items-start gap-2">
                         <span class="mt-0.5 text-blue-600 dark:text-blue-400">•</span>
-                        <span>Revise cuidadosamente los motivos de rechazo o las fechas de vencimiento.</span>
+                        <span>Revise cuidadosamente los motivos de rechazo de cada documento.</span>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="mt-0.5 text-blue-600 dark:text-blue-400">•</span>
-                        <span>Cargue nuevamente los documentos corregidos o actualizados.</span>
+                        <span>Cargue nuevamente los documentos corregidos.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="mt-0.5 text-blue-600 dark:text-blue-400">•</span>
+                        <span>Para documentos vencidos, actualice también la fecha de vencimiento.</span>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="mt-0.5 text-blue-600 dark:text-blue-400">•</span>
                         <span>Los archivos deben ser PDF, JPG, JPEG o PNG (máximo 5MB).</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="mt-0.5 text-blue-600 dark:text-blue-400">•</span>
-                        <span>Si el documento tiene fecha de vencimiento, deberá proporcionar la nueva fecha.</span>
                     </li>
                 </ul>
             </div>
