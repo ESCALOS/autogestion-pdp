@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Livewire\Chassis\AppealForm as ChassisAppealForm;
 use App\Livewire\Company\AppealForm as CompanyAppealForm;
 use App\Livewire\Driver\AppealForm as DriverAppealForm;
 use App\Livewire\Truck\AppealForm as TruckAppealForm;
@@ -18,3 +19,7 @@ Route::get('/driver/appeal/{token}', DriverAppealForm::class)
 // Apelaciones de camiones
 Route::get('/truck/appeal/{token}', TruckAppealForm::class)
     ->name('truck.appeal.show');
+
+// Apelaciones de chassis
+Route::get('/chassis/appeal/{token}', ChassisAppealForm::class)
+    ->name('chassis.appeal.show');
