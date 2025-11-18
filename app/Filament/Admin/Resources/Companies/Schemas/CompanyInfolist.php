@@ -82,7 +82,7 @@ final class CompanyInfolist
                                 ImageEntry::make('preview')
                                     ->label('Vista Previa')
                                     ->state(fn ($record) => route('company.document.view', $record->id))
-                                    ->height(200)
+                                    ->imageHeight(200)
                                     ->visible(fn ($record) => ! str_ends_with($record->path, '.pdf'))
                                     ->url(fn ($record) => route('company.document.view', $record->id))
                                     ->openUrlInNewTab(),

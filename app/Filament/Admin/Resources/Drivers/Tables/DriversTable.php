@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Drivers\Tables;
 
 use App\Enums\EntityStatusEnum;
@@ -16,7 +18,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class DriversTable
+final class DriversTable
 {
     public static function configure(Table $table): Table
     {
@@ -83,6 +85,6 @@ class DriversTable
                     RestoreBulkAction::make(),
                 ]),
             ])
-            ->poll('5s');
+            ->poll('60s');
     }
 }

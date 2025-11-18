@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Chassis\Tables;
 
 use App\Enums\EntityStatusEnum;
@@ -16,7 +18,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
-class ChassisTable
+final class ChassisTable
 {
     public static function configure(Table $table): Table
     {
@@ -102,7 +104,7 @@ class ChassisTable
             ])
             ->recordActions([
                 ViewAction::make()
-                ->label('Validar')
+                    ->label('Validar')
                     ->icon('heroicon-o-clipboard-document-check')
                     ->visible(fn (Chassis $record): bool => $record->status !== EntityStatusEnum::ACTIVE),
                 EditAction::make(),
@@ -116,6 +118,6 @@ class ChassisTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->poll('5s');
+            ->poll('60s');
     }
 }

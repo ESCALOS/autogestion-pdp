@@ -76,7 +76,7 @@ final class AppealForm extends Component implements HasSchemas
                         ->required()
                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'])
                         ->maxSize(5120)
-                        ->directory(fn () => "EMPRESAS/{$this->company->ruc}")
+                        ->directory(fn () => "EMPRESAS/{$this->company->ruc}/DOCUMENTOS")
                         ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) use ($document): string {
                             $extension = $file->getClientOriginalExtension();
                             $typeName = mb_strtoupper(str_replace(' ', '_', $document->type->getLabel()));

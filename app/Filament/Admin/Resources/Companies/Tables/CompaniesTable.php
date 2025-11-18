@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Companies\Tables;
 
 use App\Enums\CompanyStatusEnum;
@@ -17,7 +19,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
-class CompaniesTable
+final class CompaniesTable
 {
     public static function configure(Table $table): Table
     {
@@ -73,6 +75,6 @@ class CompaniesTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->poll('5s');
+            ->poll('60s');
     }
 }

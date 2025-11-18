@@ -1,6 +1,7 @@
 {
     "(and :count more error)": "(y :count error más)",
     "(and :count more errors)": "(y :count error más)|(y :count errores más)|(y :count errores más)",
+    "Login failed, check if the user is allowed to access the panel.": "Error de inicio de sesión, verifique si el usuario tiene permiso para acceder al panel.",
     "A decryption key is required.": "Se requiere una clave de descifrado.",
     "A new verification link has been sent to the email address you provided during registration.": "Se ha enviado un nuevo enlace de verificación a la dirección de correo electrónico que proporcionó durante el registro.",
     "A new verification link has been sent to your email address.": "Se ha enviado un nuevo enlace de verificación a su dirección de correo electrónico.",

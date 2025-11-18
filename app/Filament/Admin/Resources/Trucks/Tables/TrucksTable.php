@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Trucks\Tables;
 
 use App\Enums\EntityStatusEnum;
@@ -15,7 +17,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class TrucksTable
+final class TrucksTable
 {
     public static function configure(Table $table): Table
     {
@@ -75,6 +77,6 @@ class TrucksTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->poll('5s');
+            ->poll('60s');
     }
 }

@@ -151,7 +151,7 @@ final class CreateCompany extends Component implements HasSchemas
                                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
                                         ->maxSize(5120)
                                         ->required()
-                                        ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
+                                        ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/DOCUMENTOS")
                                         ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                             $extension = $file->getClientOriginalExtension();
                                             $typeName = mb_strtoupper(str_replace(' ', '_', CompanyDocumentTypeEnum::RUC_RECORD->getLabel()));
@@ -165,7 +165,7 @@ final class CreateCompany extends Component implements HasSchemas
                                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
                                         ->maxSize(5120)
                                         ->required()
-                                        ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
+                                        ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/DOCUMENTOS")
                                         ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                             $extension = $file->getClientOriginalExtension();
                                             $typeName = mb_strtoupper(str_replace(' ', '_', CompanyDocumentTypeEnum::REPRESENTATIVE_DNI->getLabel()));
@@ -180,7 +180,7 @@ final class CreateCompany extends Component implements HasSchemas
                                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
                                             ->maxSize(5120)
                                             ->required()
-                                            ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
+                                            ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/DOCUMENTOS")
                                             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                 $extension = $file->getClientOriginalExtension();
                                                 $typeName = mb_strtoupper(str_replace(' ', '_', CompanyDocumentTypeEnum::SUNARP_RECORD->getLabel()));
@@ -194,7 +194,7 @@ final class CreateCompany extends Component implements HasSchemas
                                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
                                             ->maxSize(5120)
                                             ->required()
-                                            ->directory(fn () => "EMPRESAS/{$this->data['ruc']}")
+                                            ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/DOCUMENTOS")
                                             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                 $extension = $file->getClientOriginalExtension();
                                                 $typeName = mb_strtoupper(str_replace(' ', '_', CompanyDocumentTypeEnum::POWER_OF_ATTORNEY_VALIDITY->getLabel()));
