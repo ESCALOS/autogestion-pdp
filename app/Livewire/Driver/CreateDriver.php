@@ -216,11 +216,12 @@ final class CreateDriver extends Component implements HasSchemas
                                                 })
                                                 ->columnSpan(2),
 
-                                            DatePicker::make('documents.curso_pbip.expiration_date')
-                                                ->label('Fecha de Vencimiento')
+                                            DatePicker::make('documents.curso_pbip.course_date')
+                                                ->label('Fecha del Curso')
+                                                ->helperText('Vigencia: 3 años')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->maxDate(now())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -241,11 +242,12 @@ final class CreateDriver extends Component implements HasSchemas
                                                 })
                                                 ->columnSpan(2),
 
-                                            DatePicker::make('documents.curso_seguridad_portuaria.expiration_date')
-                                                ->label('Fecha de Vencimiento')
+                                            DatePicker::make('documents.curso_seguridad_portuaria.course_date')
+                                                ->label('Fecha del Curso')
+                                                ->helperText('Vigencia: 3 años')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->maxDate(now())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -266,11 +268,12 @@ final class CreateDriver extends Component implements HasSchemas
                                                 })
                                                 ->columnSpan(2),
 
-                                            DatePicker::make('documents.curso_mercancias.expiration_date')
-                                                ->label('Fecha de Vencimiento')
+                                            DatePicker::make('documents.curso_mercancias.course_date')
+                                                ->label('Fecha del Curso')
+                                                ->helperText('Vigencia: 2 años')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->maxDate(now())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -303,7 +306,7 @@ final class CreateDriver extends Component implements HasSchemas
                                             DatePicker::make('documents.sctr.expiration_date')
                                                 ->label('Fecha de Vencimiento')
                                                 ->required()
-                                                ->native(true)
+                                                ->native(false)
                                                 ->minDate(now()->addDay())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
@@ -350,15 +353,25 @@ final class CreateDriver extends Component implements HasSchemas
 
                 foreach ($documentTypes as $key => $type) {
                     if (isset($data['documents'][$key]['file']) && $data['documents'][$key]['file']) {
-                        Document::create([
+                        $documentData = [
                             'documentable_type' => Driver::class,
                             'documentable_id' => $driver->id,
                             'type' => $type,
                             'path' => $data['documents'][$key]['file'],
                             'submitted_date' => now(),
-                            'expiration_date' => $data['documents'][$key]['expiration_date'],
-                            'status' => DocumentStatusEnum::PENDING, // Pendiente
-                        ]);
+                            'status' => DocumentStatusEnum::PENDING,
+                        ];
+
+                        // Verificar si es un curso (requiere course_date en lugar de expiration_date)
+                        if ($type->requiresCourseDate()) {
+                            $courseDate = \Carbon\Carbon::parse($data['documents'][$key]['course_date']);
+                            $documentData['course_date'] = $courseDate;
+                            $documentData['expiration_date'] = $courseDate->copy()->addYears($type->getValidityYears());
+                        } else {
+                            $documentData['expiration_date'] = $data['documents'][$key]['expiration_date'];
+                        }
+
+                        Document::create($documentData);
                     }
                 }
             });

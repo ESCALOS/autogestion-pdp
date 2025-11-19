@@ -95,8 +95,20 @@ final class AppealForm extends Component implements HasSchemas
                     ->helperText('Formatos permitidos: PDF, JPG, JPEG, PNG (máximo 5MB)'),
             ];
 
-            // Agregar campo de fecha de vencimiento si el documento lo requiere
-            if ($document->expiration_date) {
+            // Agregar campo de fecha según el tipo de documento
+            if ($document->type->requiresCourseDate()) {
+                // Para cursos: mostrar fecha del curso
+                $validityYears = $document->type->getValidityYears();
+                $formSchema[] = DatePicker::make("course_date_{$document->id}")
+                    ->label('Fecha del Curso')
+                    ->helperText("Vigencia: {$validityYears} años. La fecha de vencimiento se calculará automáticamente.")
+                    ->required()
+                    ->native(false)
+                    ->maxDate(now())
+                    ->closeOnDateSelection()
+                    ->displayFormat('d/m/Y');
+            } elseif ($document->expiration_date) {
+                // Para otros documentos: mostrar fecha de vencimiento
                 $formSchema[] = DatePicker::make("expiration_date_{$document->id}")
                     ->label('Nueva fecha de vencimiento')
                     ->required()
@@ -158,10 +170,21 @@ final class AppealForm extends Component implements HasSchemas
                         'submitted_date' => now(),
                     ];
 
-                    // Actualizar fecha de vencimiento si se proporcionó
-                    $expirationField = "expiration_date_{$document->id}";
-                    if (isset($data[$expirationField]) && ! empty($data[$expirationField])) {
-                        $updateData['expiration_date'] = $data[$expirationField];
+                    // Manejar fechas según el tipo de documento
+                    if ($document->type->requiresCourseDate()) {
+                        // Para cursos: obtener course_date y calcular expiration_date
+                        $courseDateField = "course_date_{$document->id}";
+                        if (isset($data[$courseDateField]) && ! empty($data[$courseDateField])) {
+                            $courseDate = \Carbon\Carbon::parse($data[$courseDateField]);
+                            $updateData['course_date'] = $courseDate;
+                            $updateData['expiration_date'] = $courseDate->copy()->addYears($document->type->getValidityYears());
+                        }
+                    } else {
+                        // Para otros documentos: usar expiration_date directamente
+                        $expirationField = "expiration_date_{$document->id}";
+                        if (isset($data[$expirationField]) && ! empty($data[$expirationField])) {
+                            $updateData['expiration_date'] = $data[$expirationField];
+                        }
                     }
 
                     $document->update($updateData);

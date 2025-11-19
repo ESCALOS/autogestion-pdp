@@ -16,6 +16,7 @@ class Document extends Model
         'type',
         'path',
         'submitted_date',
+        'course_date',
         'expiration_date',
         'status',
         'rejection_reason',
@@ -27,6 +28,7 @@ class Document extends Model
         'type' => \App\Enums\DocumentTypeEnum::class,
         'status' => \App\Enums\DocumentStatusEnum::class,
         'submitted_date' => 'date',
+        'course_date' => 'date',
         'expiration_date' => 'date',
         'validated_date' => 'datetime',
     ];

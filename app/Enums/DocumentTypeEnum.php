@@ -68,4 +68,30 @@ enum DocumentTypeEnum: string implements HasColor, HasIcon, HasLabel
     {
         return 'heroicon-o-document-text';
     }
+
+    /**
+     * Get the validity period in years for courses.
+     * Returns null for non-course documents.
+     */
+    public function getValidityYears(): ?int
+    {
+        return match ($this) {
+            self::CURSO_PBIP => 3,
+            self::CURSO_SEGURIDAD_PORTUARIA => 3,
+            self::CURSO_MERCANCIAS => 2,
+            default => null,
+        };
+    }
+
+    /**
+     * Check if this document type requires a course date instead of expiration date.
+     */
+    public function requiresCourseDate(): bool
+    {
+        return in_array($this, [
+            self::CURSO_PBIP,
+            self::CURSO_SEGURIDAD_PORTUARIA,
+            self::CURSO_MERCANCIAS,
+        ]);
+    }
 }
