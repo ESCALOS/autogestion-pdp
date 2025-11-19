@@ -175,6 +175,8 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->label('Fecha de Vencimiento')
                                                 ->required()
                                                 ->native(false)
+                                                ->minDate(now()->addDay())
+                                                ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
@@ -206,6 +208,8 @@ final class CreateChassis extends Component implements HasSchemas
                                             DatePicker::make('documents.chassis_habilitacion_mtc.expiration_date')
                                                 ->label('Fecha de Vencimiento')
                                                 ->native(false)
+                                                ->minDate(now()->addDay())
+                                                ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
@@ -227,6 +231,8 @@ final class CreateChassis extends Component implements HasSchemas
                                             DatePicker::make('documents.chassis_bonificacion.expiration_date')
                                                 ->label('Fecha de Vencimiento')
                                                 ->native(false)
+                                                ->minDate(now()->addDay())
+                                                ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),

@@ -102,6 +102,7 @@ final class AppealForm extends Component implements HasSchemas
                     ->required()
                     ->native(false)
                     ->minDate(now()->addDay())
+                    ->closeOnDateSelection()
                     ->helperText('Seleccione la nueva fecha de vencimiento del documento');
             }
 
