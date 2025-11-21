@@ -33,6 +33,7 @@ class Chassis extends Model
     protected $casts = [
         'status' => \App\Enums\EntityStatusEnum::class,
         'has_bonus' => 'boolean',
+        'vehicle_type' => \App\Enums\VehicleTypeEnum::class,
         'is_insulated' => 'boolean',
         'accepts_20ft' => 'boolean',
         'accepts_40ft' => 'boolean',

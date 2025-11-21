@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Truck;
 
 use App\Models\Truck;
+use App\Enums\TruckTypeEnum;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -39,6 +40,7 @@ final class ListTrucks extends Component implements HasActions, HasSchemas, HasT
                     ->searchable(),
                 TextColumn::make('truck_type')
                     ->label('Tipo')
+                    ->badge()
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('nationality')
@@ -86,13 +88,7 @@ final class ListTrucks extends Component implements HasActions, HasSchemas, HasT
                     }),
                 SelectFilter::make('nationality')
                     ->label('Nacionalidad')
-                    ->options(function () {
-                        return Truck::query()
-                            ->where('company_id', Auth::user()->company_id)
-                            ->distinct()
-                            ->pluck('nationality', 'nationality')
-                            ->toArray();
-                    }),
+                    ->options(TruckTypeEnum::class),
                 TernaryFilter::make('is_internal')
                     ->label('Interno')
                     ->placeholder('Todos')

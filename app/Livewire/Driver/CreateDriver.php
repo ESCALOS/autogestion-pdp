@@ -63,9 +63,11 @@ final class CreateDriver extends Component implements HasSchemas
                                 ->label('Número de Documento')
                                 ->required()
                                 ->maxLength(20)
-                                ->unique('drivers', 'document_number', ignoreRecord: true)
+                                ->unique('drivers', 'document_number', modifyRuleUsing: function ($rule) {
+                                    return $rule->where('company_id', Auth::user()->company_id);
+                                })
                                 ->validationMessages([
-                                    'unique' => 'Ya existe un conductor con este número de documento.',
+                                    'unique' => 'Ya existe un conductor con este número de documento para tu empresa.',
                                 ]),
 
                             TextInput::make('name')
@@ -80,6 +82,12 @@ final class CreateDriver extends Component implements HasSchemas
 
                             TextInput::make('license_number')
                                 ->label('Número de Licencia')
+                                ->unique('drivers', 'license_number', modifyRuleUsing: function ($rule) {
+                                    return $rule->where('company_id', Auth::user()->company_id);
+                                })
+                                ->validationMessages([
+                                    'unique' => 'Ya existe un conductor con este número de licencia en tu empresa.',
+                                ])
                                 ->required()
                                 ->maxLength(20),
                         ])

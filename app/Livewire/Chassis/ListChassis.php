@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Chassis;
 
+use App\Enums\VehicleTypeEnum;
 use App\Models\Chassis;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -39,6 +40,7 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
                     ->searchable(),
                 TextColumn::make('vehicle_type')
                     ->label('Tipo de Vehículo')
+                    ->badge()
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('axle_count')
@@ -116,28 +118,22 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
                     ->options(\App\Enums\EntityStatusEnum::class),
                 SelectFilter::make('vehicle_type')
                     ->label('Tipo de Vehículo')
-                    ->options(function () {
-                        return Chassis::query()
-                            ->where('company_id', Auth::user()->company_id)
-                            ->distinct()
-                            ->pluck('vehicle_type', 'vehicle_type')
-                            ->toArray();
-                    }),
-                TernaryFilter::make('is_insulated')
-                    ->label('Aislado')
-                    ->placeholder('Todos')
-                    ->trueLabel('Solo Aislados')
-                    ->falseLabel('Solo No Aislados'),
-                TernaryFilter::make('accepts_20ft')
-                    ->label('Acepta 20ft')
-                    ->placeholder('Todos')
-                    ->trueLabel('Acepta 20ft')
-                    ->falseLabel('No Acepta 20ft'),
-                TernaryFilter::make('accepts_40ft')
-                    ->label('Acepta 40ft')
-                    ->placeholder('Todos')
-                    ->trueLabel('Acepta 40ft')
-                    ->falseLabel('No Acepta 40ft'),
+                    ->options(VehicleTypeEnum::class),
+                // TernaryFilter::make('is_insulated')
+                //     ->label('Aislado')
+                //     ->placeholder('Todos')
+                //     ->trueLabel('Solo Aislados')
+                //     ->falseLabel('Solo No Aislados'),
+                // TernaryFilter::make('accepts_20ft')
+                //     ->label('Acepta 20ft')
+                //     ->placeholder('Todos')
+                //     ->trueLabel('Acepta 20ft')
+                //     ->falseLabel('No Acepta 20ft'),
+                // TernaryFilter::make('accepts_40ft')
+                //     ->label('Acepta 40ft')
+                //     ->placeholder('Todos')
+                //     ->trueLabel('Acepta 40ft')
+                //     ->falseLabel('No Acepta 40ft'),
                 TernaryFilter::make('has_bonus')
                     ->label('Bonificación')
                     ->placeholder('Todos')

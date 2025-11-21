@@ -7,6 +7,7 @@ namespace App\Livewire\Chassis;
 use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
 use App\Enums\EntityStatusEnum;
+use App\Enums\VehicleTypeEnum;
 use App\Models\Chassis;
 use App\Models\Document;
 use Exception;
@@ -56,21 +57,18 @@ final class CreateChassis extends Component implements HasSchemas
                                 ->label('Placa')
                                 ->required()
                                 ->maxLength(10)
-                                ->unique('chassis', 'license_plate', ignoreRecord: true)
+                                ->unique('chassis', 'license_plate', modifyRuleUsing: function ($rule) {
+                                    return $rule->where('company_id', Auth::user()->company_id);
+                                })
                                 ->validationMessages([
-                                    'unique' => 'Ya existe un chassis con esta placa.',
+                                    'unique' => 'Ya existe un chassis con esta placa en tu empresa.',
                                 ]),
 
                             Select::make('vehicle_type')
                                 ->label('Tipo de Vehículo')
-                                ->options([
-                                    'Semiremolque' => 'Semiremolque',
-                                    'Remolque' => 'Remolque',
-                                    'Plataforma' => 'Plataforma',
-                                    'Furgón' => 'Furgón',
-                                    'Tolva' => 'Tolva',
-                                    'Otro' => 'Otro',
-                                ])
+                                ->options(VehicleTypeEnum::class)
+                                ->searchable()
+                                ->preload()
                                 ->native(false),
 
                             TextInput::make('axle_count')

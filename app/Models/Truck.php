@@ -25,6 +25,7 @@ class Truck extends Model
 
     protected $casts = [
         'status' => \App\Enums\EntityStatusEnum::class,
+        'truck_type' => \App\Enums\TruckTypeEnum::class,
         'is_internal' => 'boolean',
         'has_bonus' => 'boolean',
         'appeal_token_expires_at' => 'datetime',
