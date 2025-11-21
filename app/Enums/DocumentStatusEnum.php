@@ -11,9 +11,7 @@ enum DocumentStatusEnum: int implements HasColor, HasIcon, HasLabel
     case PENDING = 1;
     case APPROVED = 2;
     case REJECTED = 3;
-    case DOCUMENT_REVIEW = 4;
     case NEEDS_UPDATE = 5;
-    case INFECTED_DOCUMENTS = 6;
 
     public function getLabel(): string
     {
@@ -22,8 +20,6 @@ enum DocumentStatusEnum: int implements HasColor, HasIcon, HasLabel
             self::APPROVED => 'Aprobado',
             self::REJECTED => 'Rechazado',
             self::NEEDS_UPDATE => 'Necesita Actualización',
-            self::DOCUMENT_REVIEW => 'Revisión Documentos',
-            self::INFECTED_DOCUMENTS => 'Documentos Infectados (Inactivo)',
         };
     }
 
@@ -34,8 +30,6 @@ enum DocumentStatusEnum: int implements HasColor, HasIcon, HasLabel
             self::APPROVED => 'success',
             self::REJECTED => 'danger',
             self::NEEDS_UPDATE => 'warning',
-            self::DOCUMENT_REVIEW => 'info',
-            self::INFECTED_DOCUMENTS => 'danger',
         };
     }
 
@@ -46,8 +40,6 @@ enum DocumentStatusEnum: int implements HasColor, HasIcon, HasLabel
             self::APPROVED => 'heroicon-o-check-circle',
             self::REJECTED => 'heroicon-o-x-circle',
             self::NEEDS_UPDATE => 'heroicon-o-exclamation-circle',
-            self::DOCUMENT_REVIEW => 'heroicon-o-document-magnifying-glass',
-            self::INFECTED_DOCUMENTS => 'heroicon-o-shield-exclamation',
         };
     }
 }

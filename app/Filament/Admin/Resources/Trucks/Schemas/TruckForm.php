@@ -32,7 +32,12 @@ class TruckForm
                 Toggle::make('is_internal')
                     ->label('Interno')
                     ->required(),
-                TextInput::make('truck_type'),
+                Select::make('truck_type')
+                    ->label('Tipo de Camión')
+                    ->options(\App\Enums\TruckTypeEnum::class)
+                    ->searchable()
+                    ->preload()
+                    ->native(false),
                 Toggle::make('has_bonus')
                     ->label('Tiene Bono')
                     ->required(),

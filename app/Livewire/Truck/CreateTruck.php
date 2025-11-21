@@ -7,6 +7,7 @@ namespace App\Livewire\Truck;
 use App\Enums\DocumentStatusEnum;
 use App\Enums\DocumentTypeEnum;
 use App\Enums\EntityStatusEnum;
+use App\Enums\TruckTypeEnum;
 use App\Models\Document;
 use App\Models\Truck;
 use Exception;
@@ -56,9 +57,11 @@ final class CreateTruck extends Component implements HasSchemas
                                 ->label('Placa')
                                 ->required()
                                 ->maxLength(10)
-                                ->unique('trucks', 'license_plate', ignoreRecord: true)
+                                ->unique('trucks', 'license_plate', modifyRuleUsing: function ($rule) {
+                                    return $rule->where('company_id', Auth::user()->company_id);
+                                })
                                 ->validationMessages([
-                                    'unique' => 'Ya existe un camión con esta placa.',
+                                    'unique' => 'Ya existe un tracto con esta placa en tu empresa.',
                                 ]),
 
                             Select::make('nationality')
@@ -72,12 +75,9 @@ final class CreateTruck extends Component implements HasSchemas
 
                             Select::make('truck_type')
                                 ->label('Tipo de Camión')
-                                ->options([
-                                    'T2' => 'T2',
-                                    'T3' => 'T3',
-                                    'T-Especial' => 'T-Especial',
-                                    'Otro' => 'Otro',
-                                ])
+                                ->options(TruckTypeEnum::class)
+                                ->searchable()
+                                ->preload()
                                 ->required()
                                 ->native(false),
 

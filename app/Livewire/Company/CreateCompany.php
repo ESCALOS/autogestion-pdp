@@ -23,6 +23,7 @@ use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -116,6 +117,10 @@ final class CreateCompany extends Component implements HasSchemas
                                     TextInput::make('representative_email')
                                         ->label('Correo Electrónico')
                                         ->placeholder('usuario@ejemplo.com')
+                                        ->unique(table: User::class, column: 'email')
+                                        ->validationMessages([
+                                            'unique' => 'El correo electrónico ya está registrado.',
+                                        ])
                                         ->email()
                                         ->required()
                                         ->maxLength(255)
@@ -287,9 +292,10 @@ final class CreateCompany extends Component implements HasSchemas
             $this->redirect(route('login'), navigate: true);
 
         } catch (Exception $e) {
+            Log::alert('Error al registrar la empresa: ' . $e->getMessage());
             Notification::make()
                 ->title('Error al registrar la empresa')
-                ->body($e->getMessage())
+                ->body('Ha ocurrido un error inesperado. Por favor, contacte al soporte.')
                 ->danger()
                 ->send();
         }

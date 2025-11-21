@@ -23,7 +23,7 @@ final class TruckFactory extends Factory
         return [
             'company_id' => Company::factory(),
             'license_plate' => mb_strtoupper($this->faker->unique()->bothify('???-###')),
-            'status' => EntityStatusEnum::DOCUMENT_REVIEW,
+            'status' => EntityStatusEnum::PENDING_APPROVAL,
             'nationality' => $this->faker->randomElement(['PE', 'CL', 'BO', 'BR', 'AR']),
             'is_internal' => $this->faker->boolean(),
             'truck_type' => $this->faker->randomElement(['Tracto', 'Volquete', 'Camión']),

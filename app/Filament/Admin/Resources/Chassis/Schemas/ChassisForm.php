@@ -28,8 +28,12 @@ class ChassisForm
                     ->required()
                     ->label('Estado')
                     ->options(EntityStatusEnum::class),
-                TextInput::make('vehicle_type')
-                    ->label('Tipo de Vehículo'),
+                Select::make('vehicle_type')
+                    ->label('Tipo de Vehículo')
+                    ->options(\App\Enums\VehicleTypeEnum::class)
+                    ->searchable()
+                    ->preload()
+                    ->native(false),
                 TextInput::make('axle_count')
                     ->label('Número de Ejes')
                     ->numeric(),

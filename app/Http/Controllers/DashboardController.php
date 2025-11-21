@@ -19,13 +19,11 @@ final class DashboardController extends Controller
 
         $approvedStatuses = [EntityStatusEnum::ACTIVE->value];
         $pendingStatuses = [
-            EntityStatusEnum::PENDING_APPROVAL->value,
-            EntityStatusEnum::DOCUMENT_REVIEW->value,
+            EntityStatusEnum::PENDING_APPROVAL->value
         ];
         $rejectedStatuses = [
             EntityStatusEnum::INACTIVE->value,
             EntityStatusEnum::NEEDS_UPDATE->value,
-            EntityStatusEnum::INFECTED_DOCUMENTS->value,
             EntityStatusEnum::REJECTED->value,
         ];
 

@@ -28,7 +28,7 @@ final class DriverFactory extends Factory
             'name' => $this->faker->firstName(),
             'lastname' => $this->faker->lastName(),
             'license_number' => $this->faker->unique()->bothify('??-########'),
-            'status' => EntityStatusEnum::DOCUMENT_REVIEW,
+            'status' => EntityStatusEnum::PENDING_APPROVAL,
         ];
     }
 
