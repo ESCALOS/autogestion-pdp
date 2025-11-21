@@ -81,7 +81,7 @@ it('allows uploading new document for rejected chassis document', function () {
 
     assertDatabaseHas('chassis', [
         'id' => $chassis->id,
-        'status' => EntityStatusEnum::DOCUMENT_REVIEW->value,
+        'status' => EntityStatusEnum::PENDING_APPROVAL->value,
         'appeal_token' => null,
         'appeal_token_expires_at' => null,
     ]);

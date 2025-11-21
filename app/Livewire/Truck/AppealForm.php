@@ -169,7 +169,7 @@ final class AppealForm extends Component implements HasSchemas
 
             // Actualizar estado del camión a revisión de documentos y limpiar token
             $this->truck->update([
-                'status' => EntityStatusEnum::DOCUMENT_REVIEW,
+                'status' => EntityStatusEnum::PENDING_APPROVAL,
                 'appeal_token' => null,
                 'appeal_token_expires_at' => null,
             ]);

@@ -26,8 +26,8 @@ class ListChassis extends ListRecords
             'todos' => Tab::make('Todos'),
 
             'pendientes' => Tab::make('Pendientes')
-                ->modifyQueryUsing(fn ($query) => $query->whereIn('status', [EntityStatusEnum::PENDING_APPROVAL, EntityStatusEnum::DOCUMENT_REVIEW]))
-                ->badge(fn () => Chassis::whereIn('status', [EntityStatusEnum::PENDING_APPROVAL, EntityStatusEnum::DOCUMENT_REVIEW])->count())
+                ->modifyQueryUsing(fn ($query) => $query->whereIn('status', [EntityStatusEnum::PENDING_APPROVAL]))
+                ->badge(fn () => Chassis::whereIn('status', [EntityStatusEnum::PENDING_APPROVAL])->count())
                 ->badgeColor('warning'),
 
             'aprobados' => Tab::make('Aprobados')
@@ -36,8 +36,8 @@ class ListChassis extends ListRecords
                 ->badgeColor('success'),
 
             'rechazados' => Tab::make('Rechazados')
-                ->modifyQueryUsing(fn ($query) => $query->whereIn('status', [EntityStatusEnum::INACTIVE, EntityStatusEnum::NEEDS_UPDATE, EntityStatusEnum::INFECTED_DOCUMENTS]))
-                ->badge(fn () => Chassis::whereIn('status', [EntityStatusEnum::INACTIVE, EntityStatusEnum::NEEDS_UPDATE, EntityStatusEnum::INFECTED_DOCUMENTS])->count())
+                ->modifyQueryUsing(fn ($query) => $query->whereIn('status', [EntityStatusEnum::INACTIVE, EntityStatusEnum::NEEDS_UPDATE]))
+                ->badge(fn () => Chassis::whereIn('status', [EntityStatusEnum::INACTIVE, EntityStatusEnum::NEEDS_UPDATE])->count())
                 ->badgeColor('danger'),
         ];
     }
