@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('trucks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('company_id')->constrained()->onDelete('restrict');
-            $table->string('license_plate', 10)->unique();
+            $table->string('license_plate', 10);
             $table->integer('status')->default(1)->comment('1: Inactivo, 2: Activo, 3: Necesita Actualización');
             $table->string('nationality')->nullable()->comment('Nacionalidad del vehículo');
             $table->boolean('is_internal')->default(false)->comment('Si es interno');

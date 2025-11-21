@@ -25,6 +25,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['company_id', 'document_number']);
+            $table->unique(['company_id', 'license_number']);
         });
     }
 
