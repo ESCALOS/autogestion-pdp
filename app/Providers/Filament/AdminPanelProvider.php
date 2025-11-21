@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Resources\Chassis\ChassisResource;
+use App\Filament\Admin\Resources\Drivers\DriverResource;
+use App\Filament\Admin\Resources\Trucks\TruckResource;
 use App\Filament\Admin\Resources\Users\UserResource;
 use App\Filament\Admin\Widgets\CompanyStatsOverview;
 use App\Filament\Admin\Widgets\LatestAccessLogs;
@@ -93,7 +96,7 @@ final class AdminPanelProvider extends PanelProvider
                     )
                     ->enableBrowserSessions(),
                 OverlookPlugin::make()
-                    ->sort(2)
+                    ->sort(7)
                     ->columns([
                         'default' => 4,
                         'sm' => 2,
@@ -102,6 +105,9 @@ final class AdminPanelProvider extends PanelProvider
                     ])
                     ->includes([
                         UserResource::class,
+                        DriverResource::class,
+                        TruckResource::class,
+                        ChassisResource::class,
                     ]),
                 FilamentShieldPlugin::make()
                     ->gridColumns([
