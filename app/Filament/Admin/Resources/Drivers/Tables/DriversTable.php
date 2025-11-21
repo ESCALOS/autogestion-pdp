@@ -15,8 +15,12 @@ use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 final class DriversTable
 {
@@ -66,6 +70,49 @@ final class DriversTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Filter::make('date_range')
+                    ->form([
+                        Select::make('date_type')
+                            ->label('Tipo de Fecha')
+                            ->options([
+                                'created_at' => 'Fecha de Creación',
+                                'updated_at' => 'Fecha de Actualización',
+                            ])
+                            ->default('created_at')
+                            ->required(),
+                        DatePicker::make('date_from')
+                            ->label('Desde'),
+                        DatePicker::make('date_until')
+                            ->label('Hasta'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        $dateType = $data['date_type'] ?? 'created_at';
+
+                        return $query
+                            ->when(
+                                $data['date_from'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate($dateType, '>=', $date),
+                            )
+                            ->when(
+                                $data['date_until'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate($dateType, '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+                        $dateType = $data['date_type'] ?? 'created_at';
+                        $dateLabel = $dateType === 'created_at' ? 'Creación' : 'Actualización';
+
+                        if ($data['date_from'] ?? null) {
+                            $indicators[] = $dateLabel.' desde '.\Carbon\Carbon::parse($data['date_from'])->format('d/m/Y');
+                        }
+
+                        if ($data['date_until'] ?? null) {
+                            $indicators[] = $dateLabel.' hasta '.\Carbon\Carbon::parse($data['date_until'])->format('d/m/Y');
+                        }
+
+                        return $indicators;
+                    }),
             ])
             ->recordActions([
                 ViewAction::make()

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Exports;
 
 use App\Models\Chassis;
@@ -8,7 +10,7 @@ use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Support\Number;
 
-class ChassisExporter extends Exporter
+final class ChassisExporter extends Exporter
 {
     protected static ?string $model = Chassis::class;
 
@@ -23,11 +25,15 @@ class ChassisExporter extends Exporter
                 ->label('Placa'),
             ExportColumn::make('status')
                 ->label('Estado')
-                ->state(fn ($record) => $record->status?->getLabel()),
+                ->state(fn ($record) => $record->status?->getLabel() ?? $record->status),
             ExportColumn::make('vehicle_type')
-                ->label('Tipo de Vehículo'),
+                ->label('Tipo de Vehículo')
+                ->state(fn ($record) => $record->vehicle_type?->getLabel() ?? $record->vehicle_type),
             ExportColumn::make('axle_count')
                 ->label('Número de Ejes'),
+            ExportColumn::make('has_bonus')
+                ->label('Tiene Bonificación')
+                ->state(fn ($record) => $record->has_bonus ? 'Sí' : 'No'),
             ExportColumn::make('tare')
                 ->label('Tara'),
             ExportColumn::make('material')
@@ -46,10 +52,10 @@ class ChassisExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'La exportación de carretas se completó con ' . Number::format($export->successful_rows) . ' ' . str('fila')->plural($export->successful_rows) . ' exportadas.';
+        $body = 'La exportación de carretas se completó con '.Number::format($export->successful_rows).' '.str('fila')->plural($export->successful_rows).' exportadas.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('fila')->plural($failedRowsCount) . ' fallaron.';
+            $body .= ' '.Number::format($failedRowsCount).' '.str('fila')->plural($failedRowsCount).' fallaron.';
         }
 
         return $body;
