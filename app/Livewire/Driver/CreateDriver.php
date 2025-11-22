@@ -268,7 +268,6 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->label('Certificado Curso Básico de Mercancías Peligrosas')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
                                                 ->maxSize(5120)
-                                                ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
@@ -279,7 +278,6 @@ final class CreateDriver extends Component implements HasSchemas
                                             DatePicker::make('documents.curso_mercancias.course_date')
                                                 ->label('Fecha del Curso')
                                                 ->helperText('Vigencia: 2 años')
-                                                ->required()
                                                 ->native(false)
                                                 ->maxDate(now())
                                                 ->closeOnDateSelection()
