@@ -56,12 +56,14 @@ final class CreateChassis extends Component implements HasSchemas
                             TextInput::make('license_plate')
                                 ->label('Placa')
                                 ->required()
-                                ->maxLength(10)
+                                ->maxLength(6)
+                                ->regex('/^[A-Za-z0-9]+$/')
                                 ->unique('chassis', 'license_plate', modifyRuleUsing: function ($rule) {
                                     return $rule->where('company_id', Auth::user()->company_id);
                                 })
                                 ->validationMessages([
                                     'unique' => 'Ya existe un chassis con esta placa en tu empresa.',
+                                    'regex' => 'El chassis solo puede contener letras y números, sin espacios ni caracteres especiales.',
                                 ]),
 
                             Select::make('vehicle_type')
@@ -162,6 +164,55 @@ final class CreateChassis extends Component implements HasSchemas
                             Section::make('Documentos del Chassis')
                                 ->description('Revisión Técnica (obligatorio)')
                                 ->schema([
+
+                                    // Tarjeta de Propiedad
+                                    Grid::make(3)
+                                        ->schema([
+                                            FileUpload::make('documents.chassis_tarjeta_propiedad.file')
+                                                ->label('Tarjeta de Propiedad')
+                                                ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                                ->maxSize(5120)
+                                                ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'TARJETA_PROPIEDAD.'.$extension;
+                                                })
+                                                ->columnSpan(3),
+
+                                            // DatePicker::make('documents.tarjeta_propiedad.expiration_date')
+                                            //     ->label('Fecha de Vencimiento')
+                                            //     ->required()
+                                            //     ->native(false)
+                                            //     ->displayFormat('d/m/Y')
+                                            //     ->columnSpan(1),
+                                        ]),                                    
+
+                                    // Habilitación MTC
+                                    Grid::make(3)
+                                        ->schema([
+                                            FileUpload::make('documents.chassis_habilitacion_mtc.file')
+                                                ->label('Habilitación MTC')
+                                                ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                                ->maxSize(5120)
+                                                ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'HABILITACION_MTC.'.$extension;
+                                                })
+                                                ->columnSpan(2),
+
+                                             DatePicker::make('documents.chassis_habilitacion_mtc.expiration_date')
+                                                 ->label('Fecha de Vencimiento')
+                                                 ->native(false)
+                                                 ->required()
+                                                 ->minDate(today())
+                                                 ->closeOnDateSelection()
+                                                 ->displayFormat('d/m/Y')
+                                                 ->columnSpan(1),
+                                    ]),
+
                                     // Revisión Técnica
                                     Grid::make(3)
                                         ->schema([
@@ -181,7 +232,7 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->label('Fecha de Vencimiento')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->minDate(today())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -192,34 +243,11 @@ final class CreateChassis extends Component implements HasSchemas
                     Step::make('optional_documents')
                         ->label('Documentos Opcionales')
                         ->icon('heroicon-o-document-plus')
-                        ->description('Habilitación MTC y Bonificación')
+                        ->description('Bonificación')
                         ->schema([
                             Section::make('Documentos Opcionales')
-                                ->description('Habilitación MTC y Bonificación (si aplica)')
+                                ->description('Bonificación (si aplica)')
                                 ->schema([
-                                    // Habilitación MTC
-                                    Grid::make(3)
-                                        ->schema([
-                                            FileUpload::make('documents.chassis_habilitacion_mtc.file')
-                                                ->label('Habilitación MTC')
-                                                ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
-                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
-                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                                                    $extension = $file->getClientOriginalExtension();
-                                                    return 'HABILITACION_MTC.'.$extension;
-                                                })
-                                                ->columnSpan(2),
-
-                                            DatePicker::make('documents.chassis_habilitacion_mtc.expiration_date')
-                                                ->label('Fecha de Vencimiento')
-                                                ->native(false)
-                                                ->minDate(now()->addDay())
-                                                ->closeOnDateSelection()
-                                                ->displayFormat('d/m/Y')
-                                                ->columnSpan(1),
-                                        ]),
-
                                     // Bonificación
                                     Grid::make(3)
                                         ->schema([
@@ -237,7 +265,7 @@ final class CreateChassis extends Component implements HasSchemas
                                             DatePicker::make('documents.chassis_bonificacion.expiration_date')
                                                 ->label('Fecha de Vencimiento')
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->minDate(today())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -278,7 +306,18 @@ final class CreateChassis extends Component implements HasSchemas
                 ]);
 
                 // Crear el documento obligatorio
+                $tarjetaPropiedad = Document::create([
+                    'documentable_type' => Chassis::class,
+                    'documentable_id' => $chassis->id,
+                    'type' => DocumentTypeEnum::CHASSIS_TARJETA_PROPIEDAD,
+                    'path' => $data['documents']['chassis_tarjeta_propiedad']['file'],
+                    'submitted_date' => now(),
+                    'expiration_date' => null,
+                    'status' => DocumentStatusEnum::PENDING, // Pendiente
+                ]); 
+
                 $documentTypes = [
+                    'chassis_habilitacion_mtc' => DocumentTypeEnum::CHASSIS_HABILITACION_MTC,                    
                     'chassis_revision_tecnica' => DocumentTypeEnum::CHASSIS_REVISION_TECNICA,
                 ];
 
@@ -298,7 +337,6 @@ final class CreateChassis extends Component implements HasSchemas
 
                 // Crear documentos opcionales
                 $optionalDocumentTypes = [
-                    'chassis_habilitacion_mtc' => DocumentTypeEnum::CHASSIS_HABILITACION_MTC,
                     'chassis_bonificacion' => DocumentTypeEnum::CHASSIS_BONIFICACION,
                 ];
 
