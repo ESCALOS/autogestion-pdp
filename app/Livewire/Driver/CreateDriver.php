@@ -120,7 +120,7 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->label('Fecha de vencimiento')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->minDate(today())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -145,7 +145,7 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->label('Fecha de vencimiento')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->minDate(today())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -169,7 +169,7 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->label('Fecha de Vencimiento')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->minDate(today())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -194,7 +194,7 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->label('Fecha de Vencimiento')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->minDate(today())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -313,7 +313,7 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->label('Fecha de Vencimiento')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(now()->addDay())
+                                                ->minDate(today())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),

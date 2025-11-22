@@ -27,6 +27,7 @@ enum DocumentTypeEnum: string implements HasColor, HasIcon, HasLabel
     case REVISION_TECNICA = 'revision_tecnica';
 
     // CHASSIS DOCS
+    case CHASSIS_TARJETA_PROPIEDAD = 'chassis_tarjeta_propiedad';
     case CHASSIS_HABILITACION_MTC = 'chassis_habilitacion_mtc';
     case CHASSIS_BONIFICACION = 'chassis_bonificacion';
     case CHASSIS_REVISION_TECNICA = 'chassis_revision_tecnica';
@@ -53,6 +54,7 @@ enum DocumentTypeEnum: string implements HasColor, HasIcon, HasLabel
             self::REVISION_TECNICA => 'Revisión Técnica',
 
             // CHASSIS DOCS
+            self::CHASSIS_TARJETA_PROPIEDAD => 'Chassis Tarjeta de Propiedad',
             self::CHASSIS_HABILITACION_MTC => 'Chassis Habilitación MTC',
             self::CHASSIS_BONIFICACION => 'Chassis Bonificación',
             self::CHASSIS_REVISION_TECNICA => 'Chassis Revisión Técnica',

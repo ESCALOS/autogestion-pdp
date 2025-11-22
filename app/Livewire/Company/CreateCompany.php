@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -65,7 +66,15 @@ final class CreateCompany extends Component implements HasSchemas
                                         ])
                                         ->required()
                                         ->numeric()
-                                        ->maxLength(11)
+                                        ->length(11)
+                                        ->rule(function () {
+                                            return function (string $attribute, $value, $fail) {
+                                                $prefix = $this->companyType === 1 ? '10' : '20';
+                                                if (!str_starts_with($value, $prefix)) {
+                                                    $fail("El RUC debe comenzar con {$prefix} para este tipo de empresa.");
+                                                }
+                                            };
+                                        })
                                         ->extraInputAttributes(['class' => 'dark:text-gray-800']),
 
                                     TextInput::make('business_name')
@@ -299,6 +308,11 @@ final class CreateCompany extends Component implements HasSchemas
                 ->danger()
                 ->send();
         }
+    }
+    #[On('select-company-type')]
+    public function onSelectCompanyType(int $type): void
+    {
+        $this->companyType = $type;
     }
 
     public function render()
