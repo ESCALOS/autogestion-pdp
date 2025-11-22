@@ -68,18 +68,21 @@ final class CreateChassis extends Component implements HasSchemas
                                 ->label('Tipo de Vehículo')
                                 ->options(VehicleTypeEnum::class)
                                 ->searchable()
+                                ->required()
                                 ->preload()
                                 ->native(false),
 
                             TextInput::make('axle_count')
                                 ->label('Número de Ejes')
                                 ->numeric()
+                                ->required()
                                 ->minValue(1)
                                 ->maxValue(10),
 
                             TextInput::make('tare')
                                 ->label('Tara (Toneladas)')
                                 ->numeric()
+                                ->required()
                                 ->step(0.01)
                                 ->minValue(0)
                                 ->maxValue(99999.99)
@@ -88,6 +91,7 @@ final class CreateChassis extends Component implements HasSchemas
                             TextInput::make('safe_weight')
                                 ->label('Peso Seguro (Toneladas)')
                                 ->numeric()
+                                ->required()
                                 ->step(0.01)
                                 ->minValue(0)
                                 ->maxValue(99999.99)
@@ -97,6 +101,7 @@ final class CreateChassis extends Component implements HasSchemas
                                 ->label('Largo (Metros)')
                                 ->numeric()
                                 ->step(0.01)
+                                ->required()
                                 ->minValue(0)
                                 ->maxValue(99.99)
                                 ->suffix('m'),
@@ -106,6 +111,7 @@ final class CreateChassis extends Component implements HasSchemas
                                 ->numeric()
                                 ->step(0.01)
                                 ->minValue(0)
+                                ->required()
                                 ->maxValue(99.99)
                                 ->suffix('m'),
 
@@ -114,11 +120,13 @@ final class CreateChassis extends Component implements HasSchemas
                                 ->numeric()
                                 ->step(0.01)
                                 ->minValue(0)
+                                ->required()
                                 ->maxValue(99.99)
                                 ->suffix('m'),
 
                             Select::make('material')
                                 ->label('Material')
+                                ->required()
                                 ->options([
                                     'Acero' => 'Acero',
                                     'Aluminio' => 'Aluminio',

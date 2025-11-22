@@ -79,16 +79,18 @@ final class ListTrucks extends Component implements HasActions, HasSchemas, HasT
                     ->options(\App\Enums\EntityStatusEnum::class),
                 SelectFilter::make('truck_type')
                     ->label('Tipo')
+                    ->searchable()
+                    ->preload()
+                    ->options(TruckTypeEnum::class),
+                SelectFilter::make('nationality')
+                    ->label('Nacionalidad')
                     ->options(function () {
                         return Truck::query()
                             ->where('company_id', Auth::user()->company_id)
                             ->distinct()
-                            ->pluck('truck_type', 'truck_type')
+                            ->pluck('nationality', 'nationality')
                             ->toArray();
                     }),
-                SelectFilter::make('nationality')
-                    ->label('Nacionalidad')
-                    ->options(TruckTypeEnum::class),
                 TernaryFilter::make('is_internal')
                     ->label('Interno')
                     ->placeholder('Todos')

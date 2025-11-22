@@ -84,6 +84,7 @@ final class CreateTruck extends Component implements HasSchemas
                             TextInput::make('tare')
                                 ->label('Tara (Toneladas)')
                                 ->numeric()
+                                ->required()
                                 ->step(0.01)
                                 ->minValue(0)
                                 ->maxValue(99999.99)
