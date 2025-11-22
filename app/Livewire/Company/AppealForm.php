@@ -156,6 +156,11 @@ final class AppealForm extends Component implements HasSchemas
         } catch (Exception $e) {
             DB::rollBack();
 
+            Log::error('Error al procesar la apelación de documentos', [
+                'company_id' => $this->company->id,
+                'error' => $e->getMessage(),
+            ]);
+
             Notification::make()
                 ->title('Error al procesar la apelación')
                 ->danger()
