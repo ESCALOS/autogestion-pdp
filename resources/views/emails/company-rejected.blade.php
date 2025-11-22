@@ -72,7 +72,7 @@
                 <strong>Datos de la empresa:</strong><br>
                 <strong>RUC:</strong> {{ $company->ruc }}<br>
                 <strong>Razón Social:</strong> {{ $company->business_name }}<br>
-                <strong>Tipo:</strong> {{ $company->type === 2 ? 'Persona Jurídica' : 'Persona Natural' }}
+                <strong>Tipo:</strong> {{ $company->type === \App\Enums\CompanyTypeEnum::JURIDICA ? 'Empresa Jurídica' : 'Empresa Natural' }}
             </div>
             
             <div class="rejection-list">

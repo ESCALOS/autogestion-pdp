@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('path');
             $table->date('submitted_date')->comment('Fecha de subida del documento');
             $table->date('course_date')->nullable()->after('submitted_date')->comment('Fecha en que se realizó el curso (solo para cursos)');
-            $table->date('expiration_date')->comment('Fecha de vencimiento del documento');
+            $table->date('expiration_date')->nullable()->comment('Fecha de vencimiento del documento');
             $table->integer('status')->default(1)->comment('pending, approved, rejected');
 
             $table->index(['documentable_type', 'documentable_id']);

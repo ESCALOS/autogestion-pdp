@@ -56,12 +56,14 @@ final class CreateTruck extends Component implements HasSchemas
                             TextInput::make('license_plate')
                                 ->label('Placa')
                                 ->required()
-                                ->maxLength(10)
+                                ->maxLength(6)
+                                ->regex('/^[A-Za-z0-9]+$/')
                                 ->unique('trucks', 'license_plate', modifyRuleUsing: function ($rule) {
                                     return $rule->where('company_id', Auth::user()->company_id);
                                 })
                                 ->validationMessages([
                                     'unique' => 'Ya existe un tracto con esta placa en tu empresa.',
+                                    'regex' => 'La placa solo puede contener letras y números, sin espacios ni caracteres especiales.',
                                 ]),
 
                             Select::make('nationality')
@@ -106,7 +108,7 @@ final class CreateTruck extends Component implements HasSchemas
                         ->description('Documentos del vehículo')
                         ->schema([
                             Section::make('Documentos del Vehículo')
-                                ->description('Tarjeta de Propiedad, SOAT y Póliza de Seguro')
+                                ->description('Tarjeta de Propiedad, SOAT, MTC y Póliza de Seguro')
                                 ->schema([
                                     // Tarjeta de Propiedad
                                     Grid::make(3)
@@ -121,14 +123,14 @@ final class CreateTruck extends Component implements HasSchemas
                                                     $extension = $file->getClientOriginalExtension();
                                                     return 'TARJETA_PROPIEDAD.'.$extension;
                                                 })
-                                                ->columnSpan(2),
+                                                ->columnSpan(3),
 
-                                            DatePicker::make('documents.tarjeta_propiedad.expiration_date')
-                                                ->label('Fecha de Vencimiento')
-                                                ->required()
-                                                ->native(false)
-                                                ->displayFormat('d/m/Y')
-                                                ->columnSpan(1),
+                                            // DatePicker::make('documents.tarjeta_propiedad.expiration_date')
+                                            //     ->label('Fecha de Vencimiento')
+                                            //     ->required()
+                                            //     ->native(false)
+                                            //     ->displayFormat('d/m/Y')
+                                            //     ->columnSpan(1),
                                         ]),
 
                                     // SOAT
@@ -150,9 +152,34 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->label('Fecha de Vencimiento')
                                                 ->required()
                                                 ->native(false)
+                                                ->minDate(today())
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
+
+                                    // Habilitación MTC
+                                    Grid::make(3)
+                                        ->schema([
+                                            FileUpload::make('documents.habilitacion_mtc.file')
+                                                ->label('Habilitación MTC')
+                                                ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                                ->maxSize(5120)
+                                                ->required()
+                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
+                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                                    $extension = $file->getClientOriginalExtension();
+                                                    return 'HABILITACION_MTC.'.$extension;
+                                                })
+                                                ->columnSpan(2),
+
+                                            DatePicker::make('documents.habilitacion_mtc.expiration_date')
+                                                ->label('Fecha de Vencimiento')
+                                                ->native(false)
+                                                ->required()
+                                                ->minDate(today())
+                                                ->displayFormat('d/m/Y')
+                                                ->columnSpan(1),
+                                        ]),                                        
 
                                     // Póliza de Seguro
                                     Grid::make(3)
@@ -173,6 +200,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->label('Fecha de Vencimiento')
                                                 ->required()
                                                 ->native(false)
+                                                ->minDate(today())
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
@@ -196,6 +224,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->label('Fecha de Vencimiento')
                                                 ->required()
                                                 ->native(false)
+                                                ->minDate(today())
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
@@ -205,31 +234,11 @@ final class CreateTruck extends Component implements HasSchemas
                     Step::make('optional_documents')
                         ->label('Documentos Opcionales')
                         ->icon('heroicon-o-document-plus')
-                        ->description('Habilitación MTC y Bonificación')
+                        ->description('Bonificación')
                         ->schema([
                             Section::make('Documentos Opcionales')
-                                ->description('Habilitación MTC y Bonificación (si aplica)')
+                                ->description('Bonificación (si aplica)')
                                 ->schema([
-                                    // Habilitación MTC
-                                    Grid::make(3)
-                                        ->schema([
-                                            FileUpload::make('documents.habilitacion_mtc.file')
-                                                ->label('Habilitación MTC')
-                                                ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
-                                                ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
-                                                ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                                                    $extension = $file->getClientOriginalExtension();
-                                                    return 'HABILITACION_MTC.'.$extension;
-                                                })
-                                                ->columnSpan(2),
-
-                                            DatePicker::make('documents.habilitacion_mtc.expiration_date')
-                                                ->label('Fecha de Vencimiento')
-                                                ->native(false)
-                                                ->displayFormat('d/m/Y')
-                                                ->columnSpan(1),
-                                        ]),
 
                                     // Bonificación
                                     Grid::make(3)
@@ -248,13 +257,14 @@ final class CreateTruck extends Component implements HasSchemas
                                             DatePicker::make('documents.bonificacion.expiration_date')
                                                 ->label('Fecha de Vencimiento')
                                                 ->native(false)
+                                                ->minDate(today())
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
                                 ]),
                         ]),
                 ])
-                    ->submitAction(new HtmlString('<button type="submit" class="inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-10 px-4 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700">Crear Camión</button>'))
+                    ->submitAction(new HtmlString('<button type="submit" class="inline-flex items-center justify-center gap-1 font-medium rounded-lg border transition-colors focus:outline-none focus:ring-offset-2 focus:ring-2 focus:ring-inset min-h-10 px-4 text-sm text-white shadow focus:ring-white border-transparent bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 focus:ring-offset-primary-700">Crear tracto</button>'))
                     ->extraAlpineAttributes(['@truck-created.window' => 'step = \'form.datos-del-camion::data::wizard-step\''])
                     ->skippable(false),
             ])
@@ -285,6 +295,7 @@ final class CreateTruck extends Component implements HasSchemas
                     'soat' => DocumentTypeEnum::SOAT,
                     'poliza_seguro' => DocumentTypeEnum::POLIZA_SEGURO,
                     'revision_tecnica' => DocumentTypeEnum::REVISION_TECNICA,
+                    'habilitacion_mtc' => DocumentTypeEnum::HABILITACION_MTC,
                 ];
 
                 foreach ($documentTypes as $key => $type) {
@@ -295,7 +306,7 @@ final class CreateTruck extends Component implements HasSchemas
                             'type' => $type,
                             'path' => $data['documents'][$key]['file'],
                             'submitted_date' => now(),
-                            'expiration_date' => $data['documents'][$key]['expiration_date'],
+                            'expiration_date' => $data['documents'][$key]['expiration_date'] ?? null,
                             'status' => DocumentStatusEnum::PENDING, // Pendiente
                         ]);
                     }
@@ -303,7 +314,6 @@ final class CreateTruck extends Component implements HasSchemas
 
                 // Crear documentos opcionales
                 $optionalDocumentTypes = [
-                    'habilitacion_mtc' => DocumentTypeEnum::HABILITACION_MTC,
                     'bonificacion' => DocumentTypeEnum::BONIFICACION,
                 ];
 

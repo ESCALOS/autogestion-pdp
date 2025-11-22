@@ -38,8 +38,8 @@ final class DashboardController extends Controller
             ],
             [
                 'key' => 'trucks',
-                'title' => 'Camiones',
-                'description' => 'Gestión de vehículos',
+                'title' => 'Tractos',
+                'description' => 'Gestión de tractos',
                 'route' => 'trucks.index',
                 'model' => Truck::class,
                 'icon' => 'truck',

@@ -84,7 +84,6 @@ final class UserForm
                             ->multiple()
                             ->preload()
                             ->searchable()
-                            ->required()
                             ->columnSpanFull(),
                     ])->columnSpan('4'),
             ])
