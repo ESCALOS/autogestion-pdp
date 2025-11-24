@@ -54,13 +54,11 @@ final class TrucksTable
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->label('Creado')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->label('Actualizado')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Filter::make('date_range')
