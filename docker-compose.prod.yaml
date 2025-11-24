@@ -15,8 +15,6 @@ services:
         image: 'postgres:17-alpine'
         container_name: pgsql-prod
         restart: always
-        ports:
-            - '5432:5432'
         environment:
             PGPASSWORD: '${DB_PASSWORD:-secret}'
             POSTGRES_DB: '${DB_DATABASE}'
