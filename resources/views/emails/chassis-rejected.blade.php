@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Documentos de Chassis Rechazados</title>
+        <title>Documentos de Carreta Rechazados</title>
         <style>
             .container {
                 max-width: 56rem;
@@ -66,7 +66,7 @@
                 <p>Estimado/a usuario,</p>
 
                 <p>
-                    Le informamos que su solicitud de registro de chassis requiere correcciones en los siguientes
+                    Le informamos que su solicitud de registro de carreta requiere correcciones en los siguientes
                     documentos:
                 </p>
 
@@ -134,7 +134,7 @@
 
                 <div style="text-align: center; margin-top: 30px">
                     <img
-                        src="https://i.postimg.cc/nrx8v5gk/autogestion-paracas1.jpg"
+                        src="https://images.iimg.live/images/ultimate-snap-9626.webp"
                         alt="Firma PDP Paracas"
                         style="max-width: 100%; height: auto"
                     />

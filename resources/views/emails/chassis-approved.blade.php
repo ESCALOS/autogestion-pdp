@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Chassis Aprobado</title>
+        <title>Carreta Aprobada</title>
         <style>
             .container {
                 max-width: 56rem;
@@ -78,7 +78,7 @@
                 </div>
 
                 <p>
-                    Todos los documentos han sido validados correctamente y el chassis ahora está activo en nuestro
+                    Todos los documentos han sido validados correctamente y la carreta ahora está activa en nuestro
                     sistema.
                 </p>
 
@@ -92,7 +92,7 @@
 
                 <div style="text-align: center; margin-top: 30px">
                     <img
-                        src="https://i.postimg.cc/nrx8v5gk/autogestion-paracas1.jpg"
+                        src="https://images.iimg.live/images/ultimate-snap-9626.webp"
                         alt="Firma PDP Paracas"
                         style="max-width: 100%; height: auto"
                     />

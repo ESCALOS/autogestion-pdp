@@ -104,7 +104,7 @@
             <strong>Equipo de Registro de Transportes</strong></p>
             
             <div style="text-align: center; margin-top: 30px;">
-                <img src="https://i.postimg.cc/nrx8v5gk/autogestion-paracas1.jpg" alt="Firma PDP Paracas" style="max-width: 100%; height: auto;">
+                <img src="https://images.iimg.live/images/ultimate-snap-9626.webp" alt="Firma PDP Paracas" style="max-width: 100%; height: auto;">
             </div>
         </div>
         <div class="footer">
