@@ -169,7 +169,7 @@ class ViewDriver extends Page
                     try {
                         $appealUrl = route('driver.appeal.show', $appealToken);
                         Mail::to($representativeEmail)
-                            ->send(new DriverRejectedMail($this->record, $rejectedDocuments, $appealUrl));
+                            ->queue(new DriverRejectedMail($this->record, $rejectedDocuments, $appealUrl));
 
                         Log::info('Correo de rechazo enviado a: ' . $representativeEmail);
                     } catch (\Exception $e) {
@@ -200,7 +200,7 @@ class ViewDriver extends Page
                 if ($representativeEmail) {
                     try {
                         Mail::to($representativeEmail)
-                            ->send(new DriverApprovedMail($this->record));
+                            ->queue(new DriverApprovedMail($this->record));
 
                         Log::info('Correo de aprobación enviado a: ' . $representativeEmail);
                     } catch (\Exception $e) {

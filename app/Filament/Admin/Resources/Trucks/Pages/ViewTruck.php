@@ -171,7 +171,7 @@ class ViewTruck extends Page
                     try {
                         $appealUrl = route('truck.appeal.show', $appealToken);
                         Mail::to($representativeEmail)
-                            ->send(new TruckRejectedMail($this->record, $rejectedDocuments, $appealUrl));
+                            ->queue(new TruckRejectedMail($this->record, $rejectedDocuments, $appealUrl));
 
                         Log::info('Correo de rechazo enviado a: ' . $representativeEmail);
                     } catch (\Exception $e) {
@@ -202,7 +202,7 @@ class ViewTruck extends Page
                 if ($representativeEmail) {
                     try {
                         Mail::to($representativeEmail)
-                            ->send(new TruckApprovedMail($this->record));
+                            ->queue(new TruckApprovedMail($this->record));
 
                         Log::info('Correo de aprobación enviado a: ' . $representativeEmail);
                     } catch (\Exception $e) {
