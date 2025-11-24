@@ -81,7 +81,8 @@ RUN composer install --optimize-autoloader --no-dev
 # -----------------------------------------
 # 8. Permisos
 # -----------------------------------------
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # -----------------------------------------
 # 9. Copiar supervisor config
@@ -93,6 +94,11 @@ COPY docker/php/supervisor.conf /etc/supervisor/conf.d/supervisor.conf
 # -----------------------------------------
 COPY docker/php/php.ini /etc/php/8.4/fpm/php.ini
 COPY docker/php/opcache.ini /etc/php/8.4/mods-available/opcache.ini
+
+# -----------------------------------------
+# 10.1 Configurar PHP-FPM para escuchar en 9000
+# -----------------------------------------
+COPY docker/php/www.conf /etc/php/8.4/fpm/pool.d/www.conf
 
 # -----------------------------------------
 # 11. Exponer PHP-FPM
