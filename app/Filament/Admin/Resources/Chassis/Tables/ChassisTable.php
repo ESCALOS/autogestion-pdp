@@ -37,7 +37,8 @@ final class ChassisTable
                     ->label('Placa'),
                 TextColumn::make('status')
                     ->searchable()
-                    ->label('Estado'),
+                    ->label('Estado')
+                    ->badge(),
                 TextColumn::make('vehicle_type')
                     ->badge()
                     ->searchable()
@@ -107,7 +108,7 @@ final class ChassisTable
                     ->label('Estado de Chassis')
                     ->options(EntityStatusEnum::class),
                 Filter::make('date_range')
-                    ->form([
+                    ->schema([
                         Select::make('date_type')
                             ->label('Tipo de Fecha')
                             ->options([

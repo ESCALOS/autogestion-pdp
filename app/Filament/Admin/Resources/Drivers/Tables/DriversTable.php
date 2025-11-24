@@ -69,7 +69,7 @@ final class DriversTable
             ])
             ->filters([
                 Filter::make('date_range')
-                    ->form([
+                    ->schema([
                         Select::make('date_type')
                             ->label('Tipo de Fecha')
                             ->options([
