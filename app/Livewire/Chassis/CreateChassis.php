@@ -49,7 +49,7 @@ final class CreateChassis extends Component implements HasSchemas
             ->components([
                 Wizard::make([
                     Step::make('chassis_data')
-                        ->label('Datos del Chassis')
+                        ->label('Datos de la Carreta')
                         ->icon('heroicon-o-truck')
                         ->description('Información del vehículo')
                         ->schema([
@@ -152,7 +152,8 @@ final class CreateChassis extends Component implements HasSchemas
 
                             Checkbox::make('has_bonus')
                                 ->label('¿Tiene bonificación?')
-                                ->default(false),
+                                ->default(false)
+                                ->reactive(),
                         ])
                         ->columns(2),
 
@@ -186,7 +187,7 @@ final class CreateChassis extends Component implements HasSchemas
                                             //     ->native(false)
                                             //     ->displayFormat('d/m/Y')
                                             //     ->columnSpan(1),
-                                        ]),                                    
+                                        ]),
 
                                     // Habilitación MTC
                                     Grid::make(3)
@@ -260,7 +261,8 @@ final class CreateChassis extends Component implements HasSchemas
                                                     $extension = $file->getClientOriginalExtension();
                                                     return 'BONIFICACION.'.$extension;
                                                 })
-                                                ->columnSpan(2),
+                                                ->columnSpan(2)
+                                                ->required(fn ($get) => (bool) $get('has_bonus')),
 
                                             DatePicker::make('documents.chassis_bonificacion.expiration_date')
                                                 ->label('Fecha de Vencimiento')
@@ -268,7 +270,8 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->minDate(today())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
-                                                ->columnSpan(1),
+                                                ->columnSpan(1)
+                                                ->required(fn ($get) => (bool) $get('has_bonus')),
                                         ]),
                                 ]),
                         ]),
@@ -306,7 +309,7 @@ final class CreateChassis extends Component implements HasSchemas
                 ]);
 
                 // Crear el documento obligatorio
-                $tarjetaPropiedad = Document::create([
+                Document::create([
                     'documentable_type' => Chassis::class,
                     'documentable_id' => $chassis->id,
                     'type' => DocumentTypeEnum::CHASSIS_TARJETA_PROPIEDAD,
@@ -314,10 +317,10 @@ final class CreateChassis extends Component implements HasSchemas
                     'submitted_date' => now(),
                     'expiration_date' => null,
                     'status' => DocumentStatusEnum::PENDING, // Pendiente
-                ]); 
+                ]);
 
                 $documentTypes = [
-                    'chassis_habilitacion_mtc' => DocumentTypeEnum::CHASSIS_HABILITACION_MTC,                    
+                    'chassis_habilitacion_mtc' => DocumentTypeEnum::CHASSIS_HABILITACION_MTC,
                     'chassis_revision_tecnica' => DocumentTypeEnum::CHASSIS_REVISION_TECNICA,
                 ];
 

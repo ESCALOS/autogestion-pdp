@@ -22,7 +22,7 @@ class DriverRejectedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Documentos Rechazados - ' . $this->driver->full_name,
+            subject: 'Documentos de Conductor Rechazados - ' . $this->driver->full_name,
         );
     }
 

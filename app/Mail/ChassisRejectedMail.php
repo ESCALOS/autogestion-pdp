@@ -22,7 +22,7 @@ class ChassisRejectedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Documentos Rechazados - ' . $this->chassis->license_plate,
+            subject: 'Documentos de Carreta Rechazados - ' . $this->chassis->license_plate,
         );
     }
 

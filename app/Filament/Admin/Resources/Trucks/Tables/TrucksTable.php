@@ -44,6 +44,8 @@ final class TrucksTable
                     ->label('Interno')
                     ->boolean(),
                 TextColumn::make('truck_type')
+                    ->label('Tipo de Camión')
+                    ->badge()
                     ->searchable(),
                 IconColumn::make('has_bonus')
                     ->label('Bono')
@@ -54,17 +56,15 @@ final class TrucksTable
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->label('Creado')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->label('Actualizado')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Filter::make('date_range')
-                    ->form([
+                    ->schema([
                         Select::make('date_type')
                             ->label('Tipo de Fecha')
                             ->options([

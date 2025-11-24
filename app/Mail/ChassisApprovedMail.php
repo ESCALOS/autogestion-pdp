@@ -20,7 +20,7 @@ class ChassisApprovedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Chassis Aprobado - ' . $this->chassis->license_plate,
+            subject: 'Carreta Aprobada - ' . $this->chassis->license_plate,
         );
     }
 

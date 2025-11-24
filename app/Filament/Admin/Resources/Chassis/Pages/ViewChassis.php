@@ -170,7 +170,7 @@ class ViewChassis extends Page
                     try {
                         $appealUrl = route('chassis.appeal.show', $appealToken);
                         Mail::to($representativeEmail)
-                            ->send(new ChassisRejectedMail($this->record, $rejectedDocuments, $appealUrl));
+                            ->queue(new ChassisRejectedMail($this->record, $rejectedDocuments, $appealUrl));
 
                         Log::info('Correo de rechazo enviado a: ' . $representativeEmail);
                     } catch (\Exception $e) {
@@ -201,7 +201,7 @@ class ViewChassis extends Page
                 if ($representativeEmail) {
                     try {
                         Mail::to($representativeEmail)
-                            ->send(new ChassisApprovedMail($this->record));
+                            ->queue(new ChassisApprovedMail($this->record));
 
                         Log::info('Correo de aprobación enviado a: ' . $representativeEmail);
                     } catch (\Exception $e) {

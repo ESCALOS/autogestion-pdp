@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vehículo Aprobado</title>
+    <title>Tracto Aprobado</title>
     <style>
         .container {     
             max-width: 56rem;
@@ -55,17 +55,17 @@
     <div class="content">
         <p>Estimado/a usuario,</p>
 
-        <p>Nos complace informarle que su registro de vehículo ha sido <strong>aprobado</strong> exitosamente.</p>
+        <p>Nos complace informarle que su registro de tracto ha sido <strong>aprobado</strong> exitosamente.</p>
 
         <div class="truck-info">
-            <strong>Datos del vehículo:</strong><br>
+            <strong>Datos del Tracto:</strong><br>
             <strong>Placa:</strong> {{ $truck->license_plate }}<br>
             <strong>Nacionalidad:</strong> {{ $truck->nationality }}<br>
             <strong>Tipo de Camión:</strong> {{ $truck->truck_type }}<br>
             <strong>Empresa:</strong> {{ $truck->company->business_name ?? 'N/A' }}
         </div>
 
-        <p>Todos los documentos han sido validados correctamente y el vehículo ahora está activo en nuestro sistema.</p>
+        <p>Todos los documentos han sido validados correctamente y el tracto ahora está activo en nuestro sistema.</p>
 
         <p>Puede proceder a realizar sus actividades de transporte.</p>
 
@@ -73,7 +73,7 @@
         <strong>Equipo de Registro de Transportes</strong></p>
         
         <div style="text-align: center; margin-top: 30px;">
-            <img src="https://i.postimg.cc/nrx8v5gk/autogestion-paracas1.jpg" alt="Firma PDP Paracas" style="max-width: 100%; height: auto;">
+            <img src="https://images.iimg.live/images/ultimate-snap-9626.webp" alt="Firma PDP Paracas" style="max-width: 100%; height: auto;">
         </div>
     </div>
     <div class="footer">

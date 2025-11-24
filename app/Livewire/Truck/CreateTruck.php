@@ -98,7 +98,8 @@ final class CreateTruck extends Component implements HasSchemas
 
                             Checkbox::make('has_bonus')
                                 ->label('¿Tiene bonificación?')
-                                ->default(false),
+                                ->default(false)
+                                ->reactive(),
                         ])
                         ->columns(2),
 
@@ -179,7 +180,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->minDate(today())
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
-                                        ]),                                        
+                                        ]),
 
                                     // Póliza de Seguro
                                     Grid::make(3)
@@ -252,14 +253,16 @@ final class CreateTruck extends Component implements HasSchemas
                                                     $extension = $file->getClientOriginalExtension();
                                                     return 'BONIFICACION.'.$extension;
                                                 })
-                                                ->columnSpan(2),
+                                                ->columnSpan(2)
+                                                ->required(fn ($get) => (bool) $get('has_bonus')),
 
                                             DatePicker::make('documents.bonificacion.expiration_date')
                                                 ->label('Fecha de Vencimiento')
                                                 ->native(false)
                                                 ->minDate(today())
                                                 ->displayFormat('d/m/Y')
-                                                ->columnSpan(1),
+                                                ->columnSpan(1)
+                                                ->required(fn ($get) => (bool) $get('has_bonus')),
                                         ]),
                                 ]),
                         ]),
