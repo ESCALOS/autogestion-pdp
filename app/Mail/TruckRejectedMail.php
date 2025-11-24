@@ -22,7 +22,7 @@ class TruckRejectedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Documentos Rechazados - ' . $this->truck->license_plate,
+            subject: 'Documentos de Tracto Rechazados - ' . $this->truck->license_plate,
         );
     }
 

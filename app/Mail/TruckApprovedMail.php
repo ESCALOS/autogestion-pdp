@@ -20,7 +20,7 @@ class TruckApprovedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Vehículo Aprobado - ' . $this->truck->license_plate,
+            subject: 'Tracto Aprobado - ' . $this->truck->license_plate,
         );
     }
 

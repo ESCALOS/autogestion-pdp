@@ -154,7 +154,7 @@ final class ViewCompany extends Page
                 // Enviar correo de aprobación
                 if ($this->record->representative->email) {
                     Mail::to($this->record->representative->email)
-                        ->send(new CompanyApprovedMail($this->record));
+                        ->queue(new CompanyApprovedMail($this->record));
                 }
 
                 Notification::make()
@@ -188,7 +188,7 @@ final class ViewCompany extends Page
                 if ($this->record->representative->email && ! empty($rejectedDocuments)) {
                     $appealUrl = route('company.appeal.show', $appealToken);
                     Mail::to($this->record->representative->email)
-                        ->send(new CompanyRejectedMail($this->record, $rejectedDocuments, $appealUrl));
+                        ->queue(new CompanyRejectedMail($this->record, $rejectedDocuments, $appealUrl));
                 }
 
                 Notification::make()

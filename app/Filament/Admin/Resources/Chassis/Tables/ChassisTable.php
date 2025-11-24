@@ -83,23 +83,23 @@ final class ChassisTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('accepts_20ft')
                     ->boolean()
-                    ->label('Acepta 20ft?'),
+                    ->label('Acepta 20ft?')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('accepts_40ft')
                     ->boolean()
-                    ->label('Acepta 40ft?'),
+                    ->label('Acepta 40ft?')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 // TextColumn::make('appeal_token_expires_at')
                 //     ->dateTime()
                 //     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->label('Creado')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
-                    ->label('Actualizado')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label('Actualizado'),
             ])
             ->filters([
                 SelectFilter::make('status')

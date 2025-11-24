@@ -46,15 +46,13 @@ final class CompaniesTable
                     ->badge(),
 
                 TextColumn::make('created_at')
-                    ->label('Fecha de Registro')
+                    ->label('Creado')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
                 TextColumn::make('updated_at')
-                    ->label('Fecha de Actualización')
+                    ->label('Actualizado')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('type')
