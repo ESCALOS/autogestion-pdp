@@ -39,6 +39,7 @@ final class ChassisTable
                     ->searchable()
                     ->label('Estado'),
                 TextColumn::make('vehicle_type')
+                    ->badge()
                     ->searchable()
                     ->label('Tipo de Vehículo'),
                 TextColumn::make('axle_count')

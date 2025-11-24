@@ -44,6 +44,8 @@ final class TrucksTable
                     ->label('Interno')
                     ->boolean(),
                 TextColumn::make('truck_type')
+                    ->label('Tipo de Camión')
+                    ->badge()
                     ->searchable(),
                 IconColumn::make('has_bonus')
                     ->label('Bono')
