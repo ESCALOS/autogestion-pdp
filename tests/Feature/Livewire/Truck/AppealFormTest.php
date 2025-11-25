@@ -14,7 +14,7 @@ use Livewire\Livewire;
 use function Pest\Laravel\assertDatabaseHas;
 
 beforeEach(function () {
-    Storage::fake('s3');
+    Storage::fake('local');
 });
 
 it('loads truck data correctly with valid token', function () {

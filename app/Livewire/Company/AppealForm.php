@@ -119,9 +119,9 @@ final class AppealForm extends Component implements HasSchemas
                     $newExtension = pathinfo($newPath, PATHINFO_EXTENSION);
 
                     // Solo eliminar el archivo anterior si la extensión es diferente
-                    // Si la extensión es la misma, S3 lo reemplaza automáticamente
-                    if ($oldExtension !== $newExtension && $document->path && Storage::disk('s3')->exists($document->path)) {
-                        Storage::disk('s3')->delete($document->path);
+                    // Si la extensión es la misma, el storage lo reemplaza automáticamente
+                    if ($oldExtension !== $newExtension && $document->path && Storage::exists($document->path)) {
+                        Storage::delete($document->path);
                     }
 
                     // Actualizar documento a pendiente
