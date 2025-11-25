@@ -11,6 +11,7 @@ services:
             - internal
         depends_on:
             - pgsql
+            - redis
 
     pgsql:
         image: 'postgres:17-alpine'
@@ -52,10 +53,26 @@ services:
         networks:
             - internal
 
+    redis:
+        image: 'redis:alpine'
+        volumes:
+            - 'autogestion-redis:/data'
+        networks:
+            - internal
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 3
+            timeout: 5s
+
 networks:
     internal:
         driver: bridge
 
 volumes:
     autogestion-pgsql:
+        driver: local
+    autogestion-redis:
         driver: local
