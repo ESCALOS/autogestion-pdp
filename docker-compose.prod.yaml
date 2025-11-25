@@ -4,11 +4,6 @@ services:
             context: .
             dockerfile: docker/php/Dockerfile
         container_name: app-prod
-        command: >
-            sh -c "php artisan config:cache &&
-                   php artisan route:cache &&
-                   php artisan view:cache &&
-                   supervisord -n"
         restart: always
         volumes:
             - /home/bsv.devel/private:/var/www/html/storage/app/private
