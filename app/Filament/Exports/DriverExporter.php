@@ -15,27 +15,44 @@ class DriverExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('id')
-                ->label('ID'),
             ExportColumn::make('company.business_name')
-                ->label('Empresa'),
+                ->label('Company'),
+            ExportColumn::make('full_name')
+                ->label('Driver Name')
+                ->state(fn ($record) => trim($record->name . ' ' . $record->lastname)),
+            ExportColumn::make('status')
+                ->label('Driver Status')
+                ->state(fn ($record) => $record->status ? 'OK' : 'BANNED'),
+            ExportColumn::make('document_number')
+                ->label('Driver Card ID'),
+            ExportColumn::make('license_number')
+                ->label('Driver License'),
             ExportColumn::make('document_type')
                 ->label('Tipo de Documento')
                 ->state(fn ($record) => $record->document_type?->getLabel()),
-            ExportColumn::make('document_number')
-                ->label('Número de Documento'),
-            ExportColumn::make('name')
-                ->label('Nombre'),
-            ExportColumn::make('lastname')
-                ->label('Apellido'),
-            ExportColumn::make('license_number')
-                ->label('Licencia'),
-            ExportColumn::make('status')
-                ->label('Estado')
-                ->state(fn ($record) => $record->status?->getLabel()),
             ExportColumn::make('created_at')
                 ->label('Fecha de Creación')
                 ->state(fn ($record) => $record->created_at?->format('d/m/Y H:i')),
+
+            // Driver Documents
+            ExportColumn::make('mercancias')
+                ->label('Certificado de Mercancías Peligrosas')
+                ->state(fn ($record) => $record->documents->where('type', \App\Enums\DocumentTypeEnum::CURSO_MERCANCIAS)->first()?->expiration_date?->format('d/m/Y')),
+            ExportColumn::make('seguridad_portuaria')
+                ->label('Certificado de Seguridad Portuaria')
+                ->state(fn ($record) => $record->documents->where('type', \App\Enums\DocumentTypeEnum::CURSO_SEGURIDAD_PORTUARIA)->first()?->expiration_date?->format('d/m/Y')),
+            ExportColumn::make('induccion_seguridad')
+                ->label('Inducción de Seguridad y Medio Ambiente')
+                ->state(fn ($record) => $record->documents->where('type', \App\Enums\DocumentTypeEnum::INDUCCION_SEGURIDAD)->first()?->expiration_date?->format('d/m/Y')),
+            ExportColumn::make('pbip')
+                ->label('Certificado PBIP')
+                ->state(fn ($record) => $record->documents->where('type', \App\Enums\DocumentTypeEnum::CURSO_PBIP)->first()?->expiration_date?->format('d/m/Y')),
+            ExportColumn::make('declaracion_jurada')
+                ->label('Declaración de No Antecedentes')
+                ->state(fn ($record) => $record->documents->where('type', \App\Enums\DocumentTypeEnum::DECLARACION_JURADA)->first()?->expiration_date?->format('d/m/Y')),
+            ExportColumn::make('sctr')
+                ->label('Vencimiento de SCTR')
+                ->state(fn ($record) => $record->documents->where('type', \App\Enums\DocumentTypeEnum::SCTR)->first()?->expiration_date?->format('d/m/Y')),                
         ];
     }
 
