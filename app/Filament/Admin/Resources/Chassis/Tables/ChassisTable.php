@@ -160,7 +160,8 @@ final class ChassisTable
             ])
             ->toolbarActions([
                 ExportAction::make()
-                    ->exporter(ChassisExporter::class),
+                    ->exporter(ChassisExporter::class)
+                    ->modalWidth('2xl'),
                 BulkActionGroup::make([
                     ExportBulkAction::make()
                         ->exporter(ChassisExporter::class),

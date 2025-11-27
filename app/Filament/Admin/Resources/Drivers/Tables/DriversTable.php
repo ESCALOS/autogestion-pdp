@@ -121,7 +121,8 @@ final class DriversTable
             ])
             ->toolbarActions([
                 ExportAction::make()
-                    ->exporter(DriverExporter::class),
+                    ->exporter(DriverExporter::class)
+                    ->modalWidth('2xl'),
                 BulkActionGroup::make([
                     ExportBulkAction::make()
                         ->exporter(DriverExporter::class),

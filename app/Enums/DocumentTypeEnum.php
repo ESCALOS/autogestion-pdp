@@ -81,6 +81,8 @@ enum DocumentTypeEnum: string implements HasColor, HasIcon, HasLabel
             self::CURSO_PBIP => 3,
             self::CURSO_SEGURIDAD_PORTUARIA => 3,
             self::CURSO_MERCANCIAS => 2,
+            self::DECLARACION_JURADA => 1,
+            self::INDUCCION_SEGURIDAD => 1,
             default => null,
         };
     }
@@ -94,6 +96,8 @@ enum DocumentTypeEnum: string implements HasColor, HasIcon, HasLabel
             self::CURSO_PBIP,
             self::CURSO_SEGURIDAD_PORTUARIA,
             self::CURSO_MERCANCIAS,
+            self::DECLARACION_JURADA,
+            self::INDUCCION_SEGURIDAD,
         ]);
     }
 }

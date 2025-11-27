@@ -42,7 +42,7 @@ class TruckForm
                     ->label('Tiene Bono')
                     ->required(),
                 TextInput::make('tare')
-                    ->label('Tara (kg)')
+                    ->label('Tara (TN)')
                     ->numeric(),
             ]);
     }

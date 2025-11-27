@@ -63,11 +63,13 @@ final class CreateDriver extends Component implements HasSchemas
                                 ->label('Número de Documento')
                                 ->required()
                                 ->maxLength(20)
+                                ->regex('/^\S+$/')
                                 ->unique('drivers', 'document_number', modifyRuleUsing: function ($rule) {
                                     return $rule->where('company_id', Auth::user()->company_id);
                                 })
                                 ->validationMessages([
                                     'unique' => 'Ya existe un conductor con este número de documento para tu empresa.',
+                                    'regex' => 'El número de documento no puede contener espacios.',
                                 ]),
 
                             TextInput::make('name')
@@ -82,11 +84,13 @@ final class CreateDriver extends Component implements HasSchemas
 
                             TextInput::make('license_number')
                                 ->label('Número de Licencia')
+                                ->regex('/^\S+$/')
                                 ->unique('drivers', 'license_number', modifyRuleUsing: function ($rule) {
                                     return $rule->where('company_id', Auth::user()->company_id);
                                 })
                                 ->validationMessages([
                                     'unique' => 'Ya existe un conductor con este número de licencia en tu empresa.',
+                                    'regex' => 'El número de licencia no puede contener espacios.',
                                 ])
                                 ->required()
                                 ->maxLength(20),
@@ -165,11 +169,12 @@ final class CreateDriver extends Component implements HasSchemas
                                                 })
                                                 ->columnSpan(2),
 
-                                            DatePicker::make('documents.induccion_seguridad.expiration_date')
-                                                ->label('Fecha de Vencimiento')
+                                            DatePicker::make('documents.induccion_seguridad.course_date')
+                                                ->label('Fecha de la Inducción')
+                                                ->helperText('Vigencia: 1 año')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(today())
+                                                ->maxDate(now())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
@@ -190,11 +195,12 @@ final class CreateDriver extends Component implements HasSchemas
                                                 })
                                                 ->columnSpan(2),
 
-                                            DatePicker::make('documents.declaracion_jurada.expiration_date')
-                                                ->label('Fecha de Vencimiento')
+                                            DatePicker::make('documents.declaracion_jurada.course_date')
+                                                ->label('Fecha de la Declaración Jurada')
+                                                ->helperText('Vigencia: 1 año')
                                                 ->required()
                                                 ->native(false)
-                                                ->minDate(today())
+                                                ->maxDate(now())
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
