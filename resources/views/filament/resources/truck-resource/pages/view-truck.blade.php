@@ -24,7 +24,7 @@
 
                 <div class="info-item">
                     <span class="info-label">Tara:</span>
-                    <span class="info-value">{{ $record->tare ? number_format($record->tare, 2) : 'N/A' }}</span>
+                    <span class="info-value">{{ $record->tare ? number_format($record->tare, 3) : 'N/A' }}</span>
                 </div>
 
                 <div class="info-item">

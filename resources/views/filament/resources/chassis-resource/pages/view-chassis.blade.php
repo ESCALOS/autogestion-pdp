@@ -46,14 +46,14 @@
                 @if ($record->tare)
                     <div class="info-item">
                         <span class="info-label">Tara:</span>
-                        <span class="info-value">{{ number_format($record->tare, 2) }} ton</span>
+                        <span class="info-value">{{ number_format($record->tare, 3) }} ton</span>
                     </div>
                 @endif
 
                 @if ($record->safe_weight)
                     <div class="info-item">
                         <span class="info-label">Peso Seguro:</span>
-                        <span class="info-value">{{ number_format($record->safe_weight, 2) }} ton</span>
+                        <span class="info-value">{{ number_format($record->safe_weight, 3) }} ton</span>
                     </div>
                 @endif
 
