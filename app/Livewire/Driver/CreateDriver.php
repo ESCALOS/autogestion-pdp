@@ -28,8 +28,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
-use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 final class CreateDriver extends Component implements HasSchemas
 {
@@ -116,7 +116,8 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'DNI.'.$extension;
+
+                                                    return DocumentTypeEnum::DNI->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -141,7 +142,8 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'LICENCIA.'.$extension;
+
+                                                    return DocumentTypeEnum::LICENCIA_DE_CONDUCIR->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -165,7 +167,8 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'INDUCCION_SEGURIDAD.'.$extension;
+
+                                                    return DocumentTypeEnum::INDUCCION_SEGURIDAD->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -191,7 +194,8 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'DECLARACION_JURADA_ANTECEDENTES.'.$extension;
+
+                                                    return DocumentTypeEnum::DECLARACION_JURADA->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -226,7 +230,8 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'CURSO_PBIP.'.$extension;
+
+                                                    return DocumentTypeEnum::CURSO_PBIP->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -252,7 +257,8 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'CURSO_SEGURIDAD_PORTUARIA.'.$extension;
+
+                                                    return DocumentTypeEnum::CURSO_SEGURIDAD_PORTUARIA->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -277,13 +283,15 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'CURSO_MERCANCIAS_PELIGROSAS.'.$extension;
+
+                                                    return DocumentTypeEnum::CURSO_MERCANCIAS->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
                                             DatePicker::make('documents.curso_mercancias.course_date')
                                                 ->label('Fecha del Curso')
-                                                ->helperText('Vigencia: 2 años')
+                                                ->helperText('Vigencia: 2 años. Requerido si sube el certificado.')
+                                                ->required(fn (callable $get): bool => ! empty($get('documents.curso_mercancias.file')))
                                                 ->native(false)
                                                 ->maxDate(now())
                                                 ->closeOnDateSelection()
@@ -311,7 +319,8 @@ final class CreateDriver extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'SCTR.'.$extension;
+
+                                                    return DocumentTypeEnum::SCTR->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 

@@ -98,9 +98,8 @@ final class AppealForm extends Component implements HasSchemas
                     ->directory(fn () => "EMPRESAS/{$this->truck->company->ruc}/TRUCKS/{$this->truck->license_plate}")
                     ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) use ($document): string {
                         $extension = $file->getClientOriginalExtension();
-                        $typeName = mb_strtoupper(str_replace(' ', '_', $document->type->getLabel()));
 
-                        return "{$typeName}.{$extension}";
+                        return $document->type->getFileName().'.'.$extension;
                     })
                     ->helperText($isRequired ? 'Formatos permitidos: PDF, JPG, JPEG, PNG (máximo 5MB)' : 'Opcional. Formatos permitidos: PDF, JPG, JPEG, PNG (máximo 5MB)'),
             ];

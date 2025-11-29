@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
@@ -99,5 +101,14 @@ enum DocumentTypeEnum: string implements HasColor, HasIcon, HasLabel
             self::DECLARACION_JURADA,
             self::INDUCCION_SEGURIDAD,
         ]);
+    }
+
+    /**
+     * Get the standardized file name for storage.
+     * This ensures consistency between create forms and appeal forms.
+     */
+    public function getFileName(): string
+    {
+        return mb_strtoupper(str_replace(' ', '_', $this->getLabel()));
     }
 }

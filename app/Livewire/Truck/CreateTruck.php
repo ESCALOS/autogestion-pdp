@@ -84,22 +84,17 @@ final class CreateTruck extends Component implements HasSchemas
                                 ->native(false),
 
                             TextInput::make('tare')
-                                ->label('Tara (Toneladas)')
+                                ->label('Peso Neto (Toneladas)')
                                 ->numeric()
                                 ->required()
-                                ->step(0.01)
+                                ->step(0.001)
                                 ->minValue(0)
-                                ->maxValue(99999.99)
+                                ->maxValue(99999.999)
                                 ->suffix('Ton'),
 
                             Checkbox::make('is_internal')
                                 ->label('¿Es interno?')
                                 ->default(false),
-
-                            Checkbox::make('has_bonus')
-                                ->label('¿Tiene bonificación?')
-                                ->default(false)
-                                ->reactive(),
                         ])
                         ->columns(2),
 
@@ -122,7 +117,8 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'TARJETA_PROPIEDAD.'.$extension;
+
+                                                    return DocumentTypeEnum::TARJETA_PROPIEDAD->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(3),
 
@@ -145,7 +141,8 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'SOAT.'.$extension;
+
+                                                    return DocumentTypeEnum::SOAT->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -169,7 +166,8 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'HABILITACION_MTC.'.$extension;
+
+                                                    return DocumentTypeEnum::HABILITACION_MTC->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -193,7 +191,8 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'POLIZA_SEGURO.'.$extension;
+
+                                                    return DocumentTypeEnum::POLIZA_SEGURO->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -217,7 +216,8 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'REVISION_TECNICA.'.$extension;
+
+                                                    return DocumentTypeEnum::REVISION_TECNICA->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -251,10 +251,11 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'BONIFICACION.'.$extension;
+
+                                                    return DocumentTypeEnum::BONIFICACION->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2)
-                                                ->required(fn ($get) => (bool) $get('has_bonus')),
+                                                ->live(),
 
                                             DatePicker::make('documents.bonificacion.expiration_date')
                                                 ->label('Fecha de Vencimiento')
@@ -262,7 +263,8 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->minDate(today())
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1)
-                                                ->required(fn ($get) => (bool) $get('has_bonus')),
+                                                ->helperText('Requerido si sube el documento de bonificación.')
+                                                ->required(fn (callable $get): bool => ! empty($get('documents.bonificacion.file'))),
                                         ]),
                                 ]),
                         ]),
@@ -280,6 +282,9 @@ final class CreateTruck extends Component implements HasSchemas
             $data = $this->form->getState();
 
             DB::transaction(function () use ($data) {
+                // Determinar has_bonus basándose en si se subió el documento
+                $hasBonus = ! empty($data['documents']['bonificacion']['file']);
+
                 // Crear el camión
                 $truck = Truck::create([
                     'company_id' => Auth::user()->company_id,
@@ -288,7 +293,7 @@ final class CreateTruck extends Component implements HasSchemas
                     'truck_type' => $data['truck_type'],
                     'tare' => $data['tare'] ?? null,
                     'is_internal' => $data['is_internal'] ?? false,
-                    'has_bonus' => $data['has_bonus'] ?? false,
+                    'has_bonus' => $hasBonus,
                     'status' => EntityStatusEnum::PENDING_APPROVAL,
                 ]);
 

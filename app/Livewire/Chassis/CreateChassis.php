@@ -82,21 +82,21 @@ final class CreateChassis extends Component implements HasSchemas
                                 ->maxValue(10),
 
                             TextInput::make('tare')
-                                ->label('Tara (Toneladas)')
+                                ->label('Peso Neto (Toneladas)')
                                 ->numeric()
                                 ->required()
-                                ->step(0.01)
+                                ->step(0.001)
                                 ->minValue(0)
-                                ->maxValue(99999.99)
+                                ->maxValue(99999.999)
                                 ->suffix('Ton'),
 
                             TextInput::make('safe_weight')
-                                ->label('Peso Seguro (Toneladas)')
+                                ->label('Peso Bruto (Toneladas)')
                                 ->numeric()
                                 ->required()
-                                ->step(0.01)
+                                ->step(0.001)
                                 ->minValue(0)
-                                ->maxValue(99999.99)
+                                ->maxValue(99999.999)
                                 ->suffix('Ton'),
 
                             TextInput::make('length')
@@ -149,11 +149,6 @@ final class CreateChassis extends Component implements HasSchemas
                             Checkbox::make('accepts_40ft')
                                 ->label('¿Acepta contenedores de 40ft?')
                                 ->default(false),
-
-                            Checkbox::make('has_bonus')
-                                ->label('¿Tiene bonificación?')
-                                ->default(false)
-                                ->reactive(),
                         ])
                         ->columns(2),
 
@@ -177,7 +172,8 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'TARJETA_PROPIEDAD.'.$extension;
+
+                                                    return DocumentTypeEnum::CHASSIS_TARJETA_PROPIEDAD->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(3),
 
@@ -200,19 +196,20 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'HABILITACION_MTC.'.$extension;
+
+                                                    return DocumentTypeEnum::CHASSIS_HABILITACION_MTC->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
-                                             DatePicker::make('documents.chassis_habilitacion_mtc.expiration_date')
-                                                 ->label('Fecha de Vencimiento')
-                                                 ->native(false)
-                                                 ->required()
-                                                 ->minDate(today())
-                                                 ->closeOnDateSelection()
-                                                 ->displayFormat('d/m/Y')
-                                                 ->columnSpan(1),
-                                    ]),
+                                            DatePicker::make('documents.chassis_habilitacion_mtc.expiration_date')
+                                                ->label('Fecha de Vencimiento')
+                                                ->native(false)
+                                                ->required()
+                                                ->minDate(today())
+                                                ->closeOnDateSelection()
+                                                ->displayFormat('d/m/Y')
+                                                ->columnSpan(1),
+                                        ]),
 
                                     // Revisión Técnica
                                     Grid::make(3)
@@ -225,7 +222,8 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'REVISION_TECNICA.'.$extension;
+
+                                                    return DocumentTypeEnum::CHASSIS_REVISION_TECNICA->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2),
 
@@ -259,10 +257,11 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
-                                                    return 'BONIFICACION.'.$extension;
+
+                                                    return DocumentTypeEnum::CHASSIS_BONIFICACION->getFileName().'.'.$extension;
                                                 })
                                                 ->columnSpan(2)
-                                                ->required(fn ($get) => (bool) $get('has_bonus')),
+                                                ->live(),
 
                                             DatePicker::make('documents.chassis_bonificacion.expiration_date')
                                                 ->label('Fecha de Vencimiento')
@@ -271,7 +270,8 @@ final class CreateChassis extends Component implements HasSchemas
                                                 ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1)
-                                                ->required(fn ($get) => (bool) $get('has_bonus')),
+                                                ->helperText('Requerido si sube el documento de bonificación.')
+                                                ->required(fn (callable $get): bool => ! empty($get('documents.chassis_bonificacion.file'))),
                                         ]),
                                 ]),
                         ]),
@@ -289,6 +289,9 @@ final class CreateChassis extends Component implements HasSchemas
             $data = $this->form->getState();
 
             DB::transaction(function () use ($data) {
+                // Determinar has_bonus basándose en si se subió el documento
+                $hasBonus = ! empty($data['documents']['chassis_bonificacion']['file']);
+
                 // Crear el chassis
                 $chassis = Chassis::create([
                     'company_id' => Auth::user()->company_id,
@@ -304,7 +307,7 @@ final class CreateChassis extends Component implements HasSchemas
                     'is_insulated' => $data['is_insulated'] ?? false,
                     'accepts_20ft' => $data['accepts_20ft'] ?? false,
                     'accepts_40ft' => $data['accepts_40ft'] ?? false,
-                    'has_bonus' => $data['has_bonus'] ?? false,
+                    'has_bonus' => $hasBonus,
                     'status' => EntityStatusEnum::PENDING_APPROVAL,
                 ]);
 

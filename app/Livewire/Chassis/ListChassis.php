@@ -49,11 +49,11 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
                     ->sortable(),
                 TextColumn::make('tare')
                     ->label('Tara (Ton)')
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric(decimalPlaces: 3)
                     ->sortable(),
                 TextColumn::make('safe_weight')
                     ->label('Peso Seguro (Ton)')
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric(decimalPlaces: 3)
                     ->sortable(),
                 TextColumn::make('length')
                     ->label('Largo (m)')

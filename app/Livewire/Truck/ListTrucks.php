@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Truck;
 
-use App\Models\Truck;
 use App\Enums\TruckTypeEnum;
+use App\Models\Truck;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -49,7 +49,7 @@ final class ListTrucks extends Component implements HasActions, HasSchemas, HasT
                     ->searchable(),
                 TextColumn::make('tare')
                     ->label('Tara (Ton)')
-                    ->numeric(decimalPlaces: 2)
+                    ->numeric(decimalPlaces: 3)
                     ->sortable(),
                 TextColumn::make('is_internal')
                     ->label('Interno')
