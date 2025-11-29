@@ -48,15 +48,17 @@ final class AppealForm extends Component implements HasSchemas
             abort(404, 'El enlace de apelación es inválido o ha expirado.');
         }
 
-        $rejectedDocuments = $this->driver->documents()
+        $documentsToAppeal = $this->driver->documents()
             ->where(function ($query) {
                 $query->where('status', DocumentStatusEnum::REJECTED)
+                    ->orWhere('status', DocumentStatusEnum::NEEDS_UPDATE)
+                    ->orWhere('status', DocumentStatusEnum::EXPIRING_SOON)
                     ->orWhere('expiration_date', '<', now());
             })
             ->get();
 
-        if ($rejectedDocuments->isEmpty()) {
-            abort(404, 'No hay documentos rechazados o vencidos para apelar.');
+        if ($documentsToAppeal->isEmpty()) {
+            abort(404, 'No hay documentos rechazados, por vencer o vencidos para apelar.');
         }
 
         $this->form->fill();
@@ -64,25 +66,34 @@ final class AppealForm extends Component implements HasSchemas
 
     public function form(Schema $schema): Schema
     {
-        $rejectedDocuments = $this->driver->documents()
+        $documentsToUpdate = $this->driver->documents()
             ->where(function ($query) {
                 $query->where('status', DocumentStatusEnum::REJECTED)
+                    ->orWhere('status', DocumentStatusEnum::NEEDS_UPDATE)
+                    ->orWhere('status', DocumentStatusEnum::EXPIRING_SOON)
                     ->orWhere('expiration_date', '<', now());
             })
             ->get();
 
         $components = [];
 
-        foreach ($rejectedDocuments as $document) {
+        foreach ($documentsToUpdate as $document) {
             $isExpired = $document->expiration_date && $document->expiration_date < now();
-            $description = $isExpired
-                ? "Documento vencido el: {$document->expiration_date->format('d/m/Y')}"
-                : "Motivo de rechazo: {$document->rejection_reason}";
+            $isExpiringSoon = $document->status === DocumentStatusEnum::EXPIRING_SOON && ! $isExpired;
+            $isRequired = ! $isExpiringSoon; // Solo es obligatorio si NO está próximo a vencer
+
+            if ($isExpired) {
+                $description = "Documento vencido el: {$document->expiration_date->format('d/m/Y')}";
+            } elseif ($isExpiringSoon) {
+                $description = "Documento por vencer el: {$document->expiration_date->format('d/m/Y')} (opcional actualizar ahora)";
+            } else {
+                $description = "Motivo de rechazo: {$document->rejection_reason}";
+            }
 
             $formSchema = [
                 FileUpload::make("document_{$document->id}")
                     ->label('Cargar nuevo documento')
-                    ->required()
+                    ->required($isRequired)
                     ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'])
                     ->maxSize(5120)
                     ->directory(fn () => "EMPRESAS/{$this->driver->company->ruc}/DRIVERS/{$this->driver->document_number}")
@@ -92,7 +103,7 @@ final class AppealForm extends Component implements HasSchemas
 
                         return "{$typeName}.{$extension}";
                     })
-                    ->helperText('Formatos permitidos: PDF, JPG, JPEG, PNG (máximo 5MB)'),
+                    ->helperText($isRequired ? 'Formatos permitidos: PDF, JPG, JPEG, PNG (máximo 5MB)' : 'Opcional. Formatos permitidos: PDF, JPG, JPEG, PNG (máximo 5MB)'),
             ];
 
             // Agregar campo de fecha según el tipo de documento
@@ -101,8 +112,8 @@ final class AppealForm extends Component implements HasSchemas
                 $validityYears = $document->type->getValidityYears();
                 $formSchema[] = DatePicker::make("course_date_{$document->id}")
                     ->label('Fecha del Curso')
-                    ->helperText("Vigencia: {$validityYears} años. La fecha de vencimiento se calculará automáticamente.")
-                    ->required()
+                    ->helperText($isRequired ? "Vigencia: {$validityYears} años. La fecha de vencimiento se calculará automáticamente." : "Requerido si sube un nuevo documento. Vigencia: {$validityYears} años.")
+                    ->required(fn (callable $get): bool => ! empty($get("document_{$document->id}")))
                     ->native(false)
                     ->maxDate(now())
                     ->closeOnDateSelection()
@@ -111,11 +122,11 @@ final class AppealForm extends Component implements HasSchemas
                 // Para otros documentos: mostrar fecha de vencimiento
                 $formSchema[] = DatePicker::make("expiration_date_{$document->id}")
                     ->label('Nueva fecha de vencimiento')
-                    ->required()
+                    ->required(fn (callable $get): bool => ! empty($get("document_{$document->id}")))
                     ->native(false)
                     ->minDate(now()->addDay())
                     ->closeOnDateSelection()
-                    ->helperText('Seleccione la nueva fecha de vencimiento del documento');
+                    ->helperText('Requerido si sube un nuevo documento');
             }
 
             $components[] = Section::make($document->type->getLabel())
@@ -138,14 +149,16 @@ final class AppealForm extends Component implements HasSchemas
         try {
             DB::beginTransaction();
 
-            $rejectedDocuments = $this->driver->documents()
+            $documentsToUpdate = $this->driver->documents()
                 ->where(function ($query) {
                     $query->where('status', DocumentStatusEnum::REJECTED)
+                        ->orWhere('status', DocumentStatusEnum::NEEDS_UPDATE)
+                        ->orWhere('status', DocumentStatusEnum::EXPIRING_SOON)
                         ->orWhere('expiration_date', '<', now());
                 })
                 ->get();
 
-            foreach ($rejectedDocuments as $document) {
+            foreach ($documentsToUpdate as $document) {
                 $fieldName = "document_{$document->id}";
 
                 if (isset($data[$fieldName]) && ! empty($data[$fieldName])) {
