@@ -27,6 +27,8 @@ class DriverResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Gestión de Transportes';
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $modelLabel = 'conductor';
 
     protected static ?string $pluralLabel = 'conductores';

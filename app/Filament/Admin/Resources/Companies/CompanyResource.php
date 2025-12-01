@@ -27,6 +27,8 @@ class CompanyResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Gestión de Transportes';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $modelLabel = 'Empresa';
 
     public static function form(Schema $schema): Schema
