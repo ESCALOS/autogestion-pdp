@@ -19,6 +19,7 @@ RUN apt install -y \
     unzip \
     git \
     supervisor \
+    cron \
     ca-certificates \
     libpq-dev \
     libzip-dev \
@@ -85,6 +86,17 @@ RUN composer install --optimize-autoloader --no-dev
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage/app/private/filament_exports
+
+# -----------------------------------------
+# 8.1 Instalar Cron Job para Schedule
+# -----------------------------------------
+
+# Crear cronjob para el schedule
+RUN echo "* * * * * www-data /usr/bin/php /var/www/html/artisan schedule:run >> /dev/null 2>&1" \
+    > /etc/cron.d/laravel
+
+# Permisos correctos y registrar crontab
+RUN chmod 0644 /etc/cron.d/laravel && crontab /etc/cron.d/laravel
 
 # -----------------------------------------
 # 9. Copiar supervisor config
