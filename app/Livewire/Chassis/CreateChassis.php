@@ -82,49 +82,59 @@ final class CreateChassis extends Component implements HasSchemas
                                 ->maxValue(10),
 
                             TextInput::make('tare')
-                                ->label('Peso Neto (Toneladas)')
+                                ->label('Peso Neto')
                                 ->numeric()
                                 ->required()
                                 ->step(0.001)
                                 ->minValue(0)
-                                ->maxValue(99999.999)
-                                ->suffix('Ton'),
+                                ->maxValue(99.999)
+                                ->suffix('Toneladas')
+                                ->placeholder('Ej: 12.500')
+                                ->helperText('Ingrese el peso en TONELADAS (máx. 99.999)'),
 
                             TextInput::make('safe_weight')
-                                ->label('Peso Bruto (Toneladas)')
+                                ->label('Peso Bruto')
                                 ->numeric()
                                 ->required()
                                 ->step(0.001)
                                 ->minValue(0)
-                                ->maxValue(99999.999)
-                                ->suffix('Ton'),
+                                ->maxValue(99.999)
+                                ->suffix('Toneladas')
+                                ->placeholder('Ej: 35.000')
+                                ->helperText('Ingrese el peso en TONELADAS (máx. 99.999)'),
 
                             TextInput::make('length')
-                                ->label('Largo (Metros)')
+                                ->label('Largo')
                                 ->numeric()
                                 ->step(0.01)
                                 ->required()
                                 ->minValue(0)
                                 ->maxValue(99.99)
-                                ->suffix('m'),
+                                ->suffix('Metros')
+                                ->placeholder('Ej: 12.50')
+                                ->helperText('Ingrese la medida en METROS (máx. 99.99)'),
 
                             TextInput::make('width')
-                                ->label('Ancho (Metros)')
+                                ->label('Ancho')
                                 ->numeric()
                                 ->step(0.01)
                                 ->minValue(0)
                                 ->required()
                                 ->maxValue(99.99)
-                                ->suffix('m'),
+                                ->suffix('Metros')
+                                ->placeholder('Ej: 2.60')
+                                ->helperText('Ingrese la medida en METROS (máx. 99.99)'),
 
                             TextInput::make('height')
-                                ->label('Alto (Metros)')
+                                ->label('Alto')
                                 ->numeric()
                                 ->step(0.01)
                                 ->minValue(0)
                                 ->required()
                                 ->maxValue(99.99)
-                                ->suffix('m'),
+                                ->suffix('Metros')
+                                ->placeholder('Ej: 2.80')
+                                ->helperText('Ingrese la medida en METROS (máx. 99.99)'),
 
                             Select::make('material')
                                 ->label('Material')
@@ -360,11 +370,6 @@ final class CreateChassis extends Component implements HasSchemas
                     }
                 }
             });
-
-            Notification::make()
-                ->title('Chassis creado exitosamente')
-                ->success()
-                ->send();
 
             $this->js(<<<'JS'
                 Swal.fire({

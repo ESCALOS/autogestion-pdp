@@ -84,13 +84,15 @@ final class CreateTruck extends Component implements HasSchemas
                                 ->native(false),
 
                             TextInput::make('tare')
-                                ->label('Peso Neto (Toneladas)')
+                                ->label('Peso Neto')
                                 ->numeric()
                                 ->required()
                                 ->step(0.001)
                                 ->minValue(0)
-                                ->maxValue(99999.999)
-                                ->suffix('Ton'),
+                                ->maxValue(99.999)
+                                ->suffix('Toneladas')
+                                ->placeholder('Ej: 12.500')
+                                ->helperText('Ingrese el peso en TONELADAS (máx. 99.999)'),
 
                             Checkbox::make('is_internal')
                                 ->label('¿Es interno?')
@@ -151,6 +153,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->required()
                                                 ->native(false)
                                                 ->minDate(today())
+                                                ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
@@ -176,6 +179,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->native(false)
                                                 ->required()
                                                 ->minDate(today())
+                                                ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
@@ -201,6 +205,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->required()
                                                 ->native(false)
                                                 ->minDate(today())
+                                                ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
@@ -226,6 +231,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->required()
                                                 ->native(false)
                                                 ->minDate(today())
+                                                ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1),
                                         ]),
@@ -261,6 +267,7 @@ final class CreateTruck extends Component implements HasSchemas
                                                 ->label('Fecha de Vencimiento')
                                                 ->native(false)
                                                 ->minDate(today())
+                                                ->closeOnDateSelection()
                                                 ->displayFormat('d/m/Y')
                                                 ->columnSpan(1)
                                                 ->helperText('Requerido si sube el documento de bonificación.')
@@ -339,11 +346,6 @@ final class CreateTruck extends Component implements HasSchemas
                     }
                 }
             });
-
-            Notification::make()
-                ->title('Camión creado exitosamente')
-                ->success()
-                ->send();
 
             $this->js(<<<'JS'
                 Swal.fire({

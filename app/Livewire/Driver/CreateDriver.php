@@ -397,11 +397,6 @@ final class CreateDriver extends Component implements HasSchemas
                 }
             });
 
-            Notification::make()
-                ->title('Conductor creado exitosamente')
-                ->success()
-                ->send();
-
             $this->js(<<<'JS'
                 Swal.fire({
                     icon: 'success',
