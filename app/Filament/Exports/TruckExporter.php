@@ -42,6 +42,9 @@ final class TruckExporter extends Exporter
             ExportColumn::make('created_at')
                 ->label('Fecha de Creación')
                 ->state(fn ($record) => $record->created_at?->format('d/m/Y H:i')),
+            ExportColumn::make('updated_at')
+                ->label('Fecha de Actualización')
+                ->state(fn ($record) => $record->updated_at?->format('d/m/Y H:i')),
 
             // Truck Documents
             ExportColumn::make('soat')

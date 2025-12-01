@@ -31,8 +31,11 @@ final class CompanyExporter extends Exporter
                 ->label('Active')
                 ->state(fn ($record) => $record->is_active ? 'Yes' : 'No'),
             ExportColumn::make('created_at')
-                ->label('Creation Date')
+                ->label('Fecha de Creación')
                 ->state(fn ($record) => $record->created_at?->format('d/m/Y H:i')),
+            ExportColumn::make('updated_at')
+                ->label('Fecha de Actualización')
+                ->state(fn ($record) => $record->updated_at?->format('d/m/Y H:i')),
         ];
     }
 

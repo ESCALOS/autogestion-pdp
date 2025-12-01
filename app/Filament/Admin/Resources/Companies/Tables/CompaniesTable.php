@@ -113,10 +113,14 @@ final class CompaniesTable
             ])
             ->toolbarActions([
                 ExportAction::make()
-                    ->exporter(CompanyExporter::class),
+                    ->exporter(CompanyExporter::class)
+                    ->columnMapping(false)
+                    ->modal(false),
                 BulkActionGroup::make([
                     ExportBulkAction::make()
-                        ->exporter(CompanyExporter::class),
+                        ->exporter(CompanyExporter::class)
+                        ->columnMapping(false)
+                        ->modal(false),
                     DeleteBulkAction::make(),
                 ]),
             ])

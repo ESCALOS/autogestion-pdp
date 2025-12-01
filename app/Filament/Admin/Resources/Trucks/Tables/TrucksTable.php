@@ -117,10 +117,13 @@ final class TrucksTable
             ->toolbarActions([
                 ExportAction::make()
                     ->exporter(TruckExporter::class)
-                    ->modalWidth('2xl'),
+                    ->columnMapping(false)
+                    ->modal(false),
                 BulkActionGroup::make([
                     ExportBulkAction::make()
-                        ->exporter(TruckExporter::class),
+                        ->exporter(TruckExporter::class)
+                        ->columnMapping(false)
+                        ->modal(false),
                     DeleteBulkAction::make(),
                 ]),
             ])

@@ -122,10 +122,13 @@ final class DriversTable
             ->toolbarActions([
                 ExportAction::make()
                     ->exporter(DriverExporter::class)
-                    ->modalWidth('2xl'),
+                    ->columnMapping(false)
+                    ->modal(false),
                 BulkActionGroup::make([
                     ExportBulkAction::make()
-                        ->exporter(DriverExporter::class),
+                        ->exporter(DriverExporter::class)
+                        ->columnMapping(false)
+                        ->modal(false),
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
