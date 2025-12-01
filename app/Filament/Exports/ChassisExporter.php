@@ -66,8 +66,11 @@ final class ChassisExporter extends Exporter
                 ->label('Accepts 40ft')
                 ->state(fn ($record) => $record->accepts_40ft ? 'Yes' : 'No'),
             ExportColumn::make('created_at')
-                ->label('Creation Date')
+                ->label('Fecha de Creación')
                 ->state(fn ($record) => $record->created_at?->format('d/m/Y H:i')),
+            ExportColumn::make('updated_at')
+                ->label('Fecha de Actualización')
+                ->state(fn ($record) => $record->updated_at?->format('d/m/Y H:i')),
 
             // Chassis Documents
            ExportColumn::make('bonificacion')

@@ -27,6 +27,8 @@ class TruckResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Gestión de Transportes';
 
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $modelLabel = 'tracto';
 
     public static function form(Schema $schema): Schema

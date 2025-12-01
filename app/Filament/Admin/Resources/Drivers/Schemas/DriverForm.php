@@ -22,19 +22,25 @@ class DriverForm
                     ->searchable()
                     ->required(),
                 Select::make('document_type')
+                    ->label('Tipo de Documento')
                     ->required()
                     ->options(DriverDocumentTypeEnum::class),
                 TextInput::make('document_number')
+                    ->label('Número de Documento')
                     ->required(),
                 TextInput::make('name')
+                    ->label('Nombres')
                     ->required(),
                 TextInput::make('lastname')
+                    ->label('Apellidos')
+                    ->required(),
+                TextInput::make('license_number')
+                    ->label('Número de Licencia')
                     ->required(),
                 Select::make('status')
+                    ->label('Estado')
                     ->required()
                     ->options(EntityStatusEnum::class),
-                TextInput::make('license_number')
-                    ->required(),
             ]);
     }
 }
