@@ -230,7 +230,7 @@ final class CheckExpiringDocuments extends Command
             }
             unset($driver);
 
-            Mail::to($email)->send(new DriverDocumentsExpiringMail($company, $drivers, $days));
+            Mail::to($email)->queue(new DriverDocumentsExpiringMail($company, $drivers, $days));
 
             $this->info("Notificación de conductores enviada a {$email} para empresa {$company->business_name}");
             Log::info('Notificación de documentos de conductores próximos a vencer enviada', [

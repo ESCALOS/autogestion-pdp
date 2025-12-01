@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\User;
 use App\Policies\ActivityPolicy;
 use Filament\Livewire\Notifications;
 use Filament\Notifications\Notification;
@@ -40,5 +41,9 @@ final class AppServiceProvider extends ServiceProvider
                 ->danger()
                 ->send();
         };
+
+        Gate::define('viewPulse', function (User $user) {
+            return $user->hasRole('super_admin');
+        });
     }
 }
