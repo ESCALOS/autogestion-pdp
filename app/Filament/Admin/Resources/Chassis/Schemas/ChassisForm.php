@@ -7,6 +7,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use App\Models\Company;
 use App\Enums\EntityStatusEnum;
+use Dom\Text;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -24,48 +25,83 @@ class ChassisForm
                 TextInput::make('license_plate')
                     ->label('Placa')
                     ->required(),
-                Select::make('status')
-                    ->required()
-                    ->label('Estado')
-                    ->options(EntityStatusEnum::class),
                 Select::make('vehicle_type')
                     ->label('Tipo de Vehículo')
                     ->options(\App\Enums\VehicleTypeEnum::class)
                     ->searchable()
+                    ->required()
                     ->preload()
-                    ->native(false),
+                    ->native(false),                    
                 TextInput::make('axle_count')
                     ->label('Número de Ejes')
+                    ->required()
                     ->numeric(),
-                    TextInput::make('tare')
-                    ->label('Tara')
-                    ->numeric(),
-                    TextInput::make('safe_weight')
-                    ->label('Peso Seguro')
-                    ->numeric(),
-                    TextInput::make('height')
-                    ->label('Alto')
-                    ->numeric(),
-                    TextInput::make('length')
+                TextInput::make('tare')
+                    ->label('Peso Neto')
+                    ->numeric()
+                    ->required()
+                    ->step(0.001)
+                    ->minValue(0)
+                    ->maxValue(99.999)
+                    ->suffix('Toneladas'),             
+                TextInput::make('safe_weight')
+                    ->label('Peso Bruto')
+                    ->numeric()
+                    ->required()
+                    ->step(0.001)
+                    ->minValue(0)
+                    ->maxValue(99.999)
+                    ->suffix('Toneladas'),
+                TextInput::make('length')
                     ->label('Largo')
-                    ->numeric(),
-                    TextInput::make('width')
+                    ->numeric()
+                    ->step(0.01)
+                    ->required()
+                    ->minValue(0)
+                    ->maxValue(99.99)
+                    ->suffix('Metros'),
+                TextInput::make('width')
                     ->label('Ancho')
-                    ->numeric(),
-                    TextInput::make('material')
-                    ->label('Material'),
-                Toggle::make('is_insulated')
+                    ->numeric()
+                    ->step(0.01)
+                    ->minValue(0)
+                    ->required()
+                    ->maxValue(99.99)
+                    ->suffix('Metros'),
+                TextInput::make('height')
+                    ->label('Alto')
+                    ->numeric()
+                    ->step(0.01)
+                    ->minValue(0)
+                    ->required()
+                    ->maxValue(99.99)
+                    ->suffix('Metros'),
+                Select::make('material')
+                    ->label('Material')
+                    ->required()
+                    ->options([
+                        'Acero' => 'Acero',
+                        'Aluminio' => 'Aluminio',
+                        'Fibra de Vidrio' => 'Fibra de Vidrio',
+                        'Madera' => 'Madera',
+                        'Otro' => 'Otro',
+                    ]),
+                    Toggle::make('is_insulated')
                     ->label('¿Es Aislado?')
                     ->required(),
                     Toggle::make('accepts_20ft')
                     ->label('¿Acepta 20\'?')
                     ->required(),
-                Toggle::make('accepts_40ft')
+                    Toggle::make('accepts_40ft')
                     ->label('¿Acepta 40\'?')
                     ->required(),
-                Toggle::make('has_bonus')
+                    Toggle::make('has_bonus')
                     ->label('¿Tiene Bono?')
-                    ->required()
+                    ->required(),
+                    Select::make('status')
+                        ->required()
+                        ->label('Estado')
+                        ->options(EntityStatusEnum::class),
             ]);
     }
 }

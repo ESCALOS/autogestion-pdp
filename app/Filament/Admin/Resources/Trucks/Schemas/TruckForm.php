@@ -24,26 +24,36 @@ class TruckForm
                 TextInput::make('license_plate')
                     ->label('Placa')
                     ->required(),
-                Select::make('status')
-                    ->label('Estado')
-                    ->required()
-                    ->options(EntityStatusEnum::class),
-                TextInput::make('nationality'),
-                Toggle::make('is_internal')
-                    ->label('Interno')
-                    ->required(),
+                    Select::make('nationality')
+                    ->label('Nacionalidad')
+                    ->options([
+                        'Peruana' => 'Peruana',
+                        'Extranjera' => 'Extranjera',
+                    ]),
                 Select::make('truck_type')
                     ->label('Tipo de Camión')
                     ->options(\App\Enums\TruckTypeEnum::class)
                     ->searchable()
                     ->preload()
                     ->native(false),
+                TextInput::make('tare')
+                    ->label('Peso Neto')
+                    ->numeric()
+                    ->required()
+                    ->step(0.001)
+                    ->minValue(0)
+                    ->maxValue(99.999)
+                    ->suffix('Toneladas'),
+                Select::make('status')
+                    ->label('Estado')
+                    ->required()
+                    ->options(EntityStatusEnum::class),                                    
+                Toggle::make('is_internal')
+                    ->label('Interno')
+                    ->required(),
                 Toggle::make('has_bonus')
                     ->label('Tiene Bono')
                     ->required(),
-                TextInput::make('tare')
-                    ->label('Tara (TN)')
-                    ->numeric(),
             ]);
     }
 }
