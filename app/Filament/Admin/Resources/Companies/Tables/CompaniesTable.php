@@ -52,7 +52,7 @@ final class CompaniesTable
                 TextColumn::make('updated_at')
                     ->label('Actualizado')
                     ->dateTime('d/m/Y H:i')
-                    ->sortable()
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('type')
@@ -67,23 +67,81 @@ final class CompaniesTable
                                 'updated_at' => 'Fecha de Actualización',
                             ])
                             ->default('created_at')
-                            ->required(),
+                            ->required()
+                            ->columnSpanFull(),
                         DatePicker::make('date_from')
-                            ->label('Desde'),
+                            ->label('Fecha Desde')
+                            ->native(false)
+                            ->closeOnDateSelection()
+                            ->displayFormat('d/m/Y'),
+                        Select::make('time_from')
+                            ->label('Hora Desde')
+                            ->options(function () {
+                                $hours = [];
+                                for ($i = 0; $i < 24; $i++) {
+                                    for ($j = 0; $j < 60; $j += 15) {
+                                        $time = sprintf('%02d:%02d', $i, $j);
+                                        $hours[$time] = $time;
+                                    }
+                                }
+
+                                return $hours;
+                            })
+                            ->searchable()
+                            ->placeholder(' '),
                         DatePicker::make('date_until')
-                            ->label('Hasta'),
+                            ->label('Fecha Hasta')
+                            ->native(false)
+                            ->closeOnDateSelection()
+                            ->displayFormat('d/m/Y'),
+                        Select::make('time_until')
+                            ->label('Hora Hasta')
+                            ->options(function () {
+                                $hours = [];
+                                for ($i = 0; $i < 24; $i++) {
+                                    for ($j = 0; $j < 60; $j += 15) {
+                                        $time = sprintf('%02d:%02d', $i, $j);
+                                        $hours[$time] = $time;
+                                    }
+                                }
+
+                                return $hours;
+                            })
+                            ->searchable()
+                            ->placeholder(' '),
                     ])
+                    ->columns(2)
                     ->query(function (Builder $query, array $data): Builder {
                         $dateType = $data['date_type'] ?? 'created_at';
 
                         return $query
                             ->when(
                                 $data['date_from'] ?? null,
-                                fn (Builder $query, $date): Builder => $query->whereDate($dateType, '>=', $date),
+                                function (Builder $query, $date) use ($data, $dateType): Builder {
+                                    $datetime = \Carbon\Carbon::parse($date);
+                                    if (! empty($data['time_from'])) {
+                                        [$hour, $minute] = explode(':', $data['time_from']);
+                                        $datetime->setTime((int) $hour, (int) $minute, 0);
+                                    } else {
+                                        $datetime->startOfDay();
+                                    }
+
+                                    return $query->where($dateType, '>=', $datetime);
+                                },
                             )
                             ->when(
                                 $data['date_until'] ?? null,
-                                fn (Builder $query, $date): Builder => $query->whereDate($dateType, '<=', $date),
+                                function (Builder $query, $date) use ($data, $dateType): Builder {
+                                    $datetime = \Carbon\Carbon::parse($date);
+                                    if (! empty($data['time_until'])) {
+                                        [$hour, $minute] = explode(':', $data['time_until']);
+                                        $datetime->setTime((int) $hour, (int) $minute, 59);
+                                    } else {
+                                        $datetime->endOfDay();
+                                    }
+
+                                    return $query->where($dateType, '<=', $datetime);
+                                },
                             );
                     })
                     ->indicateUsing(function (array $data): array {
@@ -92,11 +150,19 @@ final class CompaniesTable
                         $dateLabel = $dateType === 'created_at' ? 'Creación' : 'Actualización';
 
                         if ($data['date_from'] ?? null) {
-                            $indicators[] = $dateLabel.' desde '.\Carbon\Carbon::parse($data['date_from'])->format('d/m/Y');
+                            $dateStr = \Carbon\Carbon::parse($data['date_from'])->format('d/m/Y');
+                            if (! empty($data['time_from'])) {
+                                $dateStr .= ' '.$data['time_from'];
+                            }
+                            $indicators[] = $dateLabel.' desde '.$dateStr;
                         }
 
                         if ($data['date_until'] ?? null) {
-                            $indicators[] = $dateLabel.' hasta '.\Carbon\Carbon::parse($data['date_until'])->format('d/m/Y');
+                            $dateStr = \Carbon\Carbon::parse($data['date_until'])->format('d/m/Y');
+                            if (! empty($data['time_until'])) {
+                                $dateStr .= ' '.$data['time_until'];
+                            }
+                            $indicators[] = $dateLabel.' hasta '.$dateStr;
                         }
 
                         return $indicators;
