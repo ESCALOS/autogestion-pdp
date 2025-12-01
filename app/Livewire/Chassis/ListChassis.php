@@ -4,10 +4,21 @@ declare(strict_types=1);
 
 namespace App\Livewire\Chassis;
 
+use App\Enums\DocumentStatusEnum;
+use App\Enums\DocumentTypeEnum;
+use App\Enums\EntityStatusEnum;
 use App\Enums\VehicleTypeEnum;
 use App\Models\Chassis;
+use App\Models\Document;
+use Exception;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Tables\Columns\TextColumn;
@@ -18,7 +29,9 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 final class ListChassis extends Component implements HasActions, HasSchemas, HasTable
 {
@@ -115,7 +128,7 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
             ->filters([
                 SelectFilter::make('status')
                     ->label('Estado')
-                    ->options(\App\Enums\EntityStatusEnum::class),
+                    ->options(EntityStatusEnum::class),
                 SelectFilter::make('vehicle_type')
                     ->label('Tipo de Vehículo')
                     ->options(VehicleTypeEnum::class),
@@ -141,7 +154,85 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
                     ->falseLabel('Sin Bonificación'),
             ])
             ->recordActions([
-                //
+                ActionGroup::make([
+                    Action::make('add_bonus')
+                        ->label('Agregar Bonificación')
+                        ->icon('heroicon-o-document-plus')
+                        ->color('success')
+                        ->visible(fn (Chassis $record): bool => in_array($record->status, [EntityStatusEnum::ACTIVE, EntityStatusEnum::PENDING_APPROVAL]) &&
+                            ! $record->documents()->where('type', DocumentTypeEnum::CHASSIS_BONIFICACION)->exists()
+                        )
+                        ->form([
+                            Grid::make(1)
+                                ->schema([
+                                    FileUpload::make('bonus_document')
+                                        ->label('Documento de Bonificación')
+                                        ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                        ->maxSize(5120)
+                                        ->required()
+                                        ->directory(fn (Chassis $record) => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$record->license_plate}")
+                                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
+                                            $extension = $file->getClientOriginalExtension();
+
+                                            return DocumentTypeEnum::CHASSIS_BONIFICACION->getFileName().'.'.$extension;
+                                        })
+                                        ->helperText('Sube el documento de bonificación en formato PDF o imagen (máx. 5MB)'),
+
+                                    DatePicker::make('bonus_expiration_date')
+                                        ->label('Fecha de Vencimiento')
+                                        ->native(false)
+                                        ->required()
+                                        ->minDate(today())
+                                        ->closeOnDateSelection()
+                                        ->displayFormat('d/m/Y')
+                                        ->helperText('Selecciona la fecha de vencimiento del documento'),
+                                ]),
+                        ])
+                        ->modalHeading('Agregar Documento de Bonificación')
+                        ->modalDescription('Completa los datos del documento de bonificación para este chassis.')
+                        ->modalSubmitActionLabel('Agregar Bonificación')
+                        ->action(function (Chassis $record, array $data): void {
+                            try {
+                                DB::transaction(function () use ($record, $data) {
+                                    // Crear el documento de bonificación
+                                    Document::create([
+                                        'documentable_type' => Chassis::class,
+                                        'documentable_id' => $record->id,
+                                        'type' => DocumentTypeEnum::CHASSIS_BONIFICACION,
+                                        'path' => $data['bonus_document'],
+                                        'submitted_date' => now(),
+                                        'expiration_date' => $data['bonus_expiration_date'],
+                                        'status' => DocumentStatusEnum::PENDING,
+                                    ]);
+
+                                    // Actualizar el chassis
+                                    $record->update([
+                                        'has_bonus' => true,
+                                        'status' => EntityStatusEnum::PENDING_APPROVAL,
+                                    ]);
+                                });
+
+                                Notification::make()
+                                    ->title('Bonificación agregada exitosamente')
+                                    ->body('El documento de bonificación ha sido agregado y el chassis está pendiente de aprobación.')
+                                    ->success()
+                                    ->send();
+
+                                $this->dispatch('$refresh');
+                            } catch (Exception $e) {
+                                Notification::make()
+                                    ->title('Error al agregar la bonificación')
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
+                        }),
+                ])
+                    ->label('Acciones')
+                    ->icon('heroicon-o-ellipsis-vertical')
+                    ->size('sm')
+                    ->color('gray')
+                    ->button(),
             ])
             ->toolbarActions([
                 //
