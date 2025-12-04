@@ -34,8 +34,13 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
                     ->sortable(),
                 TextColumn::make('full_name')
                     ->label('Nombre Completo')
-                    ->sortable()
-                    ->searchable(),
+                    ->searchable(query: function ($query, string $search): void {
+                        $query->where(function ($query) use ($search): void {
+                            $query->whereRaw('lower(name) like ?', ['%' . strtolower($search) . '%'])
+                                ->orWhereRaw('lower(lastname) like ?', ['%' . strtolower($search) . '%'])
+                                ->orWhereRaw("lower(concat(name, ' ', lastname)) like ?", ['%' . strtolower($search) . '%']);
+                        });
+                    }),
                 TextColumn::make('document_number')
                     ->label('Número de Documento')
                     ->sortable()

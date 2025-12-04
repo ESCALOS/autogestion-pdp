@@ -39,15 +39,15 @@ final class DriversTable
                 TextColumn::make('document_number')
                     ->label('Número de Documento')
                     ->searchable(),
-                TextColumn::make('name')
-                    ->label('Nombre')
-                    ->searchable(),
-                TextColumn::make('lastname')
-                    ->label('Apellido')
-                    ->searchable(),
-                // TextColumn::make('license_number')
-                //     ->label(__('License Number'))
-                //     ->searchable(),
+                TextColumn::make('full_name')
+                    ->label('Nombre Completo')
+                    ->searchable(query: function ($query, string $search): void {
+                        $query->where(function ($query) use ($search): void {
+                            $query->whereRaw('lower(name) like ?', ['%' . strtolower($search) . '%'])
+                                ->orWhereRaw('lower(lastname) like ?', ['%' . strtolower($search) . '%'])
+                                ->orWhereRaw("lower(concat(name, ' ', lastname)) like ?", ['%' . strtolower($search) . '%']);
+                        });
+                    }),
                 TextColumn::make('documents_count')
                     ->label('Documentos')
                     ->counts('documents')

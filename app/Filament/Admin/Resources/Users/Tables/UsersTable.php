@@ -27,10 +27,15 @@ final class UsersTable
                         ->sortable()
                         ->searchable(),
                     Tables\Columns\Layout\Stack::make([
-                        Tables\Columns\TextColumn::make('name')
-                            ->copyable()
-                            ->sortable()
-                            ->searchable(),
+                        Tables\Columns\TextColumn::make('full_name')
+                            ->label('Nombre Completo')
+                            ->searchable(query: function ($query, string $search): void {
+                                $query->where(function ($query) use ($search): void {
+                                    $query->whereRaw('lower(name) like ?', ['%' . strtolower($search) . '%'])
+                                        ->orWhereRaw('lower(lastname) like ?', ['%' . strtolower($search) . '%'])
+                                        ->orWhereRaw("lower(concat(name, ' ', lastname)) like ?", ['%' . strtolower($search) . '%']);
+                                });
+                            }),
                         Tables\Columns\TextColumn::make('email')
                             ->copyable()
                             ->sortable()
