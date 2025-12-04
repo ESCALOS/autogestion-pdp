@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 
-LABEL maintainer="TuNombre"
+LABEL maintainer="Carlos Escate"
 
 ENV DEBIAN_FRONTEND=noninteractive
 

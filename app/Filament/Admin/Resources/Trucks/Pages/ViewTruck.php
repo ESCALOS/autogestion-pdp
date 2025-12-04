@@ -259,6 +259,10 @@ class ViewTruck extends Page
                 ->label('Volver')
                 ->url(static::getResource()::getUrl('index'))
                 ->color('gray'),
+            Action::make('edit')
+                ->label('Editar Camión')
+                ->url($this->record->id . '/edit')
+                ->color('warning'),
         ];
     }
 }

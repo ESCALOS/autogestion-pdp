@@ -230,6 +230,10 @@ final class ViewCompany extends Page
                 ->label('Volver')
                 ->url(self::getResource()::getUrl('index'))
                 ->color('gray'),
+            Action::make('edit')
+                ->label('Editar Empresa')
+                ->url($this->record->id . '/edit')
+                ->color('warning'),
         ];
     }
 }
