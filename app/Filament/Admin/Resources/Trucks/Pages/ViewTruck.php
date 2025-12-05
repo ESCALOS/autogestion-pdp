@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Trucks\Pages;
 
 use App\Enums\EntityStatusEnum;
@@ -7,30 +9,29 @@ use App\Filament\Admin\Resources\Trucks\TruckResource;
 use App\Mail\TruckApprovedMail;
 use App\Mail\TruckRejectedMail;
 use App\Models\Truck;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
-use Illuminate\Support\Facades\{Auth, DB, Mail, Log};
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
-class ViewTruck extends Page
+final class ViewTruck extends Page
 {
-    protected static string $resource = TruckResource::class;
-
-    protected string $view = 'filament.resources.truck-resource.pages.view-truck';
-
     public Truck $record;
+
     public array $documentStatuses = [];
+
     public array $rejectionReasons = [];
 
     public ?int $selectedDocumentId = null;
 
-    protected function getViewData(): array
-    {
-        return [
-            'record' => $this->record->load('documents'),
-        ];
-    }
+    protected static string $resource = TruckResource::class;
+
+    protected string $view = 'filament.resources.truck-resource.pages.view-truck';
 
     public function mount(int|string $record): void
     {
@@ -66,35 +67,10 @@ class ViewTruck extends Page
         return null;
     }
 
-
-    public function approveDocument(int $documentId): void
-    {
-        $this->documentStatuses[$documentId] = 2; // approved
-        $this->rejectionReasons[$documentId] = '';
-    }
-
-    public function rejectDocument(int $documentId): void
-    {
-        $this->documentStatuses[$documentId] = 3; // rejected
-    }
-
-    public function resetDocument(int $documentId): void
-    {
-        $this->documentStatuses[$documentId] = 1; // pending
-        $this->rejectionReasons[$documentId] = '';
-    }
-
     public function canApproveAll(): bool
     {
-        // Verificar que tenga al menos un documento
-        if ($this->record->documents->isEmpty()) {
-            return false;
-        }
-
-        // Todos los documentos deben estar aprobados
-        foreach ($this->record->documents as $document) {
-            $status = $this->documentStatuses[$document->id] ?? 1;
-            if ($status !== 2) { // 2 = approved
+        foreach ($this->documentStatuses as $status) {
+            if ($status !== 2) {
                 return false;
             }
         }
@@ -159,7 +135,7 @@ class ViewTruck extends Page
                     if ($this->documentStatuses[$document->id] === 3) { // 3 = rejected
                         $rejectedDocuments[] = [
                             'type' => $document->type->getLabel(),
-                            'reason' => $this->rejectionReasons[$document->id] ?? 'No especificado'
+                            'reason' => $this->rejectionReasons[$document->id] ?? 'No especificado',
                         ];
                     }
                 }
@@ -167,15 +143,15 @@ class ViewTruck extends Page
                 // Enviar correo de rechazo con enlace de apelación
                 $representativeEmail = $this->record->company->representative->email ?? null;
 
-                if ($representativeEmail && !empty($rejectedDocuments)) {
+                if ($representativeEmail && ! empty($rejectedDocuments)) {
                     try {
                         $appealUrl = route('truck.appeal.show', $appealToken);
                         Mail::to($representativeEmail)
                             ->queue(new TruckRejectedMail($this->record, $rejectedDocuments, $appealUrl));
 
-                        Log::info('Correo de rechazo enviado a: ' . $representativeEmail);
-                    } catch (\Exception $e) {
-                        Log::error('Error al enviar correo de rechazo: ' . $e->getMessage());
+                        Log::info('Correo de rechazo enviado a: '.$representativeEmail);
+                    } catch (Exception $e) {
+                        Log::error('Error al enviar correo de rechazo: '.$e->getMessage());
 
                         Notification::make()
                             ->title('Advertencia')
@@ -184,7 +160,7 @@ class ViewTruck extends Page
                             ->send();
                     }
                 } else {
-                    Log::warning('No se envió correo: email=' . ($representativeEmail ?? 'NULL') . ', documentos rechazados=' . count($rejectedDocuments));
+                    Log::warning('No se envió correo: email='.($representativeEmail ?? 'NULL').', documentos rechazados='.count($rejectedDocuments));
                 }
 
                 Notification::make()
@@ -204,9 +180,9 @@ class ViewTruck extends Page
                         Mail::to($representativeEmail)
                             ->queue(new TruckApprovedMail($this->record));
 
-                        Log::info('Correo de aprobación enviado a: ' . $representativeEmail);
-                    } catch (\Exception $e) {
-                        Log::error('Error al enviar correo de aprobación: ' . $e->getMessage());
+                        Log::info('Correo de aprobación enviado a: '.$representativeEmail);
+                    } catch (Exception $e) {
+                        Log::error('Error al enviar correo de aprobación: '.$e->getMessage());
                     }
                 } else {
                     Log::warning('No se envió correo de aprobación: la empresa no tiene representante con email registrado');
@@ -230,26 +206,34 @@ class ViewTruck extends Page
 
             DB::commit();
 
-            if (!$hasChanges) {
+            if (! $hasChanges) {
                 Notification::make()
                     ->title('Sin cambios')
                     ->info()
                     ->body('No se han realizado cambios en la validación.')
                     ->send();
+
                 return;
             }
 
-            $this->redirect(static::getResource()::getUrl('index'));
+            $this->redirect(self::getResource()::getUrl('index'));
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
 
             Notification::make()
                 ->title('Error')
                 ->danger()
-                ->body('Ocurrió un error al guardar la validación: ' . $e->getMessage())
+                ->body('Ocurrió un error al guardar la validación: '.$e->getMessage())
                 ->send();
         }
+    }
+
+    protected function getViewData(): array
+    {
+        return [
+            'record' => $this->record->load('documents'),
+        ];
     }
 
     protected function getHeaderActions(): array
@@ -257,11 +241,11 @@ class ViewTruck extends Page
         return [
             Action::make('back')
                 ->label('Volver')
-                ->url(static::getResource()::getUrl('index'))
+                ->url(self::getResource()::getUrl('index'))
                 ->color('gray'),
             Action::make('edit')
                 ->label('Editar Camión')
-                ->url($this->record->id . '/edit')
+                ->url($this->record->id.'/edit')
                 ->color('warning'),
         ];
     }

@@ -1,7 +1,34 @@
 <x-filament-panels::page>
     @vite(['resources/css/validation-documents.css'])
 
-    <div class="validation-container">
+    <div
+        class="validation-container"
+        x-data="{
+            documentStatuses: $wire.documentStatuses,
+            rejectionReasons: $wire.rejectionReasons,
+            approveDocument(id) {
+                this.documentStatuses[id] = 2
+                this.rejectionReasons[id] = ''
+            },
+            rejectDocument(id) {
+                this.documentStatuses[id] = 3
+            },
+            resetDocument(id) {
+                this.documentStatuses[id] = 1
+                this.rejectionReasons[id] = ''
+            },
+            canApproveAll() {
+                return Object.values(this.documentStatuses).every(
+                    (status) => status === 2,
+                )
+            },
+            saveValidation() {
+                $wire.set('documentStatuses', this.documentStatuses)
+                $wire.set('rejectionReasons', this.rejectionReasons)
+                $wire.saveValidation()
+            },
+        }"
+    >
         {{-- Información del Conductor --}}
         <div class="info-card">
             <h2 class="info-card-title">Información del Conductor</h2>
@@ -63,13 +90,15 @@
                     @foreach ($this->getRequiredDocumentTypes() as $documentType)
                         @php
                             $document = $record->documents->firstWhere('type', $documentType);
-                            $currentStatus = $document ? $documentStatuses[$document->id] ?? $document->status->value : null;
                         @endphp
 
                         @if ($document)
                             <div
-                                wire:key="document-{{ $document->id }}"
-                                class="document-card {{ $currentStatus == 2 ? 'approved' : ($currentStatus == 3 ? 'rejected' : '') }}"
+                                class="document-card"
+                                x-bind:class="{
+                                    'approved': documentStatuses[{{ $document->id }}] === 2,
+                                    'rejected': documentStatuses[{{ $document->id }}] === 3,
+                                }"
                             >
                                 <div class="document-header">
                                     <x-filament::icon
@@ -89,11 +118,15 @@
                                 <div class="document-info">
                                     <div class="status-row">
                                         <span class="status-label">Estado actual:</span>
-                                        <x-filament::badge
-                                            :color="App\Enums\DocumentStatusEnum::from($currentStatus)->getColor()"
-                                        >
-                                            {{ App\Enums\DocumentStatusEnum::from($currentStatus)->getLabel() }}
-                                        </x-filament::badge>
+                                        <template x-if="documentStatuses[{{ $document->id }}] === 1">
+                                            <x-filament::badge color="warning">Pendiente</x-filament::badge>
+                                        </template>
+                                        <template x-if="documentStatuses[{{ $document->id }}] === 2">
+                                            <x-filament::badge color="success">Aprobado</x-filament::badge>
+                                        </template>
+                                        <template x-if="documentStatuses[{{ $document->id }}] === 3">
+                                            <x-filament::badge color="danger">Rechazado</x-filament::badge>
+                                        </template>
                                     </div>
                                     @if ($document->submitted_date)
                                         <p class="document-date">
@@ -120,49 +153,49 @@
                                     </x-filament::button>
 
                                     <x-filament::button
-                                        wire:click="approveDocument({{ $document->id }})"
+                                        x-on:click="approveDocument({{ $document->id }})"
+                                        x-bind:disabled="documentStatuses[{{ $document->id }}] === 2"
                                         size="sm"
                                         color="success"
-                                        :disabled="$currentStatus == 2"
                                     >
                                         <x-filament::icon icon="heroicon-o-check-circle" class="mr-1 h-4 w-4" />
                                         Aprobar
                                     </x-filament::button>
 
                                     <x-filament::button
-                                        wire:click="rejectDocument({{ $document->id }})"
+                                        x-on:click="rejectDocument({{ $document->id }})"
+                                        x-bind:disabled="documentStatuses[{{ $document->id }}] === 3"
                                         size="sm"
                                         color="danger"
-                                        :disabled="$currentStatus == 3"
                                     >
                                         <x-filament::icon icon="heroicon-o-x-circle" class="mr-1 h-4 w-4" />
                                         Rechazar
                                     </x-filament::button>
 
-                                    @if ($currentStatus != 1)
-                                        <x-filament::button
-                                            wire:click="resetDocument({{ $document->id }})"
-                                            size="sm"
-                                            color="gray"
-                                        >
-                                            <x-filament::icon icon="heroicon-o-arrow-path" class="mr-1 h-4 w-4" />
-                                            Restablecer
-                                        </x-filament::button>
-                                    @endif
+                                    <x-filament::button
+                                        x-show="documentStatuses[{{ $document->id }}] !== 1"
+                                        x-on:click="resetDocument({{ $document->id }})"
+                                        size="sm"
+                                        color="gray"
+                                    >
+                                        <x-filament::icon icon="heroicon-o-arrow-path" class="mr-1 h-4 w-4" />
+                                        Restablecer
+                                    </x-filament::button>
                                 </div>
 
                                 {{-- Razón de rechazo --}}
-                                @if ($currentStatus == 3)
-                                    <div class="rejection-reason-container">
-                                        <label class="rejection-label">Razón del Rechazo *</label>
-                                        <textarea
-                                            wire:model="rejectionReasons.{{ $document->id }}"
-                                            rows="3"
-                                            class="rejection-textarea"
-                                            placeholder="Ingrese la razón del rechazo..."
-                                        ></textarea>
-                                    </div>
-                                @endif
+                                <div
+                                    x-show="documentStatuses[{{ $document->id }}] === 3"
+                                    class="rejection-reason-container"
+                                >
+                                    <label class="rejection-label">Razón del Rechazo *</label>
+                                    <textarea
+                                        x-model="rejectionReasons[{{ $document->id }}]"
+                                        rows="3"
+                                        class="rejection-textarea"
+                                        placeholder="Ingrese la razón del rechazo..."
+                                    ></textarea>
+                                </div>
                             </div>
                         @endif
                     @endforeach
@@ -172,9 +205,10 @@
 
         {{-- Botones de acción --}}
         <div class="actions-footer">
-            <x-filament::button wire:click="saveValidation" color="primary" size="lg">
-                <x-filament::icon icon="heroicon-o-check" class="mr-2 h-5 w-5" />
-                {{ $this->canApproveAll() ? 'Aprobar Conductor' : 'Guardar Validación' }}
+            <x-filament::button x-on:click="saveValidation()" color="primary" size="lg" wire:loading.attr="disabled">
+                <x-filament::icon icon="heroicon-o-check" class="mr-2 h-5 w-5" wire:loading.remove />
+                <x-filament::loading-indicator class="mr-2 h-5 w-5" wire:loading />
+                <span x-text="canApproveAll() ? 'Aprobar Conductor' : 'Guardar Validación'"></span>
             </x-filament::button>
         </div>
     </div>
