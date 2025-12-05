@@ -163,7 +163,7 @@ final class CreateCompany extends Component implements HasSchemas
                                     FileUpload::make('ruc_document')
                                         ->label('Ficha RUC')
                                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
-                                        ->maxSize(5120)
+                                        ->maxSize(10240)
                                         ->required()
                                         ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/DOCUMENTOS")
                                         ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -172,12 +172,12 @@ final class CreateCompany extends Component implements HasSchemas
 
                                             return "{$typeName}.{$extension}";
                                         })
-                                        ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
+                                        ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 10MB)'),
 
                                     FileUpload::make('representative_dni_document')
                                         ->label('DNI del Representante')
                                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
-                                        ->maxSize(5120)
+                                        ->maxSize(10240)
                                         ->required()
                                         ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/DOCUMENTOS")
                                         ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -186,13 +186,13 @@ final class CreateCompany extends Component implements HasSchemas
 
                                             return "{$typeName}.{$extension}";
                                         })
-                                        ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
+                                        ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 10MB)'),
 
                                     ...($this->companyType === 2 ? [
                                         FileUpload::make('sunarp_document')
                                             ->label('Ficha SUNARP')
                                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
-                                            ->maxSize(5120)
+                                            ->maxSize(10240)
                                             ->required()
                                             ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/DOCUMENTOS")
                                             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -201,12 +201,12 @@ final class CreateCompany extends Component implements HasSchemas
 
                                                 return "{$typeName}.{$extension}";
                                             })
-                                            ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
+                                            ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 10MB)'),
 
                                         FileUpload::make('power_of_attorney_document')
                                             ->label('Vigencia de Poder')
                                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
-                                            ->maxSize(5120)
+                                            ->maxSize(10240)
                                             ->required()
                                             ->directory(fn () => "EMPRESAS/{$this->data['ruc']}/DOCUMENTOS")
                                             ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -215,7 +215,7 @@ final class CreateCompany extends Component implements HasSchemas
 
                                                 return "{$typeName}.{$extension}";
                                             })
-                                            ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 5MB)'),
+                                            ->helperText('Formatos aceptados: PDF, JPG, PNG (máx. 10MB)'),
                                     ] : []),
                                 ]),
                         ]),
