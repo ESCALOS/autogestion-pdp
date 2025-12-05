@@ -114,7 +114,7 @@ final class CreateTruck extends Component implements HasSchemas
                                             FileUpload::make('documents.tarjeta_propiedad.file')
                                                 ->label('Tarjeta de Propiedad')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -138,7 +138,7 @@ final class CreateTruck extends Component implements HasSchemas
                                             FileUpload::make('documents.soat.file')
                                                 ->label('SOAT')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -164,7 +164,7 @@ final class CreateTruck extends Component implements HasSchemas
                                             FileUpload::make('documents.habilitacion_mtc.file')
                                                 ->label('Habilitación MTC')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -190,7 +190,7 @@ final class CreateTruck extends Component implements HasSchemas
                                             FileUpload::make('documents.poliza_seguro.file')
                                                 ->label('Póliza de Seguro')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -216,7 +216,7 @@ final class CreateTruck extends Component implements HasSchemas
                                             FileUpload::make('documents.revision_tecnica.file')
                                                 ->label('Revisión Técnica')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -253,7 +253,7 @@ final class CreateTruck extends Component implements HasSchemas
                                             FileUpload::make('documents.bonificacion.file')
                                                 ->label('Bonificación')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();

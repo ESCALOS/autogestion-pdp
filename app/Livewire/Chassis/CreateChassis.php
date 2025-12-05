@@ -177,7 +177,7 @@ final class CreateChassis extends Component implements HasSchemas
                                             FileUpload::make('documents.chassis_tarjeta_propiedad.file')
                                                 ->label('Tarjeta de Propiedad')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -201,7 +201,7 @@ final class CreateChassis extends Component implements HasSchemas
                                             FileUpload::make('documents.chassis_habilitacion_mtc.file')
                                                 ->label('Habilitación MTC')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -227,7 +227,7 @@ final class CreateChassis extends Component implements HasSchemas
                                             FileUpload::make('documents.chassis_revision_tecnica.file')
                                                 ->label('Revisión Técnica')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -263,7 +263,7 @@ final class CreateChassis extends Component implements HasSchemas
                                             FileUpload::make('documents.chassis_bonificacion.file')
                                                 ->label('Bonificación')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$this->data['license_plate']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();

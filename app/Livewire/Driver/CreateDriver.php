@@ -110,7 +110,7 @@ final class CreateDriver extends Component implements HasSchemas
                                             FileUpload::make('documents.dni.file')
                                                 ->label('DNI')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->validationAttribute('DNI')
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
@@ -137,7 +137,7 @@ final class CreateDriver extends Component implements HasSchemas
                                             FileUpload::make('documents.licencia_de_conducir.file')
                                                 ->label('Licencia de conducir')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -162,7 +162,7 @@ final class CreateDriver extends Component implements HasSchemas
                                             FileUpload::make('documents.induccion_seguridad.file')
                                                 ->label('Inducción de Seguridad y Medio Ambiente Virtual')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -189,7 +189,7 @@ final class CreateDriver extends Component implements HasSchemas
                                             FileUpload::make('documents.declaracion_jurada.file')
                                                 ->label('Declaración Jurada de no poseer Antecedentes')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -225,7 +225,7 @@ final class CreateDriver extends Component implements HasSchemas
                                             FileUpload::make('documents.curso_pbip.file')
                                                 ->label('Certificado Curso Básico PBIP I')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -252,7 +252,7 @@ final class CreateDriver extends Component implements HasSchemas
                                             FileUpload::make('documents.curso_seguridad_portuaria.file')
                                                 ->label('Certificado Curso Básico de Seguridad Portuaria')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
@@ -279,7 +279,7 @@ final class CreateDriver extends Component implements HasSchemas
                                             FileUpload::make('documents.curso_mercancias.file')
                                                 ->label('Certificado Curso Básico de Mercancías Peligrosas')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
                                                     $extension = $file->getClientOriginalExtension();
@@ -314,7 +314,7 @@ final class CreateDriver extends Component implements HasSchemas
                                             FileUpload::make('documents.sctr.file')
                                                 ->label('SCTR (Salud y Pensión)')
                                                 ->acceptedFileTypes(['application/pdf', 'image/*'])
-                                                ->maxSize(5120)
+                                                ->maxSize(10240)
                                                 ->required()
                                                 ->directory(fn () => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$this->data['document_number']}")
                                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
