@@ -68,34 +68,9 @@ final class ViewCompany extends Page
         return null;
     }
 
-    public function approveDocument(int $documentId): void
-    {
-        $this->documentStatuses[$documentId] = CompanyDocumentStatusEnum::APROBADO->value;
-        $this->rejectionReasons[$documentId] = '';
-    }
-
-    public function rejectDocument(int $documentId): void
-    {
-        $this->documentStatuses[$documentId] = CompanyDocumentStatusEnum::RECHAZADO->value;
-    }
-
-    public function resetDocument(int $documentId): void
-    {
-        $this->documentStatuses[$documentId] = CompanyDocumentStatusEnum::PENDIENTE->value;
-        $this->rejectionReasons[$documentId] = '';
-    }
-
     public function canApproveAll(): bool
     {
-        $requiredDocuments = $this->getRequiredDocumentTypes();
-
-        foreach ($requiredDocuments as $type) {
-            $document = $this->record->documents->firstWhere('type', $type);
-            if (! $document) {
-                return false;
-            }
-
-            $status = $this->documentStatuses[$document->id] ?? CompanyDocumentStatusEnum::PENDIENTE->value;
+        foreach ($this->documentStatuses as $status) {
             if ($status !== CompanyDocumentStatusEnum::APROBADO->value) {
                 return false;
             }
@@ -232,7 +207,7 @@ final class ViewCompany extends Page
                 ->color('gray'),
             Action::make('edit')
                 ->label('Editar Empresa')
-                ->url($this->record->id . '/edit')
+                ->url($this->record->id.'/edit')
                 ->color('warning'),
         ];
     }
