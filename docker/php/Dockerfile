@@ -49,7 +49,8 @@ RUN add-apt-repository ppa:ondrej/php -y && \
         php8.4-gd \
         php8.4-intl \
         php8.4-bcmath \
-        php8.4-redis
+        php8.4-redis \
+        postgresql-client
 
 # Eliminar xdebug si aparece en el PPA
 RUN apt purge -y php8.4-xdebug || true
