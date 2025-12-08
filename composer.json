@@ -28,6 +28,7 @@
         "league/flysystem-aws-s3-v3": "^3.30",
         "livewire/livewire": "^3.6",
         "marcelweidum/filament-expiration-notice": "^1.0",
+        "spatie/laravel-backup": "^9.3",
         "unknow-sk/filament-logger": "^1.0"
     },
     "require-dev": {
