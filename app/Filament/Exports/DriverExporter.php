@@ -27,7 +27,7 @@ class DriverExporter extends Exporter
                 ->label('Driver Card ID'),
             ExportColumn::make('license_number')
                 ->label('Driver License'),
-            ExportColumn::make('license_expiration')
+            ExportColumn::make('licencia_vencimiento')
                 ->label('Vencimiento de Licencia')
                 ->state(fn ($record) => $record->documents->where('type', \App\Enums\DocumentTypeEnum::LICENCIA_DE_CONDUCIR)->first()?->expiration_date?->format('d/m/Y')),
             ExportColumn::make('document_type')
