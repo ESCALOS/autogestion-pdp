@@ -32,6 +32,20 @@ RUN apt install -y \
     pkg-config
 
 # -----------------------------------------
+# 2.1 Instalar Node.js 22
+# -----------------------------------------
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt install -y nodejs
+
+# -----------------------------------------
+# 2.2 Instalar PostgreSQL Client 18
+# -----------------------------------------
+RUN curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql-keyring.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/postgresql-keyring.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+    apt update && \
+    apt install -y postgresql-client-18
+
+# -----------------------------------------
 # 3. Instalar PHP 8.4 (PPA)
 # -----------------------------------------
 RUN add-apt-repository ppa:ondrej/php -y && \
@@ -83,9 +97,11 @@ RUN composer install --optimize-autoloader --no-dev
 # -----------------------------------------
 # 8. Permisos
 # -----------------------------------------
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+RUN mkdir -p /var/www/html/storage/app/private/autogestion-backup \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage/app/private/filament_exports
+    && chmod -R 775 /var/www/html/storage/app/private/filament_exports \
+    && chmod -R 775 /var/www/html/storage/app/private/autogestion-backup
 
 # -----------------------------------------
 # 8.1 Instalar Cron Job para Schedule
