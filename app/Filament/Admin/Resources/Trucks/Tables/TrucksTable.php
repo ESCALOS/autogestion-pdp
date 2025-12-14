@@ -29,6 +29,7 @@ final class TrucksTable
             ->columns([
                 TextColumn::make('company.business_name')
                     ->label('Empresa')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('license_plate')
                     ->label('Placa')
