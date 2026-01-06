@@ -17,6 +17,7 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
@@ -117,6 +118,101 @@ final class ListTrucks extends Component implements HasActions, HasSchemas, HasT
             ])
             ->recordActions([
                 ActionGroup::make([
+                    Action::make('edit_document')
+                        ->label('Editar Documento')
+                        ->icon('heroicon-o-document-check')
+                        ->color('info')
+                        ->visible(function (Truck $record): bool {
+                            return $record->documents()
+                                ->whereNotNull('expiration_date')
+                                ->exists();
+                        })
+                        ->form([
+                            Grid::make(1)
+                                ->schema([
+                                    Select::make('document_id')
+                                        ->label('Documento')
+                                        ->options(function (Truck $record): array {
+                                            return $record->documents()
+                                                ->whereNotNull('expiration_date')
+                                                ->get()
+                                                ->mapWithKeys(function (Document $document) {
+                                                    $expirationDate = $document->expiration_date;
+                                                    $daysUntilExpiration = now()->diffInDays($expirationDate, false);
+
+                                                    if ($daysUntilExpiration < 0) {
+                                                        $status = '❌ Vencido';
+                                                    } elseif ($daysUntilExpiration <= 15) {
+                                                        $status = '⚠️ Próximo a vencer';
+                                                    } else {
+                                                        $status = '✓ Vigente';
+                                                    }
+
+                                                    $label = "{$document->type->getLabel()} - Vence: {$expirationDate->format('d/m/Y')} ({$status})";
+
+                                                    return [$document->id => $label];
+                                                })
+                                                ->toArray();
+                                        })
+                                        ->required()
+                                        ->native(false)
+                                        ->searchable(),
+                                    FileUpload::make('document_file')
+                                        ->label('Nuevo Documento')
+                                        ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                        ->maxSize(5120)
+                                        ->required()
+                                        ->directory(fn (Truck $record) => 'EMPRESAS/'.Auth::user()->company->ruc."/TRUCKS/{$record->license_plate}")
+                                        ->helperText('Sube el nuevo documento en formato PDF o imagen (máx. 5MB)'),
+                                    DatePicker::make('expiration_date')
+                                        ->label('Fecha de Vencimiento')
+                                        ->native(false)
+                                        ->required()
+                                        ->minDate(today())
+                                        ->closeOnDateSelection()
+                                        ->displayFormat('d/m/Y')
+                                        ->helperText('Selecciona la nueva fecha de vencimiento del documento'),
+                                ]),
+                        ])
+                        ->modalHeading('Editar Documento')
+                        ->modalDescription('Actualiza el documento y su fecha de vencimiento.')
+                        ->modalSubmitActionLabel('Guardar Cambios')
+                        ->action(function (Truck $record, array $data): void {
+                            try {
+                                DB::transaction(function () use ($record, $data) {
+                                    $document = Document::find($data['document_id']);
+
+                                    if ($document) {
+                                        // Actualizar el documento
+                                        $document->update([
+                                            'path' => $data['document_file'],
+                                            'submitted_date' => now(),
+                                            'expiration_date' => $data['expiration_date'],
+                                            'status' => DocumentStatusEnum::PENDING,
+                                        ]);
+
+                                        // Cambiar estado del tracto a Pendiente de Aprobación
+                                        $record->update([
+                                            'status' => EntityStatusEnum::PENDING_APPROVAL,
+                                        ]);
+                                    }
+                                });
+
+                                Notification::make()
+                                    ->title('Documento actualizado exitosamente')
+                                    ->body('El documento y la fecha de vencimiento han sido actualizados. El tracto está pendiente de aprobación.')
+                                    ->success()
+                                    ->send();
+
+                                $this->dispatch('$refresh');
+                            } catch (Exception $e) {
+                                Notification::make()
+                                    ->title('Error al actualizar el documento')
+                                    ->body($e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
+                        }),
                     Action::make('add_bonus')
                         ->label('Agregar Bonificación')
                         ->icon('heroicon-o-document-plus')
