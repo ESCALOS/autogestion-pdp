@@ -64,9 +64,11 @@
             <strong>Empresa:</strong> {{ $driver->company->business_name ?? 'N/A' }}
         </div>
 
-        <p>Todos sus documentos han sido validados correctamente y ahora está activo en nuestro sistema.</p>
 
-        <p>Puede proceder a realizar sus actividades de transporte.</p>
+        <p>
+            Todos sus documentos han sido validados correctamente conforme al proceso de registro.
+            <strong>Se activara en N4 Navis en un plazo no mayor a 24 horas.</strong>
+        </p>
 
         <p>Saludos cordiales,<br>
         <strong>Equipo de Registro de Transportes</strong></p>
