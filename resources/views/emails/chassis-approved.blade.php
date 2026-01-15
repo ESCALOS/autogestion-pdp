@@ -78,11 +78,9 @@
                 </div>
 
                 <p>
-                    Todos los documentos han sido validados correctamente y la carreta ahora está activa en nuestro
-                    sistema.
+                    Todos sus documentos han sido validados correctamente conforme al proceso de registro.
+                    <strong>Se activara en N4 Navis en un plazo no mayor a 24 horas.</strong>
                 </p>
-
-                <p>Puede proceder a realizar sus actividades de transporte.</p>
 
                 <p>
                     Saludos cordiales,
