@@ -192,6 +192,12 @@
                                         <template x-if="documentStatuses[{{ $document->id }}] === 3">
                                             <x-filament::badge color="danger">Rechazado</x-filament::badge>
                                         </template>
+                                        <template x-if="documentStatuses[{{ $document->id }}] === 4">
+                                            <x-filament::badge color="danger">Necesita Actualización</x-filament::badge>
+                                        </template>
+                                        <template x-if="documentStatuses[{{ $document->id }}] === 5">
+                                            <x-filament::badge color="warning">Próximo a vencer</x-filament::badge>
+                                        </template>
                                     </div>
 
                                     @if ($document->submitted_date)
