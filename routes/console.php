@@ -21,6 +21,16 @@ Schedule::command('backup:run --only-db')
     })
     ->withoutOverlapping();
 
+Schedule::command('documents:check-expired')
+    ->dailyAt('00:15')
+    ->onSuccess(function () {
+        Log::info('Checked for expired documents and updated statuses.');
+    })
+    ->onFailure(function () {
+        Log::error('Failed to check for expired documents.');
+    })
+    ->withoutOverlapping();
+
 Schedule::command('documents:check-expiring --days=7')
     ->dailyAt('00:30')
     ->onSuccess(function () {

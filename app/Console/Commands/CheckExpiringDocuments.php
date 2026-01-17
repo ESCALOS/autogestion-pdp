@@ -28,7 +28,7 @@ final class CheckExpiringDocuments extends Command
     /**
      * The console command description.
      */
-    protected $description = 'Check for documents expiring in the specified number of days, expired documents, and send notifications';
+    protected $description = 'Check for documents expiring in the specified number of days and send notifications';
 
     /**
      * Execute the console command.
@@ -38,13 +38,9 @@ final class CheckExpiringDocuments extends Command
         $days = (int) $this->option('days');
         $targetDate = now()->addDays($days)->format('Y-m-d');
 
-        $this->info("Verificando documentos que vencen en {$days} días (fecha: {$targetDate}) y documentos ya vencidos");
+        $this->info("Verificando documentos que vencen en {$days} días (fecha: {$targetDate})");
 
         try {
-            // Primero verificar documentos ya vencidos (inhabilita entidades)
-            $this->checkExpiredDocuments();
-
-            // Luego verificar documentos próximos a vencer (solo alerta)
             $this->checkDriverDocuments($days);
             $this->checkTruckDocuments($days);
             $this->checkChassisDocuments($days);
@@ -57,54 +53,6 @@ final class CheckExpiringDocuments extends Command
             Log::error('Error en CheckExpiringDocuments: '.$e->getMessage());
 
             return Command::FAILURE;
-        }
-    }
-
-    /**
-     * Check for already expired documents and update entity status to NEEDS_UPDATE.
-     */
-    private function checkExpiredDocuments(): void
-    {
-        $this->info('Verificando documentos vencidos...');
-
-        $this->updateExpiredDocumentsForEntity(Driver::class, 'full_name', 'Driver');
-        $this->updateExpiredDocumentsForEntity(Truck::class, 'license_plate', 'Truck');
-        $this->updateExpiredDocumentsForEntity(Chassis::class, 'license_plate', 'Chassis');
-    }
-
-    /**
-     * Update expired documents for a specific entity type.
-     */
-    private function updateExpiredDocumentsForEntity(string $modelClass, string $identifierAttribute, string $entityType): void
-    {
-        $entitiesWithExpired = $modelClass::whereHas('documents', function ($query) {
-            $query->expiredAndNeedsUpdate();
-        })
-            ->with(['documents' => function ($query) {
-                $query->expiredAndNeedsUpdate();
-            }])
-            ->get();
-
-        foreach ($entitiesWithExpired as $entity) {
-            $expiredDocumentIds = [];
-
-            foreach ($entity->documents as $document) {
-                $document->update(['status' => DocumentStatusEnum::NEEDS_UPDATE]);
-                $expiredDocumentIds[] = $document->id;
-            }
-
-            $entity->update(['status' => EntityStatusEnum::NEEDS_UPDATE]);
-
-            $message = "{$entityType} {$entity->{$identifierAttribute}} inhabilitado por documentos vencidos";
-            $this->info($message);
-
-            Log::info("{$entityType} inhabilitado por documentos vencidos", [
-                'entity_type' => $entityType,
-                'entity_id' => $entity->id,
-                'identifier' => $entity->{$identifierAttribute},
-                'expired_documents_count' => count($expiredDocumentIds),
-                'expired_document_ids' => $expiredDocumentIds,
-            ]);
         }
     }
 
