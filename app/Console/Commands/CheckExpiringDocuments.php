@@ -67,61 +67,44 @@ final class CheckExpiringDocuments extends Command
     {
         $this->info('Verificando documentos vencidos...');
 
-        // Drivers con documentos vencidos
-        $driversWithExpired = Driver::whereHas('documents', function ($query) {
-            $query->where('expiration_date', '<', now())
-                ->whereIn('status', [DocumentStatusEnum::APPROVED, DocumentStatusEnum::EXPIRING_SOON]);
+        $this->updateExpiredDocumentsForEntity(Driver::class, 'full_name', 'Driver');
+        $this->updateExpiredDocumentsForEntity(Truck::class, 'license_plate', 'Truck');
+        $this->updateExpiredDocumentsForEntity(Chassis::class, 'license_plate', 'Chassis');
+    }
+
+    /**
+     * Update expired documents for a specific entity type.
+     */
+    private function updateExpiredDocumentsForEntity(string $modelClass, string $identifierAttribute, string $entityType): void
+    {
+        $entitiesWithExpired = $modelClass::whereHas('documents', function ($query) {
+            $query->expiredAndNeedsUpdate();
         })
             ->with(['documents' => function ($query) {
-                $query->where('expiration_date', '<', now())
-                    ->whereIn('status', [DocumentStatusEnum::APPROVED, DocumentStatusEnum::EXPIRING_SOON]);
+                $query->expiredAndNeedsUpdate();
             }])
             ->get();
 
-        foreach ($driversWithExpired as $driver) {
-            foreach ($driver->documents as $document) {
+        foreach ($entitiesWithExpired as $entity) {
+            $expiredDocumentIds = [];
+
+            foreach ($entity->documents as $document) {
                 $document->update(['status' => DocumentStatusEnum::NEEDS_UPDATE]);
+                $expiredDocumentIds[] = $document->id;
             }
-            $driver->update(['status' => EntityStatusEnum::NEEDS_UPDATE]);
-            $this->info("Driver {$driver->full_name} inhabilitado por documentos vencidos");
-        }
 
-        // Trucks con documentos vencidos
-        $trucksWithExpired = Truck::whereHas('documents', function ($query) {
-            $query->where('expiration_date', '<', now())
-                ->whereIn('status', [DocumentStatusEnum::APPROVED, DocumentStatusEnum::EXPIRING_SOON]);
-        })
-            ->with(['documents' => function ($query) {
-                $query->where('expiration_date', '<', now())
-                    ->whereIn('status', [DocumentStatusEnum::APPROVED, DocumentStatusEnum::EXPIRING_SOON]);
-            }])
-            ->get();
+            $entity->update(['status' => EntityStatusEnum::NEEDS_UPDATE]);
 
-        foreach ($trucksWithExpired as $truck) {
-            foreach ($truck->documents as $document) {
-                $document->update(['status' => DocumentStatusEnum::NEEDS_UPDATE]);
-            }
-            $truck->update(['status' => EntityStatusEnum::NEEDS_UPDATE]);
-            $this->info("Truck {$truck->license_plate} inhabilitado por documentos vencidos");
-        }
+            $message = "{$entityType} {$entity->{$identifierAttribute}} inhabilitado por documentos vencidos";
+            $this->info($message);
 
-        // Chassis con documentos vencidos
-        $chassisWithExpired = Chassis::whereHas('documents', function ($query) {
-            $query->where('expiration_date', '<', now())
-                ->whereIn('status', [DocumentStatusEnum::APPROVED, DocumentStatusEnum::EXPIRING_SOON]);
-        })
-            ->with(['documents' => function ($query) {
-                $query->where('expiration_date', '<', now())
-                    ->whereIn('status', [DocumentStatusEnum::APPROVED, DocumentStatusEnum::EXPIRING_SOON]);
-            }])
-            ->get();
-
-        foreach ($chassisWithExpired as $chassis) {
-            foreach ($chassis->documents as $document) {
-                $document->update(['status' => DocumentStatusEnum::NEEDS_UPDATE]);
-            }
-            $chassis->update(['status' => EntityStatusEnum::NEEDS_UPDATE]);
-            $this->info("Chassis {$chassis->license_plate} inhabilitado por documentos vencidos");
+            Log::info("{$entityType} inhabilitado por documentos vencidos", [
+                'entity_type' => $entityType,
+                'entity_id' => $entity->id,
+                'identifier' => $entity->{$identifierAttribute},
+                'expired_documents_count' => count($expiredDocumentIds),
+                'expired_document_ids' => $expiredDocumentIds,
+            ]);
         }
     }
 
@@ -192,23 +175,12 @@ final class CheckExpiringDocuments extends Command
         $targetDate = now()->addDays($days)->format('Y-m-d');
 
         $entities = $modelClass::whereHas('documents', function ($query) use ($targetDate) {
-            $query->where('expiration_date', $targetDate)
-                ->where('status', DocumentStatusEnum::APPROVED);
+            $query->expiringOnDate($targetDate);
         })
             ->with(['documents' => function ($query) use ($targetDate) {
-                $query->where('expiration_date', $targetDate)
-                    ->where('status', DocumentStatusEnum::APPROVED);
+                $query->expiringOnDate($targetDate);
             }, 'company.representative'])
             ->get();
-
-        // Actualizar el estado de los documentos a EXPIRING_SOON (próximo a vencer, pero aún válido)
-        foreach ($entities as $entity) {
-            foreach ($entity->documents as $document) {
-                $document->update([
-                    'status' => DocumentStatusEnum::EXPIRING_SOON,
-                ]);
-            }
-        }
 
         return $entities->groupBy('company_id');
     }

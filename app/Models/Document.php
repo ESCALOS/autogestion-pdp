@@ -42,4 +42,22 @@ class Document extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'validated_by');
     }
+
+    /**
+     * Scope para documentos vencidos que necesitan actualización.
+     */
+    public function scopeExpiredAndNeedsUpdate($query)
+    {
+        return $query->where('expiration_date', '<', now())
+            ->where('status', \App\Enums\DocumentStatusEnum::APPROVED);
+    }
+
+    /**
+     * Scope para documentos próximos a vencer en una fecha específica.
+     */
+    public function scopeExpiringOnDate($query, string $date)
+    {
+        return $query->where('expiration_date', $date)
+            ->where('status', \App\Enums\DocumentStatusEnum::APPROVED);
+    }
 }
