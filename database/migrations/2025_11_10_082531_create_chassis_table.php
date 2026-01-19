@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('company_id')->constrained()->onDelete('restrict');
             $table->string('license_plate', 10);
-            $table->string('status')->default(1)->comment('1: Inactivo, 2: Activo, 3: Necesita Actualización');
+            $table->integer('status')->default(1)->comment('1: Inactivo, 2: Activo, 3: Necesita Actualización');
             $table->string('vehicle_type')->nullable();
             $table->integer('axle_count')->nullable();
             $table->boolean('has_bonus')->default(false);
