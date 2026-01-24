@@ -165,7 +165,7 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
                                 ->whereNotNull('expiration_date')
                                 ->exists();
                         })
-                        ->form([
+                        ->schema([
                             Grid::make(1)
                                 ->schema([
                                     Select::make('document_id')
@@ -178,13 +178,18 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
                                                     $expirationDate = $document->expiration_date;
                                                     $daysUntilExpiration = now()->diffInDays($expirationDate, false);
 
-                                                    if ($daysUntilExpiration < 0) {
-                                                        $status = '❌ Vencido';
-                                                    } elseif ($daysUntilExpiration <= 15) {
-                                                        $status = '⚠️ Próximo a vencer';
-                                                    } else {
-                                                        $status = '✓ Vigente';
-                                                    }
+                                                    // Determinar estado basado en status del documento y fecha
+                                                    $status = match ($document->status) {
+                                                        DocumentStatusEnum::REJECTED => '❌ Rechazado',
+                                                        DocumentStatusEnum::NEEDS_UPDATE => '❌ Vencido',
+                                                        DocumentStatusEnum::PENDING => '⏳ Pendiente',
+                                                        DocumentStatusEnum::APPROVED => match (true) {
+                                                            $daysUntilExpiration < 0 => '❌ Vencido',
+                                                            $daysUntilExpiration <= 15 => '⚠️ Próximo a vencer',
+                                                            default => '✓ Vigente',
+                                                        },
+                                                        default => '❓ Desconocido',
+                                                    };
 
                                                     $label = "{$document->type->getLabel()} - Vence: {$expirationDate->format('d/m/Y')} ({$status})";
 
@@ -258,7 +263,7 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
                         ->visible(fn (Chassis $record): bool => in_array($record->status, [EntityStatusEnum::ACTIVE, EntityStatusEnum::PENDING_APPROVAL]) &&
                             ! $record->documents()->where('type', DocumentTypeEnum::CHASSIS_BONIFICACION)->exists()
                         )
-                        ->form([
+                        ->schema([
                             Grid::make(1)
                                 ->schema([
                                     FileUpload::make('bonus_document')
@@ -333,7 +338,7 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
             ->toolbarActions([
                 //
             ])
-            ->poll('5s');
+            ->poll('60s');
     }
 
     public function render(): View

@@ -95,7 +95,7 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
                                 })
                                 ->exists();
                         })
-                        ->form([
+                        ->schema([
                             Grid::make(1)
                                 ->schema([
                                     Select::make('document_id')
@@ -119,13 +119,18 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
 
                                                     $daysUntilExpiration = now()->diffInDays($expirationDate, false);
 
-                                                    if ($daysUntilExpiration < 0) {
-                                                        $status = '❌ Vencido';
-                                                    } elseif ($daysUntilExpiration <= 15) {
-                                                        $status = '⚠️ Próximo a vencer';
-                                                    } else {
-                                                        $status = '✓ Vigente';
-                                                    }
+                                                    // Determinar estado basado en status del documento y fecha
+                                                    $status = match ($document->status) {
+                                                        DocumentStatusEnum::REJECTED => '❌ Rechazado',
+                                                        DocumentStatusEnum::NEEDS_UPDATE => '❌ Vencido',
+                                                        DocumentStatusEnum::PENDING => '⏳ Pendiente',
+                                                        DocumentStatusEnum::APPROVED => match (true) {
+                                                            $daysUntilExpiration < 0 => '❌ Vencido',
+                                                            $daysUntilExpiration <= 15 => '⚠️ Próximo a vencer',
+                                                            default => '✓ Vigente',
+                                                        },
+                                                        default => '❓ Desconocido',
+                                                    };
 
                                                     $label = "{$document->type->getLabel()} - Vence: {$expirationDate->format('d/m/Y')} ({$status})";
 
@@ -236,7 +241,7 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
                         ->visible(fn (Driver $record): bool => in_array($record->status, [EntityStatusEnum::ACTIVE, EntityStatusEnum::PENDING_APPROVAL]) &&
                             ! $record->documents()->where('type', DocumentTypeEnum::CURSO_MERCANCIAS)->exists()
                         )
-                        ->form([
+                        ->schema([
                             Grid::make(1)
                                 ->schema([
                                     FileUpload::make('mercancias_document')
@@ -307,7 +312,7 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
             ->toolbarActions([
                 //
             ])
-            ->poll('5s');
+            ->poll('60s');
     }
 
     public function render(): View
