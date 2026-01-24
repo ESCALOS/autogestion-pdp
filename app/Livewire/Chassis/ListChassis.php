@@ -17,9 +17,9 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Tables\Columns\TextColumn;
@@ -31,6 +31,7 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -156,85 +157,118 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
             ])
             ->recordActions([
                 ActionGroup::make([
-                    Action::make('edit_document')
-                        ->label('Editar Documento')
+                    Action::make('update_documents')
+                        ->label('Actualizar Documentos')
                         ->icon('heroicon-o-document-check')
                         ->color('info')
-                        ->visible(function (Chassis $record): bool {
-                            return $record->documents()
-                                ->whereNotNull('expiration_date')
-                                ->exists();
-                        })
-                        ->schema([
-                            Grid::make(1)
-                                ->schema([
-                                    Select::make('document_id')
-                                        ->label('Documento')
-                                        ->options(function (Chassis $record): array {
-                                            return $record->documents()
-                                                ->whereNotNull('expiration_date')
-                                                ->get()
-                                                ->mapWithKeys(function (Document $document) {
-                                                    $expirationDate = $document->expiration_date;
-                                                    $daysUntilExpiration = now()->diffInDays($expirationDate, false);
+                        ->visible(fn (Chassis $record): bool => $record->documents()->exists())
+                        ->schema(function (Chassis $record): array {
+                            $documents = $record->documents()->get();
+                            $components = [];
 
-                                                    // Determinar estado basado en status del documento y fecha
-                                                    $status = match ($document->status) {
-                                                        DocumentStatusEnum::REJECTED => '❌ Rechazado',
-                                                        DocumentStatusEnum::NEEDS_UPDATE => '❌ Vencido',
-                                                        DocumentStatusEnum::PENDING => '⏳ Pendiente',
-                                                        DocumentStatusEnum::APPROVED => match (true) {
-                                                            $daysUntilExpiration < 0 => '❌ Vencido',
-                                                            $daysUntilExpiration <= 15 => '⚠️ Próximo a vencer',
-                                                            default => '✓ Vigente',
-                                                        },
-                                                        default => '❓ Desconocido',
-                                                    };
+                            foreach ($documents as $document) {
+                                $isExpired = $document->expiration_date && $document->expiration_date < now();
+                                $isRejected = $document->status === DocumentStatusEnum::REJECTED;
+                                $isNeedsUpdate = $document->status === DocumentStatusEnum::NEEDS_UPDATE;
+                                $isExpiringSoon = $document->status === DocumentStatusEnum::EXPIRING_SOON;
+                                $isRequired = $isExpired || $isRejected || $isNeedsUpdate;
 
-                                                    $label = "{$document->type->getLabel()} - Vence: {$expirationDate->format('d/m/Y')} ({$status})";
+                                // Determinar descripción del estado
+                                if ($isRejected) {
+                                    $description = "❌ Rechazado - Motivo: {$document->rejection_reason}";
+                                } elseif ($isNeedsUpdate) {
+                                    $description = "❌ Vencido el: {$document->expiration_date->format('d/m/Y')}";
+                                } elseif ($isExpired) {
+                                    $description = "❌ Vencido el: {$document->expiration_date->format('d/m/Y')}";
+                                } elseif ($isExpiringSoon) {
+                                    $description = "⚠️ Por vencer el: {$document->expiration_date->format('d/m/Y')} (opcional)";
+                                } elseif ($document->status === DocumentStatusEnum::PENDING) {
+                                    $description = '⏳ Pendiente de aprobación';
+                                } else {
+                                    $expirationText = $document->expiration_date ? " - Vence: {$document->expiration_date->format('d/m/Y')}" : '';
+                                    $description = "✓ Vigente{$expirationText} (opcional)";
+                                }
 
-                                                    return [$document->id => $label];
-                                                })
-                                                ->toArray();
-                                        })
-                                        ->required()
-                                        ->native(false)
-                                        ->searchable(),
-                                    FileUpload::make('document_file')
-                                        ->label('Nuevo Documento')
-                                        ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                $formSchema = [
+                                    FileUpload::make("document_{$document->id}")
+                                        ->label('Cargar nuevo documento')
+                                        ->required($isRequired)
+                                        ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'])
                                         ->maxSize(5120)
-                                        ->required()
-                                        ->directory(fn (Chassis $record) => 'EMPRESAS/'.Auth::user()->company->ruc."/CHASSIS/{$record->license_plate}")
-                                        ->helperText('Sube el nuevo documento en formato PDF o imagen (máx. 5MB)'),
-                                    DatePicker::make('expiration_date')
-                                        ->label('Fecha de Vencimiento')
+                                        ->directory(fn () => "EMPRESAS/{$record->company->ruc}/CHASSIS/{$record->license_plate}")
+                                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) use ($document): string {
+                                            $extension = $file->getClientOriginalExtension();
+
+                                            return $document->type->getFileName().'.'.$extension;
+                                        })
+                                        ->helperText($isRequired ? 'Obligatorio. Formatos: PDF, JPG, PNG (máx. 5MB)' : 'Opcional. Formatos: PDF, JPG, PNG (máx. 5MB)'),
+                                ];
+
+                                // Los chassis solo usan expiration_date, no course_date
+                                if ($document->expiration_date) {
+                                    $formSchema[] = DatePicker::make("expiration_date_{$document->id}")
+                                        ->label('Nueva fecha de vencimiento')
+                                        ->required(fn (callable $get): bool => ! empty($get("document_{$document->id}")))
                                         ->native(false)
-                                        ->required()
-                                        ->minDate(today())
+                                        ->minDate(now()->addDay())
                                         ->closeOnDateSelection()
                                         ->displayFormat('d/m/Y')
-                                        ->helperText('Selecciona la nueva fecha de vencimiento del documento'),
-                                ]),
-                        ])
-                        ->modalHeading('Editar Documento')
-                        ->modalDescription('Actualiza el documento y su fecha de vencimiento.')
+                                        ->helperText('Requerido si sube un nuevo documento');
+                                }
+
+                                $components[] = Section::make($document->type->getLabel())
+                                    ->description($description)
+                                    ->schema($formSchema)
+                                    ->collapsible()
+                                    ->collapsed(! $isRequired)
+                                    ->icon($isRequired ? 'heroicon-o-exclamation-circle' : 'heroicon-o-document-text');
+                            }
+
+                            return $components;
+                        })
+                        ->modalHeading('Actualizar Documentos del Chassis')
+                        ->modalDescription('Actualiza los documentos del chassis. Los marcados como obligatorios deben ser actualizados.')
                         ->modalSubmitActionLabel('Guardar Cambios')
+                        ->modalWidth('2xl')
                         ->action(function (Chassis $record, array $data): void {
                             try {
                                 DB::transaction(function () use ($record, $data) {
-                                    $document = Document::find($data['document_id']);
+                                    $documents = $record->documents()->get();
+                                    $hasUpdates = false;
 
-                                    if ($document) {
-                                        // Actualizar el documento
-                                        $document->update([
-                                            'path' => $data['document_file'],
-                                            'submitted_date' => now(),
-                                            'expiration_date' => $data['expiration_date'],
-                                            'status' => DocumentStatusEnum::PENDING,
-                                        ]);
+                                    foreach ($documents as $document) {
+                                        $fieldName = "document_{$document->id}";
 
-                                        // Cambiar estado del chassis a Pendiente de Aprobación
+                                        if (isset($data[$fieldName]) && ! empty($data[$fieldName])) {
+                                            $newPath = is_array($data[$fieldName]) ? $data[$fieldName][0] : $data[$fieldName];
+
+                                            // Eliminar archivo anterior si la extensión cambió
+                                            $oldExtension = pathinfo((string) $document->path, PATHINFO_EXTENSION);
+                                            $newExtension = pathinfo($newPath, PATHINFO_EXTENSION);
+                                            if ($oldExtension !== $newExtension && $document->path && Storage::exists($document->path)) {
+                                                Storage::delete($document->path);
+                                            }
+
+                                            $updateData = [
+                                                'path' => $newPath,
+                                                'status' => DocumentStatusEnum::PENDING,
+                                                'rejection_reason' => null,
+                                                'validated_by' => null,
+                                                'validated_date' => null,
+                                                'submitted_date' => now(),
+                                            ];
+
+                                            $expirationField = "expiration_date_{$document->id}";
+                                            if (isset($data[$expirationField]) && ! empty($data[$expirationField])) {
+                                                $updateData['expiration_date'] = $data[$expirationField];
+                                            }
+
+                                            $document->update($updateData);
+                                            $hasUpdates = true;
+                                        }
+                                    }
+
+                                    if ($hasUpdates) {
                                         $record->update([
                                             'status' => EntityStatusEnum::PENDING_APPROVAL,
                                         ]);
@@ -242,15 +276,15 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
                                 });
 
                                 Notification::make()
-                                    ->title('Documento actualizado exitosamente')
-                                    ->body('El documento y la fecha de vencimiento han sido actualizados. El chassis está pendiente de aprobación.')
+                                    ->title('Documentos actualizados exitosamente')
+                                    ->body('Los documentos han sido actualizados. El chassis está pendiente de aprobación.')
                                     ->success()
                                     ->send();
 
                                 $this->dispatch('$refresh');
                             } catch (Exception $e) {
                                 Notification::make()
-                                    ->title('Error al actualizar el documento')
+                                    ->title('Error al actualizar documentos')
                                     ->body($e->getMessage())
                                     ->danger()
                                     ->send();
@@ -337,8 +371,7 @@ final class ListChassis extends Component implements HasActions, HasSchemas, Has
             ])
             ->toolbarActions([
                 //
-            ])
-            ->poll('60s');
+            ]);
     }
 
     public function render(): View

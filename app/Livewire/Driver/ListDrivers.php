@@ -16,9 +16,9 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Tables\Columns\TextColumn;
@@ -30,6 +30,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -51,9 +52,9 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
                     ->label('Nombre Completo')
                     ->searchable(query: function ($query, string $search): void {
                         $query->where(function ($query) use ($search): void {
-                            $query->whereRaw('lower(name) like ?', ['%' . strtolower($search) . '%'])
-                                ->orWhereRaw('lower(lastname) like ?', ['%' . strtolower($search) . '%'])
-                                ->orWhereRaw("lower(concat(name, ' ', lastname)) like ?", ['%' . strtolower($search) . '%']);
+                            $query->whereRaw('lower(name) like ?', ['%'.mb_strtolower($search).'%'])
+                                ->orWhereRaw('lower(lastname) like ?', ['%'.mb_strtolower($search).'%'])
+                                ->orWhereRaw("lower(concat(name, ' ', lastname)) like ?", ['%'.mb_strtolower($search).'%']);
                         });
                     }),
                 TextColumn::make('document_number')
@@ -76,143 +77,145 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
             ->filters([
                 SelectFilter::make('status')
                     ->label('Estado')
-                    ->options(\App\Enums\EntityStatusEnum::class),
+                    ->options(EntityStatusEnum::class),
                 SelectFilter::make('document_type')
                     ->label('Tipo de Documento')
                     ->options(\App\Enums\DriverDocumentTypeEnum::class),
             ])
             ->recordActions([
                 ActionGroup::make([
-                    Action::make('edit_document')
-                        ->label('Editar Documento')
+                    Action::make('update_documents')
+                        ->label('Actualizar Documentos')
                         ->icon('heroicon-o-document-check')
                         ->color('info')
-                        ->visible(function (Driver $record): bool {
-                            return $record->documents()
-                                ->where(function ($query): void {
-                                    $query->whereNotNull('expiration_date')
-                                        ->orWhereNotNull('course_date');
-                                })
-                                ->exists();
-                        })
-                        ->schema([
-                            Grid::make(1)
-                                ->schema([
-                                    Select::make('document_id')
-                                        ->label('Documento')
-                                        ->options(function (Driver $record): array {
-                                            return $record->documents()
-                                                ->where(function ($query): void {
-                                                    $query->whereNotNull('expiration_date')
-                                                        ->orWhereNotNull('course_date');
-                                                })
-                                                ->get()
-                                                ->mapWithKeys(function (Document $document) {
-                                                    // Calcular fecha de vencimiento
-                                                    if ($document->expiration_date) {
-                                                        $expirationDate = $document->expiration_date;
-                                                    } elseif ($document->course_date && $document->type->getValidityYears()) {
-                                                        $expirationDate = $document->course_date->addYears($document->type->getValidityYears());
-                                                    } else {
-                                                        return [];
-                                                    }
+                        ->visible(fn (Driver $record): bool => $record->documents()->exists())
+                        ->schema(function (Driver $record): array {
+                            $documents = $record->documents()->get();
+                            $components = [];
 
-                                                    $daysUntilExpiration = now()->diffInDays($expirationDate, false);
+                            foreach ($documents as $document) {
+                                $isExpired = $document->expiration_date && $document->expiration_date < now();
+                                $isRejected = $document->status === DocumentStatusEnum::REJECTED;
+                                $isNeedsUpdate = $document->status === DocumentStatusEnum::NEEDS_UPDATE;
+                                $isExpiringSoon = $document->status === DocumentStatusEnum::EXPIRING_SOON;
+                                $isRequired = $isExpired || $isRejected || $isNeedsUpdate;
 
-                                                    // Determinar estado basado en status del documento y fecha
-                                                    $status = match ($document->status) {
-                                                        DocumentStatusEnum::REJECTED => '❌ Rechazado',
-                                                        DocumentStatusEnum::NEEDS_UPDATE => '❌ Vencido',
-                                                        DocumentStatusEnum::PENDING => '⏳ Pendiente',
-                                                        DocumentStatusEnum::APPROVED => match (true) {
-                                                            $daysUntilExpiration < 0 => '❌ Vencido',
-                                                            $daysUntilExpiration <= 15 => '⚠️ Próximo a vencer',
-                                                            default => '✓ Vigente',
-                                                        },
-                                                        default => '❓ Desconocido',
-                                                    };
+                                // Determinar descripción del estado
+                                if ($isRejected) {
+                                    $description = "❌ Rechazado - Motivo: {$document->rejection_reason}";
+                                } elseif ($isNeedsUpdate) {
+                                    $description = "❌ Vencido el: {$document->expiration_date->format('d/m/Y')}";
+                                } elseif ($isExpired) {
+                                    $description = "❌ Vencido el: {$document->expiration_date->format('d/m/Y')}";
+                                } elseif ($isExpiringSoon) {
+                                    $description = "⚠️ Por vencer el: {$document->expiration_date->format('d/m/Y')} (opcional)";
+                                } elseif ($document->status === DocumentStatusEnum::PENDING) {
+                                    $description = '⏳ Pendiente de aprobación';
+                                } else {
+                                    $expirationText = $document->expiration_date ? " - Vence: {$document->expiration_date->format('d/m/Y')}" : '';
+                                    $description = "✓ Vigente{$expirationText} (opcional)";
+                                }
 
-                                                    $label = "{$document->type->getLabel()} - Vence: {$expirationDate->format('d/m/Y')} ({$status})";
-
-                                                    return [$document->id => $label];
-                                                })
-                                                ->toArray();
-                                        })
-                                        ->required()
-                                        ->native(false)
-                                        ->searchable()
-                                        ->live(),
-                                    FileUpload::make('document_file')
-                                        ->label('Nuevo Documento')
-                                        ->acceptedFileTypes(['application/pdf', 'image/*'])
+                                $formSchema = [
+                                    FileUpload::make("document_{$document->id}")
+                                        ->label('Cargar nuevo documento')
+                                        ->required($isRequired)
+                                        ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'])
                                         ->maxSize(5120)
-                                        ->required()
-                                        ->directory(fn (Driver $record) => 'EMPRESAS/'.Auth::user()->company->ruc."/DRIVERS/{$record->document_number}")
-                                        ->helperText('Sube el nuevo documento en formato PDF o imagen (máx. 5MB)'),
-                                    DatePicker::make('course_date')
-                                        ->label('Fecha de Inducción/Curso')
+                                        ->directory(fn () => "EMPRESAS/{$record->company->ruc}/DRIVERS/{$record->document_number}")
+                                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) use ($document): string {
+                                            $extension = $file->getClientOriginalExtension();
+
+                                            return $document->type->getFileName().'.'.$extension;
+                                        })
+                                        ->helperText($isRequired ? 'Obligatorio. Formatos: PDF, JPG, PNG (máx. 5MB)' : 'Opcional. Formatos: PDF, JPG, PNG (máx. 5MB)'),
+                                ];
+
+                                // Agregar campo de fecha según el tipo de documento
+                                if ($document->type->requiresCourseDate()) {
+                                    $validityYears = $document->type->getValidityYears();
+                                    $formSchema[] = DatePicker::make("course_date_{$document->id}")
+                                        ->label('Fecha del Curso')
+                                        ->helperText("Vigencia: {$validityYears} años")
+                                        ->required(fn (callable $get): bool => ! empty($get("document_{$document->id}")))
                                         ->native(false)
-                                        ->required()
+                                        ->maxDate(now())
+                                        ->closeOnDateSelection()
+                                        ->displayFormat('d/m/Y');
+                                } elseif ($document->expiration_date) {
+                                    $formSchema[] = DatePicker::make("expiration_date_{$document->id}")
+                                        ->label('Nueva fecha de vencimiento')
+                                        ->required(fn (callable $get): bool => ! empty($get("document_{$document->id}")))
+                                        ->native(false)
+                                        ->minDate(now()->addDay())
                                         ->closeOnDateSelection()
                                         ->displayFormat('d/m/Y')
-                                        ->helperText('Selecciona la fecha de realización del curso o inducción')
-                                        ->hidden(function ($get, Driver $record): bool {
-                                            $documentId = $get('document_id');
-                                            if (!$documentId) {
-                                                return true;
-                                            }
-                                            $document = Document::find($documentId);
+                                        ->helperText('Requerido si sube un nuevo documento');
+                                }
 
-                                            return !($document && $document->type->getValidityYears());
-                                        }),
-                                    DatePicker::make('expiration_date')
-                                        ->label('Fecha de Vencimiento')
-                                        ->native(false)
-                                        ->required()
-                                        ->minDate(today())
-                                        ->closeOnDateSelection()
-                                        ->displayFormat('d/m/Y')
-                                        ->helperText('Selecciona la nueva fecha de vencimiento del documento')
-                                        ->hidden(function ($get, Driver $record): bool {
-                                            $documentId = $get('document_id');
-                                            if (!$documentId) {
-                                                return false;
-                                            }
-                                            $document = Document::find($documentId);
+                                $components[] = Section::make($document->type->getLabel())
+                                    ->description($description)
+                                    ->schema($formSchema)
+                                    ->collapsible()
+                                    ->collapsed(! $isRequired)
+                                    ->icon($isRequired ? 'heroicon-o-exclamation-circle' : 'heroicon-o-document-text');
+                            }
 
-                                            return $document && $document->type->getValidityYears();
-                                        }),
-                                ]),
-                        ])
-                        ->modalHeading('Editar Documento')
-                        ->modalDescription('Actualiza el documento y su fecha de vencimiento.')
+                            return $components;
+                        })
+                        ->modalHeading('Actualizar Documentos del Conductor')
+                        ->modalDescription('Actualiza los documentos del conductor. Los marcados como obligatorios deben ser actualizados.')
                         ->modalSubmitActionLabel('Guardar Cambios')
+                        ->modalWidth('2xl')
                         ->action(function (Driver $record, array $data): void {
                             try {
                                 DB::transaction(function () use ($record, $data) {
-                                    $document = Document::find($data['document_id']);
+                                    $documents = $record->documents()->get();
+                                    $hasUpdates = false;
 
-                                    if ($document) {
-                                        $updateData = [
-                                            'path' => $data['document_file'],
-                                            'submitted_date' => now(),
-                                            'status' => DocumentStatusEnum::PENDING,
-                                        ];
+                                    foreach ($documents as $document) {
+                                        $fieldName = "document_{$document->id}";
 
-                                        // Si el documento tiene validez calculable, calcular y guardar como expiration_date
-                                        if ($document->type->getValidityYears()) {
-                                            $courseDate = Carbon::parse($data['course_date']);
-                                            $updateData['expiration_date'] = $courseDate->addYears($document->type->getValidityYears());
-                                            $updateData['course_date'] = null;
-                                        } else {
-                                            // Si no, guardar directamente como expiration_date
-                                            $updateData['expiration_date'] = $data['expiration_date'];
-                                            $updateData['course_date'] = null;
+                                        if (isset($data[$fieldName]) && ! empty($data[$fieldName])) {
+                                            $newPath = is_array($data[$fieldName]) ? $data[$fieldName][0] : $data[$fieldName];
+
+                                            // Eliminar archivo anterior si la extensión cambió
+                                            $oldExtension = pathinfo((string) $document->path, PATHINFO_EXTENSION);
+                                            $newExtension = pathinfo($newPath, PATHINFO_EXTENSION);
+                                            if ($oldExtension !== $newExtension && $document->path && Storage::exists($document->path)) {
+                                                Storage::delete($document->path);
+                                            }
+
+                                            $updateData = [
+                                                'path' => $newPath,
+                                                'status' => DocumentStatusEnum::PENDING,
+                                                'rejection_reason' => null,
+                                                'validated_by' => null,
+                                                'validated_date' => null,
+                                                'submitted_date' => now(),
+                                            ];
+
+                                            // Manejar fechas según el tipo de documento
+                                            if ($document->type->requiresCourseDate()) {
+                                                $courseDateField = "course_date_{$document->id}";
+                                                if (isset($data[$courseDateField]) && ! empty($data[$courseDateField])) {
+                                                    $courseDate = Carbon::parse($data[$courseDateField]);
+                                                    $updateData['course_date'] = $courseDate;
+                                                    $updateData['expiration_date'] = $courseDate->copy()->addYears($document->type->getValidityYears());
+                                                }
+                                            } else {
+                                                $expirationField = "expiration_date_{$document->id}";
+                                                if (isset($data[$expirationField]) && ! empty($data[$expirationField])) {
+                                                    $updateData['expiration_date'] = $data[$expirationField];
+                                                }
+                                            }
+
+                                            $document->update($updateData);
+                                            $hasUpdates = true;
                                         }
+                                    }
 
-                                        $document->update($updateData);
-
-                                        // Cambiar estado del driver a Pendiente de Aprobación
+                                    if ($hasUpdates) {
                                         $record->update([
                                             'status' => EntityStatusEnum::PENDING_APPROVAL,
                                         ]);
@@ -220,15 +223,15 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
                                 });
 
                                 Notification::make()
-                                    ->title('Documento actualizado exitosamente')
-                                    ->body('El documento y la fecha han sido actualizados. El conductor está pendiente de aprobación.')
+                                    ->title('Documentos actualizados exitosamente')
+                                    ->body('Los documentos han sido actualizados. El conductor está pendiente de aprobación.')
                                     ->success()
                                     ->send();
 
                                 $this->dispatch('$refresh');
                             } catch (Exception $e) {
                                 Notification::make()
-                                    ->title('Error al actualizar el documento')
+                                    ->title('Error al actualizar documentos')
                                     ->body($e->getMessage())
                                     ->danger()
                                     ->send();
@@ -311,8 +314,7 @@ final class ListDrivers extends Component implements HasActions, HasSchemas, Has
             ])
             ->toolbarActions([
                 //
-            ])
-            ->poll('60s');
+            ]);
     }
 
     public function render(): View
