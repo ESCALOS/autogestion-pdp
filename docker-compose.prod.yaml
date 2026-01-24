@@ -4,9 +4,13 @@ services:
             context: .
             dockerfile: docker/php/Dockerfile
         container_name: app-prod
+        hostname: app-prod
         restart: always
+        mem_limit: 2.5gb
         volumes:
-            - /home/bsv.devel/private:/var/www/html/storage/app/private
+            volumes:
+                #- /home/bsv.devel/private:/var/www/html/storage/app/private
+                - autogestion-storage:/var/www/html/storage/app/private
         networks:
             - internal
         depends_on:
@@ -70,8 +74,13 @@ services:
 networks:
     internal:
         driver: bridge
-
 volumes:
+    autogestion-storage:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: /mnt/uploads/autogestion
     autogestion-pgsql:
         driver: local
     autogestion-redis:

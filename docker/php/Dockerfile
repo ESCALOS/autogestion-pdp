@@ -123,6 +123,7 @@ COPY docker/php/supervisor.conf /etc/supervisor/conf.d/supervisor.conf
 # 10. Copiar configuraciones php.ini & opcache
 # -----------------------------------------
 COPY docker/php/php.ini /etc/php/8.4/fpm/php.ini
+COPY docker/php/php.ini /etc/php/8.4/cli/php.ini
 COPY docker/php/opcache.ini /etc/php/8.4/mods-available/opcache.ini
 
 # -----------------------------------------
