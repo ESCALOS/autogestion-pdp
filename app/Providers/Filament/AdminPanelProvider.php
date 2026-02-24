@@ -67,12 +67,15 @@ final class AdminPanelProvider extends PanelProvider
             ->widgets([
                 OverlookWidget::class,
                 LatestAccessLogs::class,
-                CompanyStatsOverview::class
+                CompanyStatsOverview::class,
             ])
             ->navigationGroups([
                 NavigationGroup::make()
                     ->collapsed(true)
                     ->label('General'),
+                NavigationGroup::make()
+                    ->collapsed(true)
+                    ->label('Maquinaria'),
                 NavigationGroup::make()
                     ->collapsed(true)
                     ->label('Administración'),
