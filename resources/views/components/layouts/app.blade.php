@@ -10,20 +10,27 @@
                 <div class="flex items-center space-x-4">
                     @auth
                         <div class="text-right">
-                            <div class="font-medium">{{ auth()->user()->full_name }}</div>
-
-                            @if (auth()->user()->is_company_representative)
+                            @if (auth('supplier')->check())
+                                <div class="font-medium">{{ auth('supplier')->user()->full_name }}</div>
                                 <div class="text-sm opacity-90">
-                                    Representante - {{ optional(auth()->user()->company)->business_name }}
+                                    {{ auth('supplier')->user()->supplier->business_name }}
                                 </div>
                             @else
-                                <div class="text-sm opacity-90">
-                                    {{ optional(auth()->user()->company)->business_name }}
-                                </div>
+                                <div class="font-medium">{{ auth()->user()->full_name }}</div>
+
+                                @if (auth()->user()->is_company_representative)
+                                    <div class="text-sm opacity-90">
+                                        Representante - {{ optional(auth()->user()->company)->business_name }}
+                                    </div>
+                                @else
+                                    <div class="text-sm opacity-90">
+                                        {{ optional(auth()->user()->company)->business_name }}
+                                    </div>
+                                @endif
                             @endif
                         </div>
 
-                        <form id="logout-form" method="POST" action="{{ route('logout') }}">
+                        <form id="logout-form" method="POST" action="@if (auth('supplier')->check()){{ route('supplier.logout') }}@else{{ route('logout') }}@endif">
                             @csrf
                             <button aria-label="Cerrar sesión" class="topbar-logout-button">Cerrar sesión</button>
                         </form>

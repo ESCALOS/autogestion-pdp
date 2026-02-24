@@ -10,6 +10,12 @@ use Filament\Support\Contracts\HasLabel;
 
 enum DocumentTypeEnum: string implements HasColor, HasIcon, HasLabel
 {
+    // SUPPLIER DOCS
+    case RUC_RECORD = 'ruc_record';
+    case REPRESENTATIVE_DNI = 'representative_dni';
+    case SUNARP_RECORD = 'sunarp_record';
+    case POWER_OF_ATTORNEY_VALIDITY = 'power_of_attorney_validity';
+
     // DRIVER DOCS
     case DNI = 'dni';
     case LICENCIA_DE_CONDUCIR = 'licencia_de_conducir';
@@ -37,6 +43,12 @@ enum DocumentTypeEnum: string implements HasColor, HasIcon, HasLabel
     public function getLabel(): string
     {
         return match ($this) {
+            // SUPPLIER DOCS
+            self::RUC_RECORD => 'Ficha RUC',
+            self::REPRESENTATIVE_DNI => 'DNI del Representante',
+            self::SUNARP_RECORD => 'Ficha SUNARP',
+            self::POWER_OF_ATTORNEY_VALIDITY => 'Vigencia de Poder',
+
             // DRIVER DOCS
             self::DNI => 'DNI',
             self::LICENCIA_DE_CONDUCIR => 'Licencia de conducir',
