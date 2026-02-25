@@ -10,9 +10,14 @@ use Illuminate\Support\Facades\Log;
 
 final class WhatsAppService
 {
-    private string $baseUrl = 'https://apiwsp.factiliza.com/v1/message/sendtext/NTE5OTI4MDU4NTA=';
+    public function __construct(
+        private string $baseUrl = '',
+        private string $bearerToken = '',
+    ) {
+        $this->baseUrl = $baseUrl ?: (string) config('services.whatsapp.base_url');
+        $this->bearerToken = $bearerToken ?: (string) config('services.whatsapp.token');
+    }
 
-    private string $bearerToken = 'kaJEPO2g+4fTghYSkxqSU0P/XeZYjlVhBNDr8I6KloOzaMQeOiDTt7JEjM7OVaz8';
 
     public function sendVerificationCode(string $phoneNumber, string $code): bool
     {

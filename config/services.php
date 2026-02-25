@@ -37,4 +37,9 @@ return [
         ],
     ],
 
+    'whatsapp' => [
+        'base_url' => env('WSP_BASE_URL'),
+        'token' => env('WSP_TOKEN'),
+    ],
+
 ];
