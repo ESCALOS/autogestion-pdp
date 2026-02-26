@@ -59,7 +59,7 @@ final class CreateCompany extends Component implements HasSchemas
                                 ->schema([
                                     TextInput::make('ruc')
                                         ->label('RUC')
-                                        ->placeholder($this->companyType === 1 ? '10XXXXXXXXX' : '20XXXXXXXXX')
+                                        ->placeholder($this->companyType === 1 ? '10/15/17XXXXXXXXX' : '20XXXXXXXXX')
                                         ->unique(table: Company::class, column: 'ruc')
                                         ->validationMessages([
                                             'unique' => 'El RUC ya está registrado.',
@@ -69,10 +69,13 @@ final class CreateCompany extends Component implements HasSchemas
                                         ->length(11)
                                         ->rule(function () {
                                             return function (string $attribute, $value, $fail) {
-                                                $prefix = $this->companyType === 1 ? '10' : '20';
-                                                if (!str_starts_with($value, $prefix)) {
-                                                    $fail("El RUC debe comenzar con {$prefix} para este tipo de empresa.");
+                                                $allowedPrefixes = $this->companyType === 1 ? ['10', '15', '17'] : ['20'];
+                                                $hasValidPrefix = array_filter($allowedPrefixes, fn ($p) => str_starts_with($value, $p)) !== [];
+                                                if ($hasValidPrefix) {
+                                                    return;
                                                 }
+                                                $prefixList = implode(', ', $allowedPrefixes);
+                                                $fail("El RUC debe comenzar con {$prefixList} para este tipo de empresa.");
                                             };
                                         })
                                         ->extraInputAttributes(['class' => 'dark:text-gray-800']),
