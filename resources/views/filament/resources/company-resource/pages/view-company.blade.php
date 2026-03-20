@@ -51,6 +51,11 @@
                 </div>
 
                 <div class="info-item">
+                    <span class="info-label">DNI:</span>
+                    <span class="info-value">{{ $record->representative->dni }}</span>
+                </div>
+
+                <div class="info-item">
                     <span class="info-label">Representante Legal:</span>
                     <span class="info-value">{{ $record->representative->full_name }}</span>
                 </div>

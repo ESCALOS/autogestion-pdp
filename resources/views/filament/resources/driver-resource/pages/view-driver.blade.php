@@ -40,6 +40,11 @@
                 </div>
 
                 <div class="info-item">
+                    <span class="info-label">Licencia:</span>
+                    <span class="info-value">{{ $record->license_number }}</span>
+                </div>
+
+                <div class="info-item">
                     <span class="info-label">Tipo de Documento:</span>
                     <span class="info-value">{{ $record->document_type->getLabel() }}</span>
                 </div>
