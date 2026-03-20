@@ -84,16 +84,17 @@ final class CreateDriver extends Component implements HasSchemas
 
                             TextInput::make('license_number')
                                 ->label('Número de Licencia')
-                                ->regex('/^\S+$/')
+                                ->regex('/^\S{9,10}$/')
                                 ->unique('drivers', 'license_number', modifyRuleUsing: function ($rule) {
                                     return $rule->where('company_id', Auth::user()->company_id);
                                 })
                                 ->validationMessages([
                                     'unique' => 'Ya existe un conductor con este número de licencia en tu empresa.',
-                                    'regex' => 'El número de licencia no puede contener espacios.',
+                                    'regex' => 'El número de licencia debe tener 9 o 10 caracteres y no puede contener espacios.',
                                 ])
                                 ->required()
-                                ->maxLength(20),
+                                ->minLength(9)
+                                ->maxLength(10),
                         ])
                         ->columns(2),
 
